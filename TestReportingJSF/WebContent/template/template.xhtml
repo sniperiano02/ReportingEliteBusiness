@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"> 
+
+<h:head>
+
+<h:outputScript name="charts/charts.js" library="primefaces" />
+<h:outputStylesheet name="charts/charts.css" library="primefaces" />
+
+<title><ui:insert name="pageTitle" /></title>
+	
+</h:head> 
+<body > 
+
+			 <p:layout fullPage="true" resizeTitle="resize" style="background-color:#FFFFFF;">
+        <p:layoutUnit position="north" size="40" id="north" >
+            <ui:include src="/template/header.xhtml" />
+        </p:layoutUnit>
+
+        <p:layoutUnit position="west" id="west" resizable="false" header="Menu" style="height:580px;overflow:hidden;" size="225">
+            <ui:include src="/template/navigation.xhtml" >
+          
+            </ui:include>
+        </p:layoutUnit>
+
+        <p:layoutUnit styleClass="layoutUnitCenter" position="center">
+            
+                <p:messages autoUpdate="true" id="msgs" showDetail="true" showSummary="true" />
+                <ui:insert name="PageContent"  />
+            
+        </p:layoutUnit>
+
+        <p:layoutUnit position="east" size="0" style="width:0px; display:none;" id="east">
+        </p:layoutUnit>
+
+        <p:layoutUnit position="south" resizable="true" id="south">
+            
+        </p:layoutUnit>
+    </p:layout>
+</body> 
+</html>

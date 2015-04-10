@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                >
+           	 
+			<ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form id="form1">
+		   <p:panel header="Types" style="width:500px;height:120px;" >  
+            <p:dataGrid id="availablePlayers"  
+                value="#{stat_msc.listStatMsc}" var="player" columns="1">  
+                <p:column>  
+                <p:outputLabel  id="line_chart" >
+                
+                <p:graphicImage library="img" name="chart-icon.png"></p:graphicImage>
+                </p:outputLabel>
+               <p:draggable for="line_chart" scope="forpanel" revert="true" binding="#{stat_msc.opet}" id="drag_line" ></p:draggable>
+                </p:column>  
+                <p:column>
+                  
+                <p:outputLabel id="bar" >
+                
+                <p:graphicImage library="img" name="barchart-icon.png"></p:graphicImage>
+                </p:outputLabel>
+               <p:draggable for="bar" scope="forpanel" revert="true" binding="#{stat_msc.opet1}" id="drag_bar" ></p:draggable>
+                </p:column>
+                <p:column>
+                  
+                <p:outputLabel id="pie" >
+                
+                <p:graphicImage library="img" name="piechart-icon.png"></p:graphicImage>
+                </p:outputLabel>
+                <p:draggable for="pie" scope="forpanel" revert="true" binding="#{stat_msc.opet2}" id="drag_pie" ></p:draggable>
+                 <p:outputLabel id="grid" >
+                
+                <p:graphicImage library="img" name="datagrid-icon.png"></p:graphicImage>
+                </p:outputLabel>
+                <p:draggable for="grid" scope="forpanel" revert="true" binding="#{stat_msc.opet3}" id="drag_grid" ></p:draggable>
+                </p:column>
+                
+                 
+                  
+            </p:dataGrid>  
+           
+        </p:panel>  
+        <p:spacer width="100" height="10" />
+         
+             	 <p:panel id="myPanelGrid" style="height:#{stat_msc.width}px;">  
+            
+                   <p:droppable  scope="forpanel"  tolerance="fit" datasource="availablePlayers">
+                   <p:ajax listener="#{stat_msc.ReportConfiguration}" update="myPanelGrid"  ></p:ajax>
+                   </p:droppable>
+                    
+           <p:growl id="message" showDetail="false" /> 
+</p:panel>
+		 
+		
+		</h:form>
+	
+
+		  				
+			</ui:define>
+</ui:composition>

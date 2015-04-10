@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>		
+			<ui:define name="PageContent">
+			
+		<h:form id="form" >
+    <p:dataGrid var="rep" value="#{reports_view.allreports}" columns="3" layout="grid"
+        rows="12" paginator="true" id="reports"
+        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16">
+ 
+        <f:facet name="header">
+            Tous Les rapports
+        </f:facet>
+ 
+        <p:panel header="#{rep.id_rapport}" style="text-align:center">
+            <h:panelGrid columns="1" style="width:100%">
+                <p:graphicImage name="report_img.png" library="img" style="width: 100px; height: 120px;"/> 
+ 
+                <h:outputText value="#{rep.lib_rapport}" />
+ 
+                <h:commandLink  title="View Report" action="#{reports_view.ViewRapport(rep)}">
+                    <h:outputText styleClass="ui-icon ui-icon-search" style="margin:0 auto;" />
+                   
+                </h:commandLink>
+            </h:panelGrid>
+        </p:panel>
+ 
+    </p:dataGrid>
+    </h:form>
+			
+			
+			
+			</ui:define>
+			</ui:composition>

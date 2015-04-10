@@ -1,0 +1,5 @@
+
+
+.animated .ui-progressbar-value { 
+    background-image: url("#{resource['img/pbar-ani.gif']}");
+}

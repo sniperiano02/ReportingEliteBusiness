@@ -1,0 +1,90 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                >
+                <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1">
+		<p:layout>
+		<p:layoutUnit position="east" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{staticMscBean.choix_periode}" >
+		 <p:ajax listener="#{staticMscBean.handlechange}" event="change" update="PanelPeriode" process="@this"/>
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par Heure" itemValue="Par Heure" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="Type" >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{staticMscBean.choix_Voix}" >
+		
+		<f:selectItems value="#{staticMscBean.listeVoix}" var="voix" itemLabel="#{voix}" itemValue="#{voix}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	
+			<p:panel header="Type Destination">
+			<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{staticMscBean.choix_typeDest}" >
+		
+		<f:selectItems value="#{staticMscBean.listetypeDest}" var="type" itemLabel="#{type}" itemValue="#{type}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="MSC">
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{staticMscBean.choix_msc}" >
+		
+		<f:selectItems value="#{staticMscBean.listeMSC}" var="msc" itemLabel="#{msc}" itemValue="#{msc}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="ColLineChart,ColLineChart1"  actionListener="#{staticMscBean.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+		<p:menuButton value="Options">
+        <p:menuitem value="Creer Votre propre Rapport" icon="ui-icon-disk"/>
+        <p:menuitem value="Voir Un rapport Existant"  icon="ui-icon-arrowrefresh-1-w"/>
+        
+        
+    </p:menuButton>
+		<p:panelGrid id="ColLineChart" columns="2">
+		
+	
+		</p:panelGrid>
+		
+			<p:panelGrid columns="2" id="ColLineChart1">
+	
+		
+		</p:panelGrid>
+		
+		</p:layoutUnit>
+		 <p:blockUI block="layoutUnit" trigger="btn">
+        LOADING<br />
+        <p:graphicImage name="img/loading.png"/>
+    </p:blockUI>
+		</p:layout>
+		
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>
+		

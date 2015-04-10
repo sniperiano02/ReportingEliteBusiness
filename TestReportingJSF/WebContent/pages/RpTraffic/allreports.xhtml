@@ -1,0 +1,28 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+						
+			<ui:define name="PageContent">
+		 <f:metadata>
+    <f:viewParam name="rapport_id" value="#{reports_view.id}" />
+    
+</f:metadata>
+		 <h:form>
+			
+                <p:remoteCommand name="loadForm" action="#{rp_gene.createForm}" 
+                                 update=":mainForm" process="@this" />
+            </h:form>
+
+            <h:form id="mainForm"  binding="#{rp_gene.form}"  >
+            </h:form>
+  <p:growl id="growl" showDetail="true" sticky="true" />  
+            <script type="text/javascript">
+                jQuery(document).ready(loadForm());
+            </script>
+			</ui:define>
+			</ui:composition>

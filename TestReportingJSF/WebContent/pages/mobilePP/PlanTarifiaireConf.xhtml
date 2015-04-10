@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form>
+			<h1 style="text-align:center;">Mobile Prépayé-Configuration-Plan Tarifaire</h1>
+			
+			<p:panelGrid columns="2">
+			<p:column>
+			<p:commandButton value="Ajouter" onclick="PF('dlg3').show();"/>
+			<p:separator/>
+			<p:commandButton value="Modifier" />
+			<p:separator/>
+			<p:commandButton value="Supprimer"/>
+			<p:separator/>
+			</p:column>
+			<p:column>
+			<p:dataTable style="width:300px;"  rowKey="#{plan.id}" var="plan" value="#{plan_tarif.list_plans}" selectionMode="single" selection="#{plan_tarif.plan}">
+    <p:column headerText="Code Plan Tarifaire">
+        <h:outputText value="#{plan.codePlanTarifaire}" />
+    </p:column>
+ 
+    <p:column headerText="Intitulé Plan Tarifaire">
+        <h:outputText value="#{plan.planTarifaire}" />
+    </p:column>
+ 
+   
+</p:dataTable>
+</p:column>
+			</p:panelGrid>
+			</h:form>
+			<p:dialog header="Effects" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+    <p:outputLabel value="Code Plan tarifaire" />
+    <p:inputText ></p:inputText> 
+    <p:outputLabel value="Code Plan tarifaire" />
+    <p:inputText ></p:inputText> 
+    <p:outputLabel value="Code Plan tarifaire" />
+    <p:inputText ></p:inputText> 
+    <p:outputLabel value="Code Plan tarifaire" />
+    <p:inputText></p:inputText> 
+    <p:commandButton value="Test" action="#{plan_tarif.createPlan}"/>
+    </h:panelGrid>
+</p:dialog>
+			
+			</ui:define>
+			</ui:composition>

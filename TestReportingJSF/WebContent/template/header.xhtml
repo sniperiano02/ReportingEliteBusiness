@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+             
+                xmlns:p="http://primefaces.org/ui">
+                
+                
+
+<h:form>
+<p:tabMenu activeIndex="#{tabMenuNavigationBean.activeIndex}">
+  <p:menuitem value="Administration" action="#{tabMenuNavigationBean.changeActiveIndex(0)}"   icon="ui-icon-star"/>
+  <p:menuitem value="Mobile Prepayé" action="#{tabMenuNavigationBean.changeActiveIndex(1)}" icon="ui-icon-search" />
+  <p:menuitem value="Mobile PostPayé"  icon="ui-icon-document"/>
+</p:tabMenu>
+
+</h:form>
+
+
+
+</ui:composition>
