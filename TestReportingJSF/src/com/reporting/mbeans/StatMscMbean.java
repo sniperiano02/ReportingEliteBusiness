@@ -97,7 +97,6 @@ public class StatMscMbean implements Serializable  {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	
 	@EJB
 	private  StatMscImplRemote statRemote;
 	@EJB
@@ -250,17 +249,7 @@ public void setMsc_fields(List<String> msc_fields) {
 	}
 	
 	
-
-	 public void ReportGridConfiguration(){
-		 
-		//pie Map<String,Number> 
-		 // donut Map<String,Number>
-		 //HorizontalBarChartModel ,line,bar Map<Object,Number>
-		 
-	 }
-	 
-	 
-	 
+ 
 	
 	 
 	 public void deleteDialog(){
