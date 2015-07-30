@@ -6,6 +6,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.reporting.metier.entities.AxeY;
 import com.reporting.metier.entities.Report;
 import com.reporting.metier.interfaces.ReportRemote;
 
@@ -27,10 +28,8 @@ public class ReportImpl implements ReportRemote {
 	@Override
 	public void addReport(Report report) {
 		em.persist(report);
-		for(int j=0;j<report.getLst_chart().size();j++){
-			report.getLst_chart().get(j).setReport_chart(report);
-			em.merge(report.getLst_chart().get(j));
-		}
+		
+		
 		
 	}
 

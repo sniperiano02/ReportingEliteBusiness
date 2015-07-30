@@ -2,7 +2,9 @@ package com.reporting.metier.entities;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -13,8 +15,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -32,26 +36,32 @@ public class ChartDynamic implements Serializable {
 	@Id
 	@GeneratedValue(strategy= GenerationType.SEQUENCE)
 	private Integer id_chart;
+	
+	private String nom_chart;
 	private String type_chart;
 	
 	private String operation;
 	private String axe_x;
 	private String axe_y;
-	@ElementCollection
+	@OneToMany(mappedBy="chartD",cascade=CascadeType.ALL)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@CollectionTable( name="chart_y",schema="stat", joinColumns=@JoinColumn(name="chart_y_ID",referencedColumnName="id_chart")
-	)
-	private List<String> list_axe_y;
+	private List<AxeY> list_axe_y;
 	
 	
-	public List<String> getList_axe_y() {
+	public List<AxeY> getList_axe_y() {
 		return list_axe_y;
 	}
-	public void setList_axe_y(List<String> list_axe_y) {
+	public void setList_axe_y(List<AxeY> list_axe_y) {
 		this.list_axe_y = list_axe_y;
 	}
+	public String getNom_chart() {
+		return nom_chart;
+	}
+	public void setNom_chart(String nom_chart) {
+		this.nom_chart = nom_chart;
+	}
 	@ManyToOne
-	@JoinColumn(name = "report_chart_id", referencedColumnName = "id_rapport")
+	@JoinColumn(name ="report_chart_id")
 	private Report report_chart;
 	
 	
@@ -86,6 +96,7 @@ public class ChartDynamic implements Serializable {
 	public void setId_chart(Integer id_chart) {
 		this.id_chart = id_chart;
 	}
+
 
 	public Report getReport_chart() {
 		return report_chart;

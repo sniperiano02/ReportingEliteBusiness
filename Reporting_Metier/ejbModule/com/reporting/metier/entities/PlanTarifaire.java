@@ -16,9 +16,6 @@ public class PlanTarifaire implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Integer id;
-
 	@Column(name="code_plan_tarifaire")
 	private String codePlanTarifaire;
 
@@ -29,19 +26,12 @@ public class PlanTarifaire implements Serializable {
 	private String nomUtilisateur;
 
 	@Column(name="plan_tarifaire")
+	@ToUse
 	private String planTarifaire;
 
 	private String type;
 
 	public PlanTarifaire() {
-	}
-
-	public Integer getId() {
-		return this.id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public String getCodePlanTarifaire() {

@@ -19,10 +19,10 @@ public class TypeDestination implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private Integer id;
 	
-	@OneToMany(mappedBy="destination")
-	private List<StatMsc> listDestMSC;
+	
 
 	@Column(name="date_modif")
 	private Timestamp dateModif;
@@ -33,7 +33,7 @@ public class TypeDestination implements Serializable {
 	private String nomUtilisateur;
 
 	@Column(name="type_dest")
-	
+	@ToUse
 	private String typeDest;
 
 	public TypeDestination() {
@@ -79,13 +79,7 @@ public class TypeDestination implements Serializable {
 		this.typeDest = typeDest;
 	}
 
-	public List<StatMsc> getListDestMSC() {
-		return listDestMSC;
-	}
-
-	public void setListDestMSC(List<StatMsc> listDestMSC) {
-		this.listDestMSC = listDestMSC;
-	}
+	
 
 	
 	

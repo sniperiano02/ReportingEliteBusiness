@@ -1,7 +1,12 @@
 package com.reporting.metier.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.*;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import java.math.BigDecimal;
 
 
@@ -18,10 +23,12 @@ public class StatMsc implements Serializable {
 	@Id
 	private Integer id;
 	
-	@ManyToOne
+	
+	@ManyToOne ( fetch = FetchType.LAZY)
 	@JoinColumn(name="type_dest",referencedColumnName="id",insertable=false,updatable=false)
 	private TypeDestination destination;
 
+	
 	@Column(name="date_appel")
 	private String dateAppel;
 
@@ -44,9 +51,7 @@ public class StatMsc implements Serializable {
 	@Column(name="type_call")
 	private String typeCall;
 
-	@Column(name="type_dest")
-	private Integer typeDest;
-
+	
 	@Column(name="type_subscriber")
 	private String typeSubscriber;
 
@@ -125,13 +130,6 @@ public class StatMsc implements Serializable {
 		this.typeCall = typeCall;
 	}
 
-	public Integer getTypeDest() {
-		return this.typeDest;
-	}
-
-	public void setTypeDest(Integer typeDest) {
-		this.typeDest = typeDest;
-	}
 
 	public String getTypeSubscriber() {
 		return this.typeSubscriber;

@@ -1,6 +1,8 @@
 package com.reporting.metier.services;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.reporting.metier.entities.PlanTarifaire;
 import com.reporting.metier.interfaces.PlanTarifaireRemote;
@@ -8,6 +10,7 @@ import com.reporting.metier.interfaces.PlanTarifaireRemote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  * Session Bean implementation class PlanTarifaireImpl
@@ -33,7 +36,7 @@ public class PlanTarifaireImpl implements PlanTarifaireRemote {
 
 	@Override
 	public void deletePlanT(PlanTarifaire p) {
-		em.remove(p);
+		em.remove(em.contains(p) ? p : em.merge(p));
 	}
 
 	@Override
@@ -47,6 +50,19 @@ public class PlanTarifaireImpl implements PlanTarifaireRemote {
 	public List<PlanTarifaire> getAllPlanTarifaires() {
 		// TODO Auto-generated method stub
 		return em.createQuery("Select p from PlanTarifaire p").getResultList();
+	}
+
+	@Override
+	public PlanTarifaire getPlanByName(String name) {
+		PlanTarifaire found = null;
+		Query query = em.createQuery("select p from PlanTarifaire c where p.planTarifaire=:x");
+		query.setParameter("x", name);
+		try{
+			found = (PlanTarifaire) query.getSingleResult();
+		}catch(Exception ex){
+			Logger.getLogger(this.getClass().getName()).log(Level.INFO, "no plan with name="+name);
+		}
+		return found;
 	}
 
 }

@@ -26,5 +26,22 @@ public class TypeDestinationImpl implements TypeDestinationRemote {
 		// TODO Auto-generated method stub
 		return em.createQuery("Select distinct typeDest from TypeDestination t").getResultList();
 	}
+	@Override
+	public void addTypeDest(TypeDestination td) {
+		// TODO Auto-generated method stub
+		em.persist(td);
+	}
+	@Override
+	public void deleteTypeDest(TypeDestination td) {
+		// TODO Auto-generated method stub
+		em.remove(em.contains(td) ? td : em.merge(td));
+		
+		
+	}
+	@Override
+	public void updateTypeDest(TypeDestination td) {
+		// TODO Auto-generated method stub
+		em.merge(td);
+	}
 
 }

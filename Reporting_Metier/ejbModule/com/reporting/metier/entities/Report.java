@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -38,16 +39,13 @@ private String table_name;
 
 
 
-@OneToMany(mappedBy="report_chart")
+
+
+@OneToMany(mappedBy="report_chart",cascade=CascadeType.ALL)
 @LazyCollection(LazyCollectionOption.FALSE)
 private List<ChartDynamic> lst_chart; 
-@ElementCollection(targetClass=Datagrid.class)
+@OneToMany(mappedBy="report_grid",cascade=CascadeType.ALL)
 @LazyCollection(LazyCollectionOption.FALSE)
-@CollectionTable(
-      name="datagrids_report",
-    		  schema="stat",
-      joinColumns=@JoinColumn(name="rep_grid_ID")
-)
 private List<Datagrid> lst_datagrid;
 
 
@@ -95,7 +93,6 @@ public List<String> getFilters_report() {
 public void setFilters_report(List<String> filters_report) {
 	this.filters_report = filters_report;
 }
-
 
 
 
