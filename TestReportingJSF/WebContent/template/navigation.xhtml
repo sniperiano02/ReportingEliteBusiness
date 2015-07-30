@@ -3,37 +3,192 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+               xmlns:b="http://bootsfaces.net/ui"
+                xmlns:tr="http://myfaces.apache.org/trinidad"
                 >
-                
-                
+                          
 
 
-
-		<h:form>
+		<h:form id="form2">
+		  
 		
-	 <p:panelMenu style="width:300px" rendered="#{tabMenuNavigationBean.activeIndex==1}">
-        <p:submenu label="Configuration">
-            <p:menuitem value="Save"  icon="ui-icon-disk" />
-            <p:menuitem value="Update"   icon="ui-icon-arrowrefresh-1-w" />
-        </p:submenu>
+
+	 <p:panelMenu    rendered="#{tabMenuNavigationBean.pan_postpaye}"  >
+	
+        
         <p:submenu label="Reporting Traffic">
-            <p:menuitem value="MSC" outcome="mscStatic.jsf"  icon="ui-icon-close"/>
-            <p:menuitem value="IN Local"  icon="ui-icon-disk" />
-            <p:menuitem value="IN Roaming"   icon="ui-icon-arrowrefresh-1-w" />
+            <p:menuitem value="MSC" outcome="/pages/postapaye/RpTraffic/mscStaticpost.jsf"    />
+        
         </p:submenu>
         <p:separator />
-        <p:submenu label="Navigations" >
+ 
+        <p:submenu label="Assurance Integrity">
+            <p:menuitem value="Parc Active " outcome="/pages/postapaye/assurance_integrity/parcActivePop.jsf"    />
            
-                    <p:menuitem value="Home" url="http://www.primefaces.org" icon="ui-icon-home" />
-                    <p:menuitem value="Docs" url="http://www.primefaces.org/documentation" icon="ui-icon-document" />
-                    <p:menuitem value="Download" url="http://www.primefaces.org/downloads" icon="ui-icon-arrowthick-1-s" />
-                    <p:menuitem value="Support" url="http://www.primefaces.org/support" icon="ui-icon-wrench" />
+        </p:submenu>
+                <p:submenu label="KPI" >
+           
+                    <p:menuitem value="ARPU" outcome="/pages/postapaye/kpi/arpuPop.jsf"  />
+                    <p:menuitem value="MOU" outcome="/pages/postapaye/kpi/mouPop.jsf"  />
+                   
+          
+        </p:submenu>
+               
+       
+    </p:panelMenu>
+     <p:panelMenu    rendered="#{tabMenuNavigationBean.pan_prepayé}" >
+	
+        <p:submenu id="conf" label="Configuration">
+            <p:menuitem id="gst" value="Gestion Tarifs"  outcome="/pages/mobilePP/tarif.jsf" />
+            <p:menuitem id="pl" value="Plan Tarifaire" outcome="/pages/mobilePP/PlanTarifiaireConf.jsf" >
+          
+            </p:menuitem>
+        </p:submenu>
+        <p:submenu id="rpTra" label="Reporting Traffic">
+            <p:menuitem id="msc" value="MSC" outcome="/pages/RpTraffic/mscStatic.jsf"    />
+            <p:menuitem id="in_loc" value="IN Local" outcome="/pages/RpTraffic/in_local_static.jsf"     />
+            <p:menuitem id="in_roa" value="IN Roaming" outcome="/pages/RpTraffic/in_roaming_static.jsf"    />
+        </p:submenu>
+        <p:separator />
+        <p:submenu id="traAss" label="Traffic Assurance" >
+           
+                    <p:menuitem id="cdr1" value="CDR inexistant IN" outcome="/pages/trafficAssurance/cdrIN_inexistant.jsf"    />
+                    <p:menuitem id="cdr2" value="CDR inexistant MSC" outcome="/pages/trafficAssurance/cdrMSC_inexistant.jsf"  />
+                    <p:menuitem id="cdr3" value="CDR MSC SUP IN" outcome="/pages/trafficAssurance/cdrMscSUPIn.jsf" />
+                    <p:menuitem id="cdr4" value="CDR IN SUP MSC" outcome="/pages/trafficAssurance/cdrInSUPMsc.jsf"  />
                
             
            
         </p:submenu>
+           <p:submenu label="Rating" >
+           
+                    <p:menuitem value="Verif Rating Offre" outcome="/pages/rating/verifOffre.jsf"    />
+                    <p:menuitem value="Verif Rating Transfert" outcome="/pages/rating/VerifTransfert.jsf"  />
+                    <p:menuitem value="Verif Rating Locale" outcome="/pages/rating/verifRatingLoc.jsf" />
+                    <p:menuitem value="Verif Rating Roaming" outcome="/pages/rating/verifRatingRoa.jsf"  />
+               
+            
+           
+        </p:submenu>
+        
+         <p:submenu label="Assurance Integrity" >
+           
+                    <p:menuitem value="Parc Active" outcome="/pages/assurance_integrity/parcActice.jsf"    />
+                  
+                    
+            
+           
+        </p:submenu>
+          <p:submenu label="Controle Balance" >
+           
+                    <p:menuitem value="Balance Negative" outcome="/pages/ControleBalance/balancenegatif.jsf"    />
+                   <p:menuitem value="Balance Principale" outcome="/pages/ControleBalance/balanceprincipe.jsf"    />
+                  
+                    
+            
+           
+        </p:submenu>
+                <p:submenu label="KPI" >
+           
+                    <p:menuitem value="ARPM Local" outcome="/pages/kpi/arpmlocal.jsf"  />
+                    <p:menuitem value="ARPM Roaming" outcome="/pages/kpi/arpmroaming.jsf"  />
+                     <p:menuitem value="ARPU" outcome="/pages/kpi/arpu.jsf"  />
+                     <p:menuitem value="MOU" outcome="/pages/kpi/mou.jsf"  />
+                   
+          
+        </p:submenu>
+                      <p:submenu label="Dashboard" >
+           
+                    <p:menuitem value="Chiffre d'affaire"   />
+                    <p:menuitem value="Stat Recharge" outcome="/pages/dashboard/recharge.jsf"  />
+                      <p:menuitem value="Stat Ajustement"  />
+                        <p:menuitem value="Stat Activation"  outcome="/pages/dashboard/activation.jsf" />
+                        <p:menuitem value="Stat Transfert" outcome="/pages/dashboard/transfert.jsf"  />
+                   
+          
+        </p:submenu>
+       
+    </p:panelMenu>
+   	 <p:panelMenu  rendered="#{tabMenuNavigationBean.pan_reporting}">
+   	  <p:submenu label="Nouveau">
+  
+            <p:menuitem value="Creer Nouveau Rapport" outcome="/pages/RpTraffic/Test.jsf" >
+          
+            </p:menuitem>
+        </p:submenu>
+         <p:submenu label="Rapport Existant">
+  
+            <p:menuitem value="Consulter" outcome="/pages/RpTraffic/rapport.jsf" >
+          
+            </p:menuitem>
+        </p:submenu>
+    </p:panelMenu>
+     <p:panelMenu  rendered="#{tabMenuNavigationBean.pan_interco}">
+     <p:submenu label="KPI" >
+                 <p:menuitem value="MOU Entrant" outcome="/pages/interco/kpi/mou_entrant.jsf" />
+                 <p:menuitem value="MOU Sortant " outcome="/pages/interco/kpi/mou_sortant.jsf" />
+                 <p:menuitem value="Prix Moyen Par Minute" outcome="/pages/interco/kpi/pmpm.jsf" />
+                   <p:menuitem value="Coût Moyen Par Minute" outcome="/pages/interco/kpi/cmpm.jsf" />
+     
+     </p:submenu>
+   
+       	  <p:submenu label="Least Cost Routing">
+   	  <p:menuitem value="Gestion des Template" outcome="/pages/interco/lcr/manage_template.jsf" />
+                 <p:menuitem value="Ajouter Template" outcome="/pages/interco/lcr/templateDef.jsf" />
+                 <p:menuitem value="Gestion des Offres" outcome="/pages/interco/lcr/manage_offre.jsf" />
+                   <p:menuitem value="Routage Optiomale" outcome="/pages/interco/lcr/routage_optimale.jsf" />
+      <p:menuitem value="Definir Nouveau Routage" outcome="/pages/interco/lcr/upload.jsf" />
+ </p:submenu>
+    </p:panelMenu>
+    	 <p:panelMenu   rendered="#{tabMenuNavigationBean.pan_admin}">
+   	  <p:submenu label="Gestion Utilisateurs">
+  
+            <p:menuitem value="Utilisateur" outcome="/pages/administration/gestion_utilisateurs/manage_user.jsf" />
+                      <p:menuitem value="Group" outcome="/pages/administration/gestion_utilisateurs/manage_group.jsf" />
+          
+            
+        </p:submenu>
+         	  <p:submenu label="Parametre Rating">
+  
+            <p:menuitem value="Pays" outcome="/pages/administration/param_rating/pays_manage.jsf" />
+       <p:menuitem value="Taux Change" outcome="/pages/administration/param_rating/Taux_Change.jsf" />
+ 
+         <p:menuitem value="Noeud" outcome="/pages/administration/param_rating/noeud_manage" />
+	  <p:menuitem value="Account In" outcome="/pages/administration/param_rating/account_manage.jsf" />
+       <p:menuitem value="Type Destination" outcome="/pages/administration/param_rating/typeDestination.jsf" />
+        <p:menuitem value="Package Jour" outcome="/pages/administration/param_rating/Package_Jour.jsf" />  
+        <p:menuitem value="Package Heure" outcome="/pages/administration/param_rating/Package_heure.jsf"  />
+        <p:menuitem value="Destination" outcome="/pages/administration/param_rating/destination.jsf" />    
+              <p:menuitem value="Zone Destination" outcome="/pages/administration/param_rating/zone_destination.jsf" />
+       
+        </p:submenu>
+        
+        	  <p:submenu label="Jobs Controle">
+              <p:menuitem value="alarmes" outcome="/pages/administration/job_controle/alarmes.jsf" />
+            <p:menuitem value=" Gestion Alarmes" outcome="/pages/administration/job_controle/gestion_alarmes.jsf" />
+            <p:menuitem value="Gestion des Processus" outcome="/pages/administration/job_controle/proc_manage.jsf" />
+                  
+            
+        </p:submenu>
+          <p:submenu label="Etats des Serveurs">
+  
+            <p:menuitem value="Gestion des alarmes" outcome="/pages/administration/etats_serveurs/gestion_alarmes.jsf" />
+                      <p:menuitem value="Alarmes" outcome="/pages/administration/etats_serveurs/alarmes.jsf" />
+          
+            
+        </p:submenu>
+               <p:submenu label="CDRs Erreurs">
+  
+            <p:menuitem value="UTARIF" outcome="/pages/administration/cdr_erreurs/Utarif.jsf" />
+                      <p:menuitem value="UDEST" outcome="/pages/administration/cdr_erreurs/UDest.jsf" />
+          <p:menuitem value="UZONE" outcome="/pages/administration/cdr_erreurs/UZone.jsf" />
+                   <p:menuitem value="UHNI" outcome="/pages/administration/cdr_erreurs/Uhni.jsf" />
+          
+            
+        </p:submenu>
     </p:panelMenu>
 </h:form>
+
 
 </ui:composition>
 

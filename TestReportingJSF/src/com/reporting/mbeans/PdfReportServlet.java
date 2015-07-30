@@ -45,11 +45,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
 import net.sf.dynamicreports.report.builder.chart.AbstractCategoryChartSerieBuilder;
 import net.sf.dynamicreports.report.builder.chart.Bar3DChartBuilder;
 import net.sf.dynamicreports.report.builder.chart.LineChartBuilder;
 import net.sf.dynamicreports.report.builder.chart.Pie3DChartBuilder;
 import net.sf.dynamicreports.report.builder.column.TextColumnBuilder;
+import net.sf.dynamicreports.report.builder.component.GenericElementBuilder;
 import net.sf.dynamicreports.report.builder.component.SubreportBuilder;
 import net.sf.dynamicreports.report.builder.style.FontBuilder;
 import net.sf.dynamicreports.report.builder.style.StyleBuilder;
@@ -112,6 +114,7 @@ public void setSt(String st) {
 	  where_liste = (List<String>) req.getSession().getAttribute("where");
 	  rapport = (Report) req.getSession().getAttribute("rapport");
 	  choix_filter_date = (String) req.getSession().getAttribute("choix_date");
+	  String table = rapport.getTable_name();
 	 System.out.println(where_liste.size()); 
 	 
 
@@ -129,13 +132,13 @@ public void setSt(String st) {
    
     try {
     	
-
+    	 Class c = Class.forName("com.reporting.metier.entities."+table);
     	 JasperReportBuilder rp1 = report();
       rp1
               .setColumnTitleStyle(columnTitleStyle)
            .highlightDetailEvenRows()
          
-           .title(cmp.text("Getting started").setStyle(boldCenteredStyle))//shows report title
+           .title(cmp.text(rapport.getLib_rapport()).setStyle(boldCenteredStyle))//shows report title
            
            
 
@@ -144,35 +147,58 @@ public void setSt(String st) {
          if(this.getRapport().getLst_datagrid().size()>0){
         	 for(int i = 0;i<this.getRapport().getLst_datagrid().size();i++){
            	  Datagrid chd= this.getRapport().getLst_datagrid().get(i);
+           	 int nb=0;
+			 for(int s=0;s<chd.getList_axe_y().size();s++){
+				 nb = nb +chd.getList_axe_y().get(s).getOperations().size()+1;
+				
+			 }
+			 
+			 System.out.println(nb);
            	  JasperReportBuilder gridReport = null;
-           	String[] columns3 = new String[2];
-           	
+           	String[] columns3 = new String[nb];
+           
            	  TextColumnBuilder<String> XColumn4 = col.column(chd.getDaxe_x(), chd.getDaxe_x(), type.stringType());
-           	  TextColumnBuilder<BigDecimal> YColumn4 = col.column(chd.getDaxe_y(), chd.getDaxe_y(), type.bigDecimalType());
+           	 /// TextColumnBuilder<BigDecimal> YColumn4 = col.column(chd.getDaxe_y(), chd.getDaxe_y(), type.bigDecimalType());
            	  List<String> axe_y_datagrid = new ArrayList<String>();
-           	  axe_y_datagrid.add(chd.getDaxe_y());
-       			 List<Object[]> lst4=statRemote.getAllStatMsc("Extract (year from to_date(dateAppel,'YYMMDD'))", axe_y_datagrid, chd.getOperationD(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
-       			 //List<Object[]> lst=statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(), chd.getOperation(), "Group By trancheHoraire ", where_liste);
+           	  columns3[0]=chd.getDaxe_x();
+       			 List<Object[]> lst4= new ArrayList<>();
+       			 //List<Object[]> lst=statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(),table, chd.getOperation(), "Group By trancheHoraire ", where_liste);
        			 if(this.getChoix_filter_date().equals("Par heure")&&chd.getDaxe_x().equals("dateAppel")){
-       		 			lst4 =statRemote.getAllStatMsc("trancheHoraire", axe_y_datagrid, chd.getOperationD(), "Group By trancheHoraire ", where_liste);
-       		    		
-       		 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getDaxe_x().equals("dateAppel")){
-       		 			lst4 =statRemote.getAllStatMsc("Extract (year from to_date(dateAppel,'YYMMDD'))", axe_y_datagrid, chd.getOperationD(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
-       			 		 }else if(this.getChoix_filter_date().equals("Par mois")&&chd.getDaxe_x().equals("dateAppel")){
-       			 			lst4 =statRemote.getAllStatMsc("Extract (month from to_date(dateAppel,'YYMMDD'))", axe_y_datagrid, chd.getOperationD(), "Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
-       				 		 }
-       		 		 else if(chd.getDaxe_x().equals("typeDest")){
-       		 			lst4 =statRemote.getAllStatMsc("s.destination.typeDest", axe_y_datagrid, chd.getOperationD(), "Group By s.destination.typeDest ", where_liste);
-       				 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getDaxe_x().equals("dateAppel")){
-       				 			lst4 =statRemote.getAllStatMsc("Extract (day from to_date(dateAppel,'YYMMDD'))", axe_y_datagrid, chd.getOperationD(), "Group By Extract (day from to_date(dateAppel,'YYMMDD')) ORDER BY Extract (day from to_date(dateAppel,'YYMMDD')) DESC ", where_liste);
-       					 		 }else{
-       					 			lst4=statRemote.getAllStatMsc(chd.getDaxe_x(), axe_y_datagrid, chd.getOperationD(), "Group By "+chd.getDaxe_x(), where_liste);
-       					 		 }
-       			columns3[0]=chd.getDaxe_x();
-       			columns3[1]=chd.getDaxe_y();
-       			// TextColumnBuilder<BigDecimal> YColumn2= col.column(chd.getDaxe_y(), chd.getDaxe_y(), type.bigDecimalType());
+ 		 			lst4 =statRemote.getAllStatMsc1("trancheHoraire", chd.getList_axe_y(),table, chd.getOperationD(), "Group By trancheHoraire ", where_liste);
+ 		    		
+ 		 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getDaxe_x().equals("dateAppel")){
+ 		 			lst4 =statRemote.getAllStatMsc1("to_char(Extract (year from to_date(dateAppel,'YYMMDD')),'9999')", chd.getList_axe_y(),table, chd.getOperationD(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
+ 			 		 }else if(this.getChoix_filter_date().equals("Par mois")&&chd.getDaxe_x().equals("dateAppel")){
+ 			 			lst4 =statRemote.getAllStatMsc1("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", chd.getList_axe_y(),table, chd.getOperationD(), "Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
+ 				 		 }
+ 		 		 else if(chd.getDaxe_x().equals("typeDest")){
+ 		 			lst4 =statRemote.getAllStatMsc1("destination.typeDest", chd.getList_axe_y(),table,"" , "Group By destination.typeDest ", where_liste);
+ 				 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getDaxe_x().equals("dateAppel")){
+ 				 			lst4 =statRemote.getAllStatMsc1("to_char(to_date(dateAppel,'YYMMDD'),'DD/MM')", chd.getList_axe_y(),table, chd.getOperationD(), "Group By to_date(dateAppel,'YYMMDD') ", where_liste);
+ 					 		 }else{
+ 					 			 lst4=statRemote.getAllStatMsc1(chd.getDaxe_x(), chd.getList_axe_y(),table, chd.getOperationD(), "Group By "+chd.getDaxe_x(), where_liste);
+ 					 		 }
        			 gridReport = report();
-gridReport.columns(XColumn4,YColumn4);
+ 		 		 gridReport.addColumn(XColumn4);
+       			 for(int nb_y=0;nb_y<chd.getList_axe_y().size();nb_y++){
+    				 System.out.println(nb);
+    				
+    				 
+    				for(int k=0;k<chd.getList_axe_y().get(nb_y).getOperations().size();k++){
+    					
+    				Class type =	c.getDeclaredField(chd.getList_axe_y().get(nb_y).getAxey()).getType();
+    				if (chd.getList_axe_y().get(nb_y).getOperations().get(k).equals("AVG")){
+    					type = Double.class;
+    				}
+    					 gridReport.addColumn(col.column(chd.getList_axe_y().get(nb_y).getOperations().get(k)+chd.getList_axe_y().get(nb_y).getAxey(), chd.getList_axe_y().get(nb_y).getOperations().get(k)+chd.getList_axe_y().get(nb_y).getAxey(), type));
+    			 			//data =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", this.getWhere_liste());
+    					 int j=k+1;
+    			 			columns3[j]=chd.getList_axe_y().get(nb_y).getOperations().get(k)+chd.getList_axe_y().get(nb_y).getAxey();
+    				}
+       			 }
+       			// TextColumnBuilder<BigDecimal> YColumn2= col.column(chd.getDaxe_y(), chd.getDaxe_y(), type.bigDecimalType());
+       			
+
 gridReport.setColumnTitleStyle(columnTitleStyle).highlightDetailEvenRows();
 
        			 gridReport.setDataSource(createDataSource(columns3, lst4));
@@ -191,36 +217,49 @@ gridReport.setColumnTitleStyle(columnTitleStyle).highlightDetailEvenRows();
 		 case "line":
 			 
 			 System.out.println(chd.getList_axe_y().size());
-			 String[] columns = new String[chd.getList_axe_y().size()+1];
+			 int nb=0;
+			 for(int s=0;s<chd.getList_axe_y().size();s++){
+				 nb = nb +chd.getList_axe_y().get(s).getOperations().size()+1;
+			 }
+		
+
+			 String[] columns = new String[nb];
 			
 			 LineChartBuilder linechart = cht.lineChart();
+			 
+			 linechart.setSubtitle(chd.getNom_chart());
 			 columns[0]=chd.getAxe_x();
 			 TextColumnBuilder<String> XColumn = col.column(chd.getAxe_x(), chd.getAxe_x(), type.stringType());
 			 linechart.setCategory(XColumn);
 			 
-			 List<Object[]> lst=statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(), chd.getOperation(), "Group By trancheHoraire ", where_liste);
+			 List<Object[]> lst=new ArrayList<>();
 			 if(this.getChoix_filter_date().equals("Par heure")&&chd.getAxe_x().equals("dateAppel")){
-		 			lst =statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(), chd.getOperation(), "Group By trancheHoraire ", where_liste);
+		 			lst =statRemote.getAllStatMsc1("trancheHoraire", chd.getList_axe_y(),table, chd.getOperation(), "Group By trancheHoraire ", where_liste);
 		    		
 		 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getAxe_x().equals("dateAppel")){
-		 			lst =statRemote.getAllStatMsc("Extract (year from to_date(dateAppel,'YYMMDD'))", chd.getList_axe_y(), chd.getOperation(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
+		 			lst =statRemote.getAllStatMsc1("to_char(Extract (year from to_date(dateAppel,'YYMMDD')),'9999')", chd.getList_axe_y(),table, chd.getOperation(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
 			 		 }else if(this.getChoix_filter_date().equals("Par mois")&&chd.getAxe_x().equals("dateAppel")){
-			 			lst =statRemote.getAllStatMsc("Extract (month from to_date(dateAppel,'YYMMDD'))", chd.getList_axe_y(), chd.getOperation(), "Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 			lst =statRemote.getAllStatMsc1("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", chd.getList_axe_y(),table, chd.getOperation(), "Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
 				 		 }
 		 		 else if(chd.getAxe_x().equals("typeDest")){
-		 			lst =statRemote.getAllStatMsc("s.destination.typeDest", chd.getList_axe_y(), chd.getOperation(), "Group By s.destination.typeDest ", where_liste);
+		 			lst =statRemote.getAllStatMsc1("destination.typeDest", chd.getList_axe_y(),table, chd.getOperation(), "Group By destination.typeDest ", where_liste);
 				 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getAxe_x().equals("dateAppel")){
-				 			lst =statRemote.getAllStatMsc("to_date(dateAppel,'YYMMDD')", chd.getList_axe_y(), chd.getOperation(), "Group By to_date(dateAppel,'YYMMDD') ", where_liste);
+				 			lst =statRemote.getAllStatMsc1("to_char(to_date(dateAppel,'YYMMDD'),'DD/MM')", chd.getList_axe_y(),table, chd.getOperation(), "Group By to_date(dateAppel,'YYMMDD') ", where_liste);
 					 		 }else{
-					 			 lst=statRemote.getAllStatMsc(chd.getAxe_x(), chd.getList_axe_y(), chd.getOperation(), "Group By "+chd.getAxe_x(), where_liste);
+					 			 lst=statRemote.getAllStatMsc1(chd.getAxe_x(), chd.getList_axe_y(),table, chd.getOperation(), "Group By "+chd.getAxe_x(), where_liste);
 					 		 }
 		 		 
 			 for(int nb_y=0;nb_y<chd.getList_axe_y().size();nb_y++){
-				int j=nb_y+1;
-				 linechart.addSerie(cht.serie(col.column(chd.getList_axe_y().get(nb_y), chd.getList_axe_y().get(nb_y), type.bigDecimalType())));
-				 			//data =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", this.getWhere_liste());
-				 		
-				 			columns[j]=chd.getList_axe_y().get(nb_y);
+				 System.out.println(nb);
+				
+				for(int k=0;k<chd.getList_axe_y().get(nb_y).getOperations().size();k++){
+					
+					 linechart.addSerie(cht.serie(col.column(chd.getList_axe_y().get(nb_y).getOperations().get(k)+chd.getList_axe_y().get(nb_y).getAxey(), chd.getList_axe_y().get(nb_y).getOperations().get(k)+chd.getList_axe_y().get(nb_y).getAxey(), type.bigDecimalType())));
+			 			//data =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", this.getWhere_liste());
+					 int j=k+1;
+			 			columns[j]=chd.getList_axe_y().get(nb_y).getOperations().get(k)+chd.getList_axe_y().get(nb_y).getAxey();
+				}
+				
 				 			
 				 			
 				 		
@@ -230,7 +269,7 @@ gridReport.setColumnTitleStyle(columnTitleStyle).highlightDetailEvenRows();
 			 }
 
 				
-				linechart.setDataSource(createDataSource(columns,lst)).customizers(new ChartCustomizer());
+				linechart.setDataSource(createDataSource(columns,lst));
 				
 				 lineReport = report();
 				 
@@ -246,35 +285,36 @@ gridReport.setColumnTitleStyle(columnTitleStyle).highlightDetailEvenRows();
 		 	break;
 		 case "bar":
 			
-			 String[] columns1 = new String[chd.getList_axe_y().size()+1];
+			 String[] columns1 = new String[chd.getList_axe_y().size()+2];
 				
 			 Bar3DChartBuilder barchart = cht.bar3DChart();
 			 columns1[0]=chd.getAxe_x();
 			 TextColumnBuilder<String> XColumn1 = col.column(chd.getAxe_x(), chd.getAxe_x(), type.stringType());
 			 barchart.setCategory(XColumn1);
-			 List<Object[]> lst1=statRemote.getAllStatMsc("Extract (year from to_date(dateAppel,'YYMMDD'))", chd.getList_axe_y(), chd.getOperation(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
-			 //List<Object[]> lst=statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(), chd.getOperation(), "Group By trancheHoraire ", where_liste);
+			 List<Object[]> lst1= new ArrayList<>();
+			 //List<Object[]> lst=statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(),table, chd.getOperation(), "Group By trancheHoraire ", where_liste);
 			 if(this.getChoix_filter_date().equals("Par heure")&&chd.getAxe_x().equals("dateAppel")){
-		 			lst1 =statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(), chd.getOperation(), "Group By trancheHoraire ", where_liste);
+		 			lst1 =statRemote.getAllStatMsc1("trancheHoraire", chd.getList_axe_y(),table, chd.getOperation(), "Group By trancheHoraire ", where_liste);
 		    		
 		 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getAxe_x().equals("dateAppel")){
-		 			lst1 =statRemote.getAllStatMsc("Extract (year from to_date(dateAppel,'YYMMDD'))", chd.getList_axe_y(), chd.getOperation(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
+		 			lst1 =statRemote.getAllStatMsc1("to_char(Extract (year from to_date(dateAppel,'YYMMDD')),'9999')", chd.getList_axe_y(),table, chd.getOperation(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
 			 		 }else if(this.getChoix_filter_date().equals("Par mois")&&chd.getAxe_x().equals("dateAppel")){
-			 			lst1 =statRemote.getAllStatMsc("Extract (month from to_date(dateAppel,'YYMMDD'))", chd.getList_axe_y(), chd.getOperation(), "Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 			lst1 =statRemote.getAllStatMsc1("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", chd.getList_axe_y(),table, chd.getOperation(), "Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
 				 		 }
 		 		 else if(chd.getAxe_x().equals("typeDest")){
-		 			lst1 =statRemote.getAllStatMsc("s.destination.typeDest", chd.getList_axe_y(), chd.getOperation(), "Group By s.destination.typeDest ", where_liste);
+		 			lst1 =statRemote.getAllStatMsc1("s.destination.typeDest", chd.getList_axe_y(),table, chd.getOperation(), "Group By s.destination.typeDest ", where_liste);
 				 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getAxe_x().equals("dateAppel")){
-				 			lst1 =statRemote.getAllStatMsc("Extract (day from to_date(dateAppel,'YYMMDD'))", chd.getList_axe_y(), chd.getOperation(), "Group By Extract (day from to_date(dateAppel,'YYMMDD')) ORDER BY Extract (day from to_date(dateAppel,'YYMMDD')) DESC ", where_liste);
+				 			lst1 =statRemote.getAllStatMsc1("to_char(to_date(dateAppel,'YYMMDD'),'DD/MM')", chd.getList_axe_y(),table, chd.getOperation(), "Group By to_date(dateAppel,'YYMMDD') ORDER BY to_date(dateAppel,'YYMMDD') DESC ", where_liste);
 					 		 }else{
-					 			 lst1=statRemote.getAllStatMsc(chd.getAxe_x(), chd.getList_axe_y(), chd.getOperation(), "Group By "+chd.getAxe_x(), where_liste);
+					 			 lst1=statRemote.getAllStatMsc1(chd.getAxe_x(), chd.getList_axe_y(),table, chd.getOperation(), "Group By "+chd.getAxe_x(), where_liste);
 					 		 }
 			 for(int nb_y=0;nb_y<chd.getList_axe_y().size();nb_y++){
 				int j=nb_y+1;
-				barchart.addSerie(cht.serie(col.column(chd.getList_axe_y().get(nb_y), chd.getList_axe_y().get(nb_y), type.bigDecimalType())));
+				
+				barchart.addSerie(cht.serie(col.column(chd.getList_axe_y().get(nb_y).getAxey(), chd.getList_axe_y().get(nb_y).getAxey(), type.bigDecimalType())));
 				 			//data =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", this.getWhere_liste());
 				 		
-				 			columns1[j]=chd.getList_axe_y().get(nb_y);
+				 			columns1[j]=chd.getList_axe_y().get(nb_y).getAxey();
 				 			
 				 			
 				 		
@@ -307,22 +347,22 @@ gridReport.setColumnTitleStyle(columnTitleStyle).highlightDetailEvenRows();
 			 pichart.setKey(XColumn2);
 			 List<String> axe_y_pie = new ArrayList<String>();
 			 axe_y_pie.add(chd.getAxe_y());
-			 List<Object[]> lst2=statRemote.getAllStatMsc("Extract (year from to_date(dateAppel,'YYMMDD'))", axe_y_pie, chd.getOperation(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
-			 //List<Object[]> lst=statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(), chd.getOperation(), "Group By trancheHoraire ", where_liste);
+			 List<Object[]> lst2=new ArrayList<>();
+			 //List<Object[]> lst=statRemote.getAllStatMsc("trancheHoraire", chd.getList_axe_y(),table, chd.getOperation(), "Group By trancheHoraire ", where_liste);
 			 if(this.getChoix_filter_date().equals("Par heure")&&chd.getAxe_x().equals("dateAppel")){
-		 			lst2 =statRemote.getAllStatMsc("trancheHoraire", axe_y_pie, chd.getOperation(), "Group By trancheHoraire ", where_liste);
+		 			lst2 =statRemote.getAllStatMsc("trancheHoraire", axe_y_pie,table, chd.getOperation(), "Group By trancheHoraire ", where_liste);
 		    		
 		 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getAxe_x().equals("dateAppel")){
-		 			lst2 =statRemote.getAllStatMsc("Extract (year from to_date(dateAppel,'YYMMDD'))", axe_y_pie, chd.getOperation(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
+		 			lst2 =statRemote.getAllStatMsc("to_char(Extract (year from to_date(dateAppel,'YYMMDD')),'9999')", axe_y_pie,table, chd.getOperation(), "Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
 			 		 }else if(this.getChoix_filter_date().equals("Par mois")&&chd.getAxe_x().equals("dateAppel")){
-			 			lst2 =statRemote.getAllStatMsc("Extract (month from to_date(dateAppel,'YYMMDD'))", axe_y_pie, chd.getOperation(), "Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 			lst2 =statRemote.getAllStatMsc("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", axe_y_pie,table, chd.getOperation(), "Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
 				 		 }
 		 		 else if(chd.getAxe_x().equals("typeDest")){
-		 			lst2 =statRemote.getAllStatMsc("s.destination.typeDest", axe_y_pie, chd.getOperation(), "Group By s.destination.typeDest ", where_liste);
+		 			lst2 =statRemote.getAllStatMsc("destination.typeDest", axe_y_pie,table, chd.getOperation(), "Group By destination.typeDest ", where_liste);
 				 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getAxe_x().equals("dateAppel")){
-				 			lst2 =statRemote.getAllStatMsc("Extract (day from to_date(dateAppel,'YYMMDD'))", axe_y_pie, chd.getOperation(), "Group By Extract (day from to_date(dateAppel,'YYMMDD')) ORDER BY Extract (day from to_date(dateAppel,'YYMMDD')) DESC ", where_liste);
+				 			lst2 =statRemote.getAllStatMsc("to_char(to_date(dateAppel,'YYMMDD'),'DD/MM')", axe_y_pie,table, chd.getOperation(), "Group By to_date(dateAppel,'YYMMDD') ORDER BY to_date(dateAppel,'YYMMDD') DESC ", where_liste);
 					 		 }else{
-					 			lst2=statRemote.getAllStatMsc(chd.getAxe_x(), axe_y_pie, chd.getOperation(), "Group By "+chd.getAxe_x(), where_liste);
+					 			lst2=statRemote.getAllStatMsc(chd.getAxe_x(), axe_y_pie,table, chd.getOperation(), "Group By "+chd.getAxe_x(), where_liste);
 					 		 }
 			 columns2[1]=chd.getAxe_y();
 			 TextColumnBuilder<BigDecimal> YColumn2= col.column(chd.getAxe_y(), chd.getAxe_y(), type.bigDecimalType());
@@ -353,26 +393,34 @@ gridReport.setColumnTitleStyle(columnTitleStyle).highlightDetailEvenRows();
 
     } catch (DRException e) {
       throw new ServletException(e);
-    }
+    } catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (NoSuchFieldException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (SecurityException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     out.close();
         
   }
   
   private JRDataSource createDataSource(String[] columns,List<Object[]> lst) {
+	  System.out.println(columns.length);
+	  
       DRDataSource dataSource = new DRDataSource( columns);
          for (Object[] result :lst){
-      
-    if(result.length==3){
-				dataSource.add(result[0].toString(),  (BigDecimal)result[1],(BigDecimal)result[2] );
-			}else if (result.length==4){
-				dataSource.add(result[0].toString(),  (BigDecimal)result[1],(BigDecimal)result[2],(BigDecimal)result[3]);
-			}else if (result.length==5){
-				dataSource.add(result[0].toString(),  (BigDecimal)result[1],(BigDecimal)result[2],(BigDecimal)result[3],(BigDecimal)result[4]);
-			}else if(result.length==2){
-				dataSource.add(result[0].toString(),  (BigDecimal)result[1]);
+     System.out.println(result.length);
+   
+				
+				dataSource.add(result);
+				
+		    	
 			}
 			
-			}
+			
 	
 	return dataSource; 
 
@@ -393,23 +441,22 @@ gridReport.setColumnTitleStyle(columnTitleStyle).highlightDetailEvenRows();
       }
       
      
-   
-   private class ChartCustomizer implements DRIChartCustomizer, Serializable {
-	   
-	         private static final long serialVersionUID = 1L;
-	  
-	         @Override
-	         public void customize(JFreeChart chart, ReportParameters reportParameters) {
-	           // LineRenderer3D renderer = (LineRenderer3D) chart.getCategoryPlot().getRenderer();
-	            
-	   
-	            CategoryAxis domainAxis = chart.getCategoryPlot().getDomainAxis();
-	   
-	            domainAxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6.0));
-	   
-	         }
-	   
-	      }
+      private class CategoryExpression extends AbstractSimpleExpression<String> {
+    	 
+    	        private static final long serialVersionUID = 1L;
+    	  
+    	   
+    	 
+    	        @Override
+    	
+    	        public String evaluate(ReportParameters reportParameters) {
+    	  
+    	           return type.integerType().valueToString("date", reportParameters);
+    	  
+    	        }
+    	 
+    	     }
 
+  
 }
 

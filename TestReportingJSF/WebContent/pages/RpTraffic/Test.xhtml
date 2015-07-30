@@ -3,6 +3,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:hf="http://highfaces.org"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
                 template="/template/template.xhtml"
                 >
            	 
@@ -10,55 +12,187 @@
 			
 
 			<ui:define name="PageContent">
+			
 		<h:form id="form1">
-		   <p:panel header="Types" style="width:500px;height:120px;" >  
-            <p:dataGrid id="availablePlayers"  
-                value="#{stat_msc.listStatMsc}" var="player" columns="1">  
-                <p:column>  
+		<p:panelGrid columns="2"  >
+		<p:outputLabel value="Choisir une table"></p:outputLabel>
+		
+		<p:selectOneMenu value="#{stat_msc.choix_table}" style="width:1000px;" >
+		 <p:ajax listener="#{stat_msc.handle_tableChoice()}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Stat MSC" itemValue="com.reporting.metier.entities.StatMsc" />
+            <f:selectItem itemLabel="Stat Traffic IN" itemValue="com.reporting.metier.entities.StatTraficIn" />
+          <f:selectItem itemLabel="Stat Reconciliation MSC/IN " itemValue="com.reporting.metier.entities.StatDetailsReconMscIn" />
+        <f:selectItem itemLabel="Stat Activation Prépayé" itemValue="com.reporting.metier.entities.StatActivation" />
+      <f:selectItem itemLabel="Stat Balance Negative ¨Prépayé" itemValue="com.reporting.metier.entities.StatBalanceNeg" />
+      <f:selectItem itemLabel="Stat Taxe Prépayé" itemValue="com.reporting.metier.entities.StatTaxePrp" />
+      <f:selectItem itemLabel="Stat Verif Rating Prépayé" itemValue="com.reporting.metier.entities.StatErreurTarifIn" />
+      <f:selectItem itemLabel="Stat Rating Transfert " itemValue="com.reporting.metier.entities.StatTransfertIn" />
+      <f:selectItem itemLabel="Stat Rating Offre" itemValue="com.reporting.metier.entities.StatVerifOffreIn" />
+      <f:selectItem itemLabel="Stat Mou(Minutes of Use) Prépayé" itemValue="com.reporting.metier.entities.StatMouPrp" />
+        <f:selectItem itemLabel="Stat ARPU(Average Revenue Per User ) Prépayé" itemValue="com.reporting.metier.entities.StatArpuPrp" />
+            
+      
+		</p:selectOneMenu>
+		</p:panelGrid>
+		<p:layout rendered="#{stat_msc.choice}"  widgetVar="layvar" onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		   
+           
+         <p:layoutUnit position="west" header="Filters"  id="colFilters"   collapsible="true" style="height:400px;" >
+              
+                   </p:layoutUnit>
+                   <p:layoutUnit position="north" header="Sauvegarder" id="sauvegard"     collapsible="true" >
+              
+                   </p:layoutUnit>
+                     <p:layoutUnit position="east" header="Types" id="availablePlayers"     size="100"  collapsible="true" >
+                   	  
+            
+                
                 <p:outputLabel  id="line_chart" >
                 
                 <p:graphicImage library="img" name="chart-icon.png"></p:graphicImage>
                 </p:outputLabel>
                <p:draggable for="line_chart" scope="forpanel" revert="true" binding="#{stat_msc.opet}" id="drag_line" ></p:draggable>
-                </p:column>  
-                <p:column>
-                  
+            
+               
+                  <br/>
                 <p:outputLabel id="bar" >
                 
                 <p:graphicImage library="img" name="barchart-icon.png"></p:graphicImage>
                 </p:outputLabel>
                <p:draggable for="bar" scope="forpanel" revert="true" binding="#{stat_msc.opet1}" id="drag_bar" ></p:draggable>
-                </p:column>
-                <p:column>
-                  
+                
+              
+                  <br/>
                 <p:outputLabel id="pie" >
                 
                 <p:graphicImage library="img" name="piechart-icon.png"></p:graphicImage>
                 </p:outputLabel>
+                
                 <p:draggable for="pie" scope="forpanel" revert="true" binding="#{stat_msc.opet2}" id="drag_pie" ></p:draggable>
+                 <br/>
                  <p:outputLabel id="grid" >
                 
                 <p:graphicImage library="img" name="datagrid-icon.png"></p:graphicImage>
                 </p:outputLabel>
                 <p:draggable for="grid" scope="forpanel" revert="true" binding="#{stat_msc.opet3}" id="drag_grid" ></p:draggable>
-                </p:column>
+               
                 
                  
                   
-            </p:dataGrid>  
+          
+          
            
-        </p:panel>  
-        <p:spacer width="100" height="10" />
-         
-             	 <p:panel id="myPanelGrid" style="height:#{stat_msc.width}px;">  
-            
-                   <p:droppable  scope="forpanel"  tolerance="fit" datasource="availablePlayers">
-                   <p:ajax listener="#{stat_msc.ReportConfiguration}" update="myPanelGrid"  ></p:ajax>
+      </p:layoutUnit>
+                   
+                 
+         <p:layoutUnit position="center" id="myPanelGrid" >
+             
+                  
+                  <p:droppable  scope="forpanel"  tolerance="fit" >
+                   <p:ajax listener="#{stat_msc.ReportConfiguration}" oncomplete="PF('dlg1').show()" update="form1:myPanelGrid"  ></p:ajax>
                    </p:droppable>
+                    <c:forEach items="#{stat_msc.lineMapList}" var="char" varStatus="loop">
+            <p:panel>
+            <hf:chart type="line" title="#{char.name}"  >
+            <c:forEach items="#{char.getSeries()}" var="serie" varStatus="loop">
+             <hf:chartSerie name="#{serie.getName()}"  value="#{serie.getMap()}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"/>
+  
+            </c:forEach>
+            <hf:chartAxis position="w" min="0" ></hf:chartAxis>
+            </hf:chart>
+            
+            </p:panel>
+            </c:forEach>
+             <c:forEach items="#{stat_msc.barMapList}" var="bart" varStatus="loop">
+            <p:panel>
+            <hf:chart type="bar" title="#{bart.name}"  >
+            <c:forEach items="#{bart.getSeries()}" var="serie" varStatus="loop">
+             <hf:chartSerie name="#{serie.getName()}"  value="#{serie.getMap()}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"/>
+  
+            </c:forEach>
+            
+            </hf:chart>
+            </p:panel>
+            </c:forEach>
+               <c:forEach items="#{stat_msc.pieSeries}" var="piechart" varStatus="loop">
+            
+            <hf:chart type="pie" title="#{stat_msc.libGraphe}"  >
+             <hf:chartSerie name="#{stat_msc.libGraphe}" value="#{piechart}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"/>
+            </hf:chart>
+       
+            </c:forEach>
+              
+                   
+                   
+                   
+                   
+               
+                     
                     
            <p:growl id="message" showDetail="false" /> 
+           <p:dialog header="Configuration" widgetVar="dlg1" closable="false">
+<p:panelGrid columns="2" >
+<p:outputLabel value="Libelle" for="lb01"></p:outputLabel>
+<p:inputText id="lb01" value="#{stat_msc.libGraphe}"></p:inputText>
+<p:outputLabel value="Axe X" for="lstAxeX"></p:outputLabel>
+<p:selectOneMenu id="lstAxeX" value="#{stat_msc.typeAxe}">
+<f:selectItems value="#{stat_msc.msc_fields}" />
+	
+
+</p:selectOneMenu>
+</p:panelGrid>
+<p:panel header="Choisir Operations"  rendered="#{stat_msc.lineorBar}">
+<table>
+    <thead>
+        <tr>
+            <th>Axe Y</th>
+            <ui:repeat value="#{stat_msc.operationsY.values().toArray()}" var="service">
+                <th>#{service}</th>
+            </ui:repeat>
+        </tr>
+    </thead>
+    <tbody>
+        <ui:repeat value="#{stat_msc.listeAxeY.entrySet().toArray()}" var="office">
+            <tr>
+                <td>#{office.value}</td>
+                <ui:repeat value="#{stat_msc.operationsY.keySet().toArray()}" var="service">
+                    <td><p:selectBooleanCheckbox value="#{stat_msc.axeOperations[office.key][service]}" /></td>
+                </ui:repeat>
+            </tr>
+        </ui:repeat>
+        
+       
+    </tbody>
+</table>
 </p:panel>
-		 
+<p:outputPanel  rendered="#{stat_msc.lineorBar==false}" >
+<p:panelGrid columns="2" >
+<p:outputLabel value="Action" for="lstActions"></p:outputLabel>
+<p:selectOneMenu id="lstActions" value="#{stat_msc.actiontype}">
+<f:selectItem  itemLabel="Somme" itemValue="SUM"/>
+<f:selectItem  itemLabel="Moyenne" itemValue="AVG"/>
+<f:selectItem  itemLabel="Nombre" itemValue="Count"/>
+</p:selectOneMenu>
+<p:outputLabel value="Axe Y" for="lstY"></p:outputLabel>
+<p:selectOneMenu id="lstY" value="#{stat_msc.typeAxeY}">
+<f:selectItems value="#{stat_msc.msc_fields1}"/>
+</p:selectOneMenu>
+
+
+
+</p:panelGrid>
+
+</p:outputPanel>
+
+<p:commandButton value="Valider" actionListener="#{stat_msc.createChart()}"  oncomplete="PF('dlg1').hide()" update="@form"  ></p:commandButton>
+
+<p:commandButton value="Annuler"   onclick="PF('dlg1').hide()" update="@form"  ></p:commandButton>
+
+
+</p:dialog>
+</p:layoutUnit>
+		</p:layout>
 		
 		</h:form>
 	

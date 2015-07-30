@@ -3,13 +3,14 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="/template/template.xhtml">
+                template="/template/template.xhtml"
+                 xmlns:pretty="http://ocpsoft.com/prettyfaces">
            	
 			<ui:define name="pageTitle">welcome</ui:define>		
 			<ui:define name="PageContent">
 			
-		<h:form id="form" >
-    <p:dataGrid var="rep" value="#{reports_view.allreports}" columns="3" layout="grid"
+		<h:form id="form_consult" >
+    <p:dataTable var="rep" value="#{reports_view.allreports}"  
         rows="12" paginator="true" id="reports"
         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
         rowsPerPageTemplate="6,12,16">
@@ -17,21 +18,23 @@
         <f:facet name="header">
             Tous Les rapports
         </f:facet>
- 
-        <p:panel header="#{rep.id_rapport}" style="text-align:center">
-            <h:panelGrid columns="1" style="width:100%">
-                <p:graphicImage name="report_img.png" library="img" style="width: 100px; height: 120px;"/> 
- 
-                <h:outputText value="#{rep.lib_rapport}" />
- 
-                <h:commandLink  title="View Report" action="#{reports_view.ViewRapport(rep)}">
+ <p:column headerText="Nom Rapport">
+ <p:outputLabel value="#{rep.lib_rapport}"></p:outputLabel>
+ </p:column>
+ <p:column headerText="Table">
+  <p:outputLabel value="#{rep.table_name}"></p:outputLabel>
+ </p:column>
+        <p:column>
+         <h:commandLink  title="View Report" action="#{reports_view.ViewRapport(rep)}">
                     <h:outputText styleClass="ui-icon ui-icon-search" style="margin:0 auto;" />
-                   
+        
                 </h:commandLink>
-            </h:panelGrid>
-        </p:panel>
+        </p:column>
  
-    </p:dataGrid>
+               
+          
+ 
+    </p:dataTable>
     </h:form>
 			
 			

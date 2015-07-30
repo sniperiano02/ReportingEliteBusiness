@@ -8,46 +8,62 @@
 			<ui:define name="pageTitle">welcome</ui:define>	
 
 			<ui:define name="PageContent">
-			<h:form>
-			<h1 style="text-align:center;">Mobile Prépayé-Configuration-Plan Tarifaire</h1>
+			<h:form id="form1" >
 			
-			<p:panelGrid columns="2">
-			<p:column>
-			<p:commandButton value="Ajouter" onclick="PF('dlg3').show();"/>
-			<p:separator/>
-			<p:commandButton value="Modifier" />
-			<p:separator/>
-			<p:commandButton value="Supprimer"/>
-			<p:separator/>
-			</p:column>
-			<p:column>
-			<p:dataTable style="width:300px;"  rowKey="#{plan.id}" var="plan" value="#{plan_tarif.list_plans}" selectionMode="single" selection="#{plan_tarif.plan}">
+			
+		
+			<p:dataTable id="singleDT"  rowKey="#{plan1.codePlanTarifaire}" var="plan1" value="#{plan_tarif.list_plans}" selectionMode="single" selection="#{plan_tarif.plan}" >
     <p:column headerText="Code Plan Tarifaire">
-        <h:outputText value="#{plan.codePlanTarifaire}" />
+        <h:outputText value="#{plan1.codePlanTarifaire}" />
     </p:column>
  
     <p:column headerText="Intitulé Plan Tarifaire">
-        <h:outputText value="#{plan.planTarifaire}" />
+        <h:outputText value="#{plan1.planTarifaire}" />
     </p:column>
  
-   
+   <f:facet name="footer">
+   <p:panelGrid columns="3">
+            <p:commandButton  process="singleDT" update=":form1:planDetail"  value="Modifier" oncomplete="PF('dlg4').show()"  />
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+                                  <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-plusthick" value="Supprimer" actionListener="#{plan_tarif.deletePlan}"  />
+             
+        </p:panelGrid>
+        </f:facet>
 </p:dataTable>
-</p:column>
-			</p:panelGrid>
-			</h:form>
-			<p:dialog header="Effects" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+
+			
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
 			<h:panelGrid>
     <p:outputLabel value="Code Plan tarifaire" />
-    <p:inputText ></p:inputText> 
-    <p:outputLabel value="Code Plan tarifaire" />
-    <p:inputText ></p:inputText> 
-    <p:outputLabel value="Code Plan tarifaire" />
-    <p:inputText ></p:inputText> 
-    <p:outputLabel value="Code Plan tarifaire" />
-    <p:inputText></p:inputText> 
-    <p:commandButton value="Test" action="#{plan_tarif.createPlan}"/>
+    <p:inputText value="#{plan_tarif.planTarifaire.codePlanTarifaire}" ></p:inputText> 
+    <p:outputLabel value="Libelle Plan Tarifaire" />
+    <p:inputText value="#{plan_tarif.planTarifaire.planTarifaire}" ></p:inputText> 
+    <p:outputLabel value="Type" />
+    <p:inputText value="#{plan_tarif.planTarifaire.type}" ></p:inputText> 
+    <p:outputLabel value="Nom Utilisateur" />
+    <p:inputText value="#{plan_tarif.planTarifaire.nomUtilisateur}"></p:inputText> 
+  
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{plan_tarif.createPlan}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" />
     </h:panelGrid>
 </p:dialog>
-			
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty plan_tarif.plan}" columnClasses="label,value" columns="2">
+    <p:outputLabel value="Code Plan tarifaire" />
+    <p:inputText value="#{plan_tarif.plan.codePlanTarifaire}" ></p:inputText> 
+    <p:outputLabel value="Libelle Plan Tarifaire" />
+    <p:inputText value="#{plan_tarif.plan.planTarifaire}" ></p:inputText> 
+    <p:outputLabel value="Type" />
+    <p:inputText value="#{plan_tarif.plan.type}" ></p:inputText> 
+    <p:outputLabel value="Nom Utilisateur" />
+    <p:inputText value="#{plan_tarif.plan.nomUtilisateur}"></p:inputText> 
+  
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{plan_tarif.modifPlan}" oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+	</h:form>		
 			</ui:define>
 			</ui:composition>

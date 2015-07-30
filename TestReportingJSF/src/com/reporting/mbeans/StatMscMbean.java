@@ -8,13 +8,46 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -40,7 +73,8 @@ import javax.faces.el.ValueBinding;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.BehaviorEvent;
 import javax.faces.model.SelectItem;
-
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
@@ -78,12 +112,17 @@ import org.primefaces.model.chart.HorizontalBarChartModel;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.PieChartModel;
 
+import com.reporting.metier.entities.AxeY;
 import com.reporting.metier.entities.ChartDynamic;
 import com.reporting.metier.entities.Datagrid;
+
 import com.reporting.metier.entities.Noeud;
 import com.reporting.metier.entities.Report;
+import com.reporting.metier.entities.Result;
 import com.reporting.metier.entities.StatMsc;
+import com.reporting.metier.entities.ToUse;
 import com.reporting.metier.entities.TypeDestination;
+import com.reporting.metier.interfaces.GenericReportingRemote;
 import com.reporting.metier.interfaces.NoeudRemote;
 import com.reporting.metier.interfaces.ReportRemote;
 import com.reporting.metier.interfaces.StatMscImplRemote;
@@ -103,8 +142,45 @@ public class StatMscMbean implements Serializable  {
 	private ReportRemote reportRemote;
 	@EJB
 	private NoeudRemote noeudremote;
+	
+	
+	@EJB
+	private GenericReportingRemote genericReportRemote;
+	
+	
+	private String libGraphe;
+	
+	
+	public String getLibGraphe() {
+		return libGraphe;
+	}
+	public void setLibGraphe(String libGraphe) {
+		this.libGraphe = libGraphe;
+	}
 	private List<Noeud> liste_noeuds;
 	private List<String> liste_noeuds_noms;
+	
+	private String choix_table;
+	
+	
+	public String getChoix_table() {
+		return choix_table;
+	}
+	public void setChoix_table(String choix_table) {
+		this.choix_table = choix_table;
+	}
+	private boolean choice= false;
+	private boolean ChartChoose= false;
+	public boolean isChartChoose() {
+		return ChartChoose;
+	}
+	public void setChartChoose(boolean chartChoose) {
+		ChartChoose = chartChoose;
+	}
+	
+	public boolean isChoice() {
+		return choice;
+	}
 	private Draggable opet;
 	private Draggable opet1;
 	private Draggable opet2;
@@ -112,6 +188,30 @@ public class StatMscMbean implements Serializable  {
 	private Date dtTest;
 	private BigDecimal duree_filter;
 	private ReportConfiguration report_configuration;
+	private List<AxeY> fin_AxeYLst;
+	
+	
+	public List<AxeY> getFin_AxeYLst() {
+		return fin_AxeYLst;
+	}
+	public void setFin_AxeYLst(List<AxeY> fin_AxeYLst) {
+		this.fin_AxeYLst = fin_AxeYLst;
+	}
+	private List<AxeY> AxeYOperations;
+	public List<AxeY> getAxeYOperations() {
+		return AxeYOperations;
+	}
+	public void setAxeYOperations(List<AxeY> axeYOperations) {
+		AxeYOperations = axeYOperations;
+	}
+	private boolean lineorBar = false;
+	
+	public boolean isLineorBar() {
+		return lineorBar;
+	}
+	public void setLineorBar(boolean lineorBar) {
+		this.lineorBar = lineorBar;
+	}
 
 	public ReportConfiguration getReport_configuration() {
 		return report_configuration;
@@ -150,6 +250,16 @@ public class StatMscMbean implements Serializable  {
 	
 	private String choixDateFilter;
 	protected List<Integer> simpleList;
+	
+	private List<String> opertions;
+	
+	
+	public List<String> getOpertions() {
+		return opertions;
+	}
+	public void setOpertions(List<String> opertions) {
+		this.opertions = opertions;
+	}
     
     public List<Integer> getSimpleList() {
         return simpleList;
@@ -159,11 +269,89 @@ public class StatMscMbean implements Serializable  {
 
 	private String typeAxe ;
 	private String typeAxeY ;
-	private List<String> liste_filters = new ArrayList<String>();
+	private List<Filter> liste_filters = new ArrayList<Filter>();
 	private List<String> liste_filters_selected = new ArrayList<String>();
 	private String chartType;
+	
+	
+	
+	private List<SerieChart> LinesSeries;
+	private List<SerieChart> BarSeries;
+	private List<List<Object[]>> PieSeries;
+	
+	public List<SerieChart> getBarSeries() {
+		return BarSeries;
+	}
+	public void setBarSeries(List<SerieChart> barSeries) {
+		BarSeries = barSeries;
+	}
+	public List<SerieChart> getLinesSeries() {
+		return LinesSeries;
+	}
+	public void setLinesSeries(List<SerieChart> linesSeries) {
+		LinesSeries = linesSeries;
+	}
+	public List<List<Object[]>> getPieSeries() {
+		return PieSeries;
+	}
+	public void setPieSeries(List<List<Object[]>> pieSeries) {
+		PieSeries = pieSeries;
+	}
+	
+private List<HighChart> BarMapList;
 
-	private Report p;
+private List<HighChart> LineMapList;
+
+private List<List<Map<String,Number>>> PieMapList;
+
+
+public List<List<Map<String, Number>>> getPieMapList() {
+	return PieMapList;
+}
+
+public void setPieMapList(List<List<Map<String, Number>>> pieMapList) {
+	PieMapList = pieMapList;
+}
+public List<HighChart> getBarMapList() {
+	return BarMapList;
+}
+public List<HighChart> getLineMapList() {
+	return LineMapList;
+}
+public void setBarMapList(List<HighChart> barMapList) {
+	BarMapList = barMapList;
+}
+public void setLineMapList(List<HighChart> lineMapList) {
+	LineMapList = lineMapList;
+}
+
+	
+	private Map<String, String> listeAxeY;
+	private Map<String, String> OperationsY;
+	private Map<String, Map<String, Boolean>> AxeOperations;
+	
+	public Map<String, Map<String, Boolean>> getAxeOperations() {
+		return AxeOperations;
+	}
+	public Map<String, String> getListeAxeY() {
+		return listeAxeY;
+	}
+	public Map<String, String> getOperationsY() {
+		return OperationsY;
+	}
+	public void setAxeOperations(Map<String, Map<String, Boolean>> axeOperations) {
+		AxeOperations = axeOperations;
+	}
+	public void setListeAxeY(Map<String, String> listeAxeY) {
+		this.listeAxeY = listeAxeY;
+	}
+	public void setOperationsY(Map<String, String> operationsY) {
+		OperationsY = operationsY;
+	}
+
+	private Report p = new Report();
+	
+	
 
 	
 	public StatMscMbean() {
@@ -187,9 +375,105 @@ public List<String> getMsc_fields() {
 public void setMsc_fields(List<String> msc_fields) {
 	this.msc_fields = msc_fields;
 }
+
+public void handle_tableChoice() throws SecurityException, ClassNotFoundException{
+	msc_fields = new ArrayList<>();
+	msc_fields1 = new ArrayList<>();
+	liste_filters = new ArrayList<>();
+	
+	Class c = Class.forName(choix_table);
+	for(int j=2; j<c.getDeclaredFields().length;j++){
+		if(c.getDeclaredFields()[j].getGenericType()==BigDecimal.class){
+			System.out.println(c.getDeclaredFields()[j].getGenericType());
+			//System.out.println(StatMsc.class.getDeclaredFields()[j].getType());
+			msc_fields1.add(c.getDeclaredFields()[j].getName());
+		}else if(c.getDeclaredFields()[j].isAnnotationPresent(ManyToOne.class)==false) {
+			
+			msc_fields.add(c.getDeclaredFields()[j].getName());
+		}else if(c.getDeclaredFields()[j].isAnnotationPresent(ManyToOne.class)){
+			Class co = c.getDeclaredFields()[j].getType();
+			for(int i=0;i<co.getDeclaredFields().length;i++){
+				if(co.getDeclaredFields()[i].isAnnotationPresent(ToUse.class)){
+					msc_fields.add(c.getDeclaredFields()[j].getName()+"."+co.getDeclaredFields()[i].getName());
+				}
+			}
+			
+		}
+		
+	}
+	for(int j=2; j<c.getDeclaredFields().length;j++){
+		if(c.getDeclaredFields()[j].getGenericType()==String.class){
+			Filter f =new Filter();
+			f.setLabel(c.getDeclaredFields()[j].getName());
+			f.setValue(c.getDeclaredFields()[j].getName());
+			liste_filters.add(f);
+		}else if(c.getDeclaredFields()[j].isAnnotationPresent(ManyToOne.class)){
+			Field[] fields= c.getDeclaredFields()[j].getType().getDeclaredFields();
+			
+					 Filter f =new Filter();
+						f.setLabel(c.getDeclaredFields()[j].getName().toString());
+						f.setValue(c.getDeclaredFields()[j].getName().toString());
+						System.out.println(c.getDeclaredFields()[j].getType().getName());
+						liste_filters.add(f);
+			
+			
+		}
+		listeAxeY = new LinkedHashMap<>();
+		for(int k=0;k<msc_fields1.size();k++){
+			
+			listeAxeY.put( msc_fields1.get(k), msc_fields1.get(k));
+		}
+		OperationsY = new LinkedHashMap<>();
+		OperationsY.put("SUM", "SUM");
+		OperationsY.put("AVG", "AVG");
+		OperationsY.put("Count", "Count");
+		AxeOperations = new HashMap<>();
+			    for (String office : listeAxeY.keySet()) {
+			    	AxeOperations.put(office, new HashMap<String, Boolean>());
+			    }
+			    
+			    LineMapList = new ArrayList<>();
+			    BarMapList = new ArrayList<>();
+			    PieSeries = new ArrayList<>();
+	}
+	LayoutUnit colFilters = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:colFilters");
+	colFilters.getChildren().clear(); 
+	SelectManyMenu menu_filters = (SelectManyMenu) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:filters_menu");
+	   FacesContext facesCtx = FacesContext.getCurrentInstance();
+       ELContext elContext = facesCtx.getELContext();
+       Application app = facesCtx.getApplication();
+       ExpressionFactory elFactory = app.getExpressionFactory();
+       LayoutUnit component = (LayoutUnit) facesCtx.getViewRoot().findComponent("form1:myPanelGrid");
+	    
+		  if(menu_filters==null){
+			  menu_filters = new SelectManyMenu();
+	    	   menu_filters.setId("filters_menu");
+	    	   ValueExpression valueExp5 = elFactory.createValueExpression(elContext, "#{stat_msc.liste_filters_selected}",List.class);
+	    	   ValueExpression valueExp6 = elFactory.createValueExpression(elContext, "filter",Object.class);
+	    	   ValueExpression valueExp7 = elFactory.createValueExpression(elContext, "#{filter.label}",Object.class);
+	    	   ValueExpression valueExp8 = elFactory.createValueExpression(elContext, "#{filter.value}",Object.class);
+	    	   UISelectItems list_items3 = new UISelectItems();
+	    	   
+	    	   menu_filters.setValueExpression("value", valueExp5);
+	    	   list_items3.setValue(liste_filters);
+	    	   list_items3.setValueExpression("var", valueExp6);
+	    	   list_items3.setValueExpression("itemLabel", valueExp7);
+	    	   list_items3.setValueExpression("itemValue", valueExp8);
+	    	   menu_filters.setShowCheckbox(true);
+	    	   menu_filters.getChildren().add(list_items3);
+	    	 
+	    	   
+	    	   colFilters.getChildren().add(menu_filters);
+		  }
+		  create_Lib_Save();
+ 	  
+	choice=true;
+}
 	
 	@PostConstruct
-	public void init() throws ParseException{
+	public void init() throws ParseException, SecurityException, ClassNotFoundException{
+		
+	
 	dtTest=statRemote.getMSCDate();
 	System.out.println(dtTest);
 			list1.add("Aucun");
@@ -204,22 +488,8 @@ public void setMsc_fields(List<String> msc_fields) {
 			report_configuration.getListeActions().add("COUNT");
 	        //Random r = new Random();
 	        
-			for(int j=3; j<StatMsc.class.getDeclaredFields().length;j++){
-				if(StatMsc.class.getDeclaredFields()[j].getGenericType()==BigDecimal.class){
-					System.out.println(StatMsc.class.getDeclaredFields()[j].getGenericType());
-					//System.out.println(StatMsc.class.getDeclaredFields()[j].getType());
-					msc_fields1.add(StatMsc.class.getDeclaredFields()[j].getName());
-				}else {
-					msc_fields.add(StatMsc.class.getDeclaredFields()[j].getName());
-				}
-				
-			}
-			for(int j=3; j<StatMsc.class.getDeclaredFields().length;j++){
-				if(StatMsc.class.getDeclaredFields()[j].getGenericType()==String.class){
-					liste_filters.add(StatMsc.class.getDeclaredFields()[j].getName());
-				}
-				liste_filters.add("typeDest");
-			}
+			
+			
 		listParDate.add("Par heure");
 		listParDate.add("Par Jour");
 		listParDate.add("Par mois");
@@ -230,12 +500,18 @@ public void setMsc_fields(List<String> msc_fields) {
 			liste_noeuds_noms.add(liste_noeuds.get(noeud_nb).getCodeNoeud());
 			System.out.println(liste_noeuds.get(noeud_nb).getCodeNoeud());
 		}
-			
+		
+		
+		
+
+		 
 		
 		
 	
 	}
-	
+	public List<String> getMsc_fields1() {
+		return msc_fields1;
+	}
 	
 	
 	
@@ -267,69 +543,59 @@ public void setMsc_fields(List<String> msc_fields) {
 	       ELContext elContext = facesCtx.getELContext();
 	       Application app = facesCtx.getApplication();
 	       ExpressionFactory elFactory = app.getExpressionFactory();
-	       UIComponent component = facesCtx.getViewRoot().findComponent("form1:myPanelGrid");
-		    
+	       LayoutUnit component = (LayoutUnit) facesCtx.getViewRoot().findComponent("form1:myPanelGrid");
+	       LayoutUnit sauvegard = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:sauvegard");
+	   	
 			 if (component != null) {
 		 UIComponent componentLib = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:tx_rapport");
 	        UIComponent componentBtn = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:btnsave");
-	        UIComponent componentpg = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:pgall");
-	       if(componentpg==null){
-	    	  
-	    	   PanelGrid pgall = new PanelGrid();
-	    	   pgall.setStyle("border-style: hidden;");
-	    	   pgall.setId("pgall");
-	    	   Column colFilters = new Column();
-	    	   Panel panel_filters = new Panel();
-	    	   panel_filters.setStyle("height:580px;overflow:hidden;width:225;");
-	    	   panel_filters.setHeader("Choisir Filtres");
-	    	   SelectManyMenu menu_filters = new SelectManyMenu();
-	    	   ValueExpression valueExp5 = elFactory.createValueExpression(elContext, "#{stat_msc.liste_filters_selected}",Object.class); 
-	    	   UISelectItems list_items3 = new UISelectItems();
-	    	   menu_filters.setValueExpression("value", valueExp5);
-	    	   list_items3.setValue(liste_filters);
-	    	   menu_filters.setShowCheckbox(true);
-	    	   menu_filters.getChildren().add(list_items3);
-	    	   panel_filters.getChildren().add(menu_filters);
+	       
+	       
+	    	 
+	    	   //PanelGrid pgall = (PanelGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:pgall");
+	    	  // pgall.setStyle("border-style: hidden;");
+	    	 
 	    	   
-	    	   colFilters.getChildren().add(panel_filters);
-	    	   Column ColChart = new Column();
-	    	   ColChart.setId("ChartCol");
-	       pgall.getChildren().add(colFilters);
-	       pgall.getChildren().add(ColChart);
+		    	   LayoutUnit ColChart = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:ChartCol");
+		    	 
+		   
+	    	   
+	    	   
 	       
 	       if (componentLib == null) {
-	        	PanelGrid pgGrid = new PanelGrid();
+	        	
 	        	//pgGrid.setStyle("margin-left:500px;");
 	        	OutputLabel lb_rapport = new OutputLabel();
 			   	 InputText tx_rapport = new InputText();
-			   	lb_rapport.setValue("Libelle Rapport");
+			   	lb_rapport.setValue("Libelle Rapport:");
 				 lb_rapport.setFor("tx_rapport");
 				// tx_rapport.setStyle("width:100px;");
 				 tx_rapport.setId("tx_rapport");
+				 
 				ValueExpression value_input = elFactory.createValueExpression(elContext,"#{stat_msc.lib_report}",Object.class);
 				 tx_rapport.setValueExpression("value", value_input);
 				 
-				 pgGrid.getChildren().add(lb_rapport);
-				 pgGrid.getChildren().add(tx_rapport);
+				 sauvegard.getChildren().add(lb_rapport);
+				 sauvegard.getChildren().add(tx_rapport);
 				 
-				 component.getChildren().add(pgGrid);
+				 
 				
 				 
-	        }
+	        
 	        if (componentBtn == null) {
 	        	 CommandButton btnsave = new CommandButton();
 			        btnsave.setId("btnsave");
 			        btnsave.setValue("Sauvegarder Rapport");
-			        btnsave.setStyle("margin-left:900px;");
+			   
 			        MethodExpression methodExpression1 =null;
 	  methodExpression1 = elFactory.createMethodExpression(elContext,"#{stat_msc.createRapport}",null, new Class[]{});
 	  btnsave.setActionExpression(methodExpression1);
-	  component.getChildren().add(btnsave);
+	  sauvegard.getChildren().add(btnsave);
 	        }
 	       
 		  
 	        
-	        component.getChildren().add(pgall);
+	        //component.getChildren().add(pgall);
 			 }
 			 }	 
 		 
@@ -340,31 +606,32 @@ public void setMsc_fields(List<String> msc_fields) {
 
 	 
 	 public void ReportConfiguration(DragDropEvent event){
-		
-			if(event.getDragId().equals("form1:availablePlayers:0:line_chart")){
-				 UIComponent component = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
-				    
+		System.out.println(event.getDragId());
+			if(event.getDragId().equals("form1:line_chart")){
+				 LayoutUnit component = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
+				    setLineorBar(true);
 				 if (component != null) {
+					 
 					 chartType="line";
-					 report_configuration.createDialog(component, msc_fields, msc_fields1, "#{stat_msc.createChart}", "#{stat_msc.deleteDialog}", "#{stat_msc.actiontype}", "#{stat_msc.typeAxe}", "#{stat_msc.list_Axe_Y}");
+					// report_configuration.createDialog(component, msc_fields, msc_fields1, "#{stat_msc.createChart}", "#{stat_msc.deleteDialog}", "#{stat_msc.actiontype}", "#{stat_msc.typeAxe}", "#{stat_msc.list_Axe_Y}");
 				      
 				       
-				       create_Lib_Save();
+				       
 				        
 				        RequestContext requestContext = RequestContext.getCurrentInstance();
-				        requestContext.update("form1:myPanelGrid");
+				     
 				        opet = new Draggable();
 				        FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:availablePlayers").getChildren().add(opet);
 				        requestContext.update("form1:availablePlayers");
 				   
 				}
-			}else if(event.getDragId().equals("form1:availablePlayers:0:pie")){
-				 UIComponent component = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
-				    
+			}else if(event.getDragId().equals("form1:pie")){
+				 LayoutUnit component = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
+				    setLineorBar(false);
 				 if (component != null) {
 					 chartType="pie";
-					 report_configuration.createDialog1(component, msc_fields, msc_fields1, "#{stat_msc.createChart}", "#{stat_msc.deleteDialog}", "#{stat_msc.actiontype}", "#{stat_msc.typeAxe}", "#{stat_msc.typeAxeY}");
-				       create_Lib_Save();
+					// report_configuration.createDialog1(component, msc_fields, msc_fields1, "#{stat_msc.createChart}", "#{stat_msc.deleteDialog}", "#{stat_msc.actiontype}", "#{stat_msc.typeAxe}", "#{stat_msc.typeAxeY}");
+				       
 				        
 				        RequestContext requestContext = RequestContext.getCurrentInstance();
 				        requestContext.update("form1:myPanelGrid");
@@ -373,13 +640,13 @@ public void setMsc_fields(List<String> msc_fields) {
 				        requestContext.update("form1:availablePlayers");
 				   
 				}
-			}else if(event.getDragId().equals("form1:availablePlayers:0:bar")){
-				 UIComponent component = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
-				    
+			}else if(event.getDragId().equals("form1:bar")){
+				 LayoutUnit component = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
+				    setLineorBar(true);
 				 if (component != null) {
 					 chartType="bar";
-					 report_configuration.createDialog(component, msc_fields, msc_fields1, "#{stat_msc.createChart}", "#{stat_msc.deleteDialog}", "#{stat_msc.actiontype}", "#{stat_msc.typeAxe}", "#{stat_msc.list_Axe_Y}");
-				       create_Lib_Save();
+					// report_configuration.createDialog(component, msc_fields, msc_fields1, "#{stat_msc.createChart}", "#{stat_msc.deleteDialog}", "#{stat_msc.actiontype}", "#{stat_msc.typeAxe}", "#{stat_msc.list_Axe_Y}");
+				       
 				        
 				        RequestContext requestContext = RequestContext.getCurrentInstance();
 				        requestContext.update("form1:myPanelGrid");
@@ -389,14 +656,14 @@ public void setMsc_fields(List<String> msc_fields) {
 				   
 				}
 				 
-			}else if(event.getDragId().equals("form1:availablePlayers:0:grid")){
-				 UIComponent component = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
-				    
+			}else if(event.getDragId().equals("form1:grid")){
+				 LayoutUnit component = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
+				    setLineorBar(true);
 				 if (component != null) {
 					 chartType="grid";
-					 report_configuration.createDialog1(component, msc_fields, msc_fields1, "#{stat_msc.createChart}", "#{stat_msc.deleteDialog}", "#{stat_msc.actiontype}", "#{stat_msc.typeAxe}", "#{stat_msc.typeAxeY}");
+					// report_configuration.createDialog1(component, msc_fields, msc_fields1, "#{stat_msc.createChart}", "#{stat_msc.deleteDialog}", "#{stat_msc.actiontype}", "#{stat_msc.typeAxe}", "#{stat_msc.typeAxeY}");
 					
-				       create_Lib_Save();
+				    
 				        
 				        RequestContext requestContext = RequestContext.getCurrentInstance();
 				        requestContext.update("form1:myPanelGrid");
@@ -412,37 +679,131 @@ public void setMsc_fields(List<String> msc_fields) {
 
 	 
 	
-private Object[] initGridModel(){
+private List<Object[]> initGridModel(){
 	String action;
 	String groupby;
-	Object[] list = null ;
-	switch (actiontype) {
-	case "SUM":
-		action="SUM(";
-		
-		 groupby= "Group By ";
-	 
-	       list= statRemote.getConfiguartionChartByCfg(typeAxe, typeAxeY+")", action,groupby+typeAxe).entrySet().toArray();
-	      
+	Datagrid grid = new Datagrid();
+	List<Object[]> list = new ArrayList<>(); ;
+	int endIndex = choix_table.lastIndexOf(".")+1;
+	String table1 = choix_table.substring(endIndex, choix_table.length());
+	 AxeYOperations = new ArrayList<>();
+	 for (Entry<String, Map<String, Boolean>> entry : AxeOperations.entrySet()) {
+		 AxeY axeY =  new AxeY();
+		 opertions = new ArrayList<>();
+	        String office = entry.getKey();
 	        
-	       
-		break;
-	case "AVG":
-		action="AVG(";
-	
-		groupby= "Group By ";
-		 list= statRemote.getConfiguartionChartByCfg(typeAxe, typeAxeY+")", action,groupby+typeAxe).entrySet().toArray();
-		break;
-	case "Aucun":
-		action=" ";
-	
-		groupby= "Group By ";
-		 list= statRemote.getConfiguartionChartByCfg(typeAxe, typeAxeY+")", action,groupby+typeAxe).entrySet().toArray();
-		break;
+	        Map<String, Boolean> services = entry.getValue();
+	        for(Entry e: services.entrySet()){
+	        	if((boolean) e.getValue()==true){
+	        		opertions.add(e.getKey().toString());
+	        		System.out.println(e.getKey().toString());
+	        	}
+	        }
+	        if(opertions.size()>0){
+	        	axeY.setAxey(office);
+	        	axeY.setOperations(opertions);
+	        	 axeY.setGridD(grid);
+		        AxeYOperations.add(axeY);
+		       
 
-	default:
-		break;
-	}
+	        }
+	        
+	    }
+	 List<String> where = new ArrayList<>();
+	 if(AxeYOperations.isEmpty()==false){
+		 if(typeAxe.contains("date")){
+			 list=statRemote.getAllStatMsc1("to_date("+typeAxe+",'YYMMDD')", AxeYOperations, table1, "", "", where);
+		 }else{
+			 list=statRemote.getAllStatMsc1(typeAxe, AxeYOperations, table1, "", "", where);
+		 }
+		
+			FacesContext facesCtx = FacesContext.getCurrentInstance();
+		    ELContext elContext = facesCtx.getELContext();
+		    Application app = facesCtx.getApplication();
+			 ExpressionFactory elFactory = app.getExpressionFactory();
+			DataTable table = (DataTable) app.createComponent(DataTable.COMPONENT_TYPE);
+			
+			
+			 table.setValue(list);
+			 table.setVar("exam");
+			 table.setWidgetVar("examTable");
+			 table.setEmptyMessage("aucun résultat trouvé pour votre recherche");
+
+			 table.setPaginator(true);
+			 table.setPaginatorPosition("bottom");
+			 table.setRows(5);
+			 UIOutput HeaderColumnTitle = (UIOutput) app.createComponent(UIOutput.COMPONENT_TYPE);
+			 HeaderColumnTitle.setValue(libGraphe);
+			 table.setHeader(HeaderColumnTitle);
+			 table.setPaginatorTemplate("{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}");
+			 table.setRowsPerPageTemplate("10,25,50,100");
+
+			 
+			Column indexColumn = (Column) app.createComponent(Column.COMPONENT_TYPE);
+			 UIOutput indexColumnTitle = (UIOutput) app.createComponent(UIOutput.COMPONENT_TYPE);
+			 if(typeAxe.contains(".")){
+				 int b = typeAxe.lastIndexOf(".");
+				 String s = typeAxe.substring(0,b);
+				 indexColumnTitle.setValue(s);
+			 }else{
+				 indexColumnTitle.setValue(typeAxe);
+			 }
+		
+			 indexColumn.getFacets().put("header", indexColumnTitle);
+			 //table.getColumns().add(column);
+			 table.getChildren().add(indexColumn);
+		 ValueExpression indexValueExp = elFactory.createValueExpression(elContext, "#{exam[0]}", Object.class);
+			 HtmlOutputText indexOutput = (HtmlOutputText) app.createComponent(HtmlOutputText.COMPONENT_TYPE);
+			 indexOutput.setValueExpression("value", indexValueExp);
+			 indexColumn.getChildren().add(indexOutput);
+			 int nbr=0;
+			 for(int nb=0;nb<AxeYOperations.size();nb++){
+				 nbr=nbr+AxeYOperations.get(nb).getOperations().size();
+			 }
+			 System.out.println(nbr);
+			 int nb=1;
+			 for(int k=0;k<AxeYOperations.size();k++){
+				 String name = AxeYOperations.get(k).getAxey();
+				 for (int p=0;p<AxeYOperations.get(k).getOperations().size();p++){
+					
+					 Column nameColumn = new Column();
+					 UIOutput nameColumnTitle = (UIOutput) app.createComponent(UIOutput.COMPONENT_TYPE);
+					 nameColumnTitle.setValue(AxeYOperations.get(k).getOperations().get(p)+"("+name+")");
+					 nameColumn.getFacets().put("header", nameColumnTitle);
+					 table.getChildren().add(nameColumn);
+
+					 ValueExpression nameValueExp = elFactory.createValueExpression(elContext, "#{exam["+nb+"]}", Object.class);
+					 nb++;
+					 HtmlOutputText nameOutput = new HtmlOutputText();
+					 nameOutput.setValueExpression("value", nameValueExp);
+					 nameColumn.getChildren().add(nameOutput);
+
+				 }
+				 
+			 }
+			 
+			 //Name Column
+			
+			 UIComponent component1 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
+			// UIComponent comp2 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:configuration_dialog");
+			 UIComponent compColChart = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:ChartCol");
+			 component1.getChildren().add(table);
+			 
+			 grid.setDaxe_x(typeAxe);
+			 grid.setList_axe_y(AxeYOperations);
+			 grid.setReport_grid(p);
+			   //dg.setList_axe_y(AxeYOperations);
+			   //dg.setOperationD(actiontype);
+			   lst_grids.add(grid);
+			 //  component1.getChildren().remove(comp2);
+			
+				//component1.getChildren()
+				 
+			    RequestContext requestContext = RequestContext.getCurrentInstance();
+				 requestContext.update("form1:myPanelGrid");
+		 
+	 }
+
    
     
      
@@ -450,440 +811,249 @@ private Object[] initGridModel(){
 
 }
 
-	private LineChartModel initLineModel() {
+public void submit(){
 	
+	
+	
+	 Report p = new Report();
+	 ChartDynamic cd= new ChartDynamic();
+	 cd.setAxe_x("dateAppel");
+	 cd.setList_axe_y(AxeYOperations);
+		int endIndex = choix_table.lastIndexOf(".")+1;
+		String table = choix_table.substring(endIndex, choix_table.length());
+	 p.setTable_name(table);
+	 List<ChartDynamic> cdh = new ArrayList<>();
+	 cdh.add(cd);
+	 p.setLst_chart(cdh);
+	
+	 reportRemote.addReport(p);
+}
+
+	private void initLineModel() {
+		
+		int endIndex = choix_table.lastIndexOf(".")+1;
+		String table = choix_table.substring(endIndex, choix_table.length());
 			String action;
 			String groupby;
 			//ChartDynamic chartdynamique = new ChartDynamic();
 			
-			 LineChartModel modelchart = new LineChartModel();
-			
-			switch (actiontype) {
-			case "SUM":
-				action="SUM(";
+			ChartDynamic chd = new ChartDynamic();
+		
+			 AxeYOperations = new ArrayList<>();
+			 for (Entry<String, Map<String, Boolean>> entry : AxeOperations.entrySet()) {
+				 AxeY axeY =  new AxeY();
+				 opertions = new ArrayList<>();
+			        String office = entry.getKey();
+			        
+			        Map<String, Boolean> services = entry.getValue();
+			        for(Entry e: services.entrySet()){
+			        	if((boolean) e.getValue()==true){
+			        		opertions.add(e.getKey().toString());
+			        		System.out.println(e.getKey().toString());
+			        	}
+			        }
+			        if(opertions.size()>0){
+			        	axeY.setAxey(office);
+			        	axeY.setOperations(opertions);
+			        	 axeY.setChartD(chd);
+				        AxeYOperations.add(axeY);
+				  
+			        }
+			        
+			    }
+			 LinesSeries = new ArrayList<>();
+			 
+			 for(AxeY a: AxeYOperations){
 				
-				 groupby= "Group By ";
-				for(int k =0;k<List_Axe_Y.size();k++){
-					 ChartSeries boys = new ChartSeries();
-					 boys.setLabel(typeAxe+" Par"+typeAxeY);
-				        boys.setData(statRemote.getConfiguartionChartByCfg(typeAxe, List_Axe_Y.get(k)+")", action,groupby+typeAxe));
-				      
-				        
-				        modelchart.addSeries(boys);
-				}
+				
+				
+					 for(String bs: a.getOperations()){
+						
+							
+								
+								
+								 groupby= "Group By ";
+								
+									SerieChart sch = new SerieChart();
+									
+									sch.setMap(statRemote.getConfiguartionChartByCfg(typeAxe, a.getAxey()+")",table, bs+"(",groupby+typeAxe));
+									System.out.println(sch.getMap().size());
+									sch.setName(bs+"("+a.getAxey()+")");
+									
+									
+								        LinesSeries.add(sch);
+								 
+								
+							      
+							        
+							
+					 }
 				 
 				
-			      
-			        
-				break;
-			case "AVG":
-				action="AVG(";
-			
-				groupby= "Group By ";
-				for(int k =0;k<List_Axe_Y.size();k++){
-					 ChartSeries boys = new ChartSeries();
-					 boys.setLabel(typeAxe+" Par "+List_Axe_Y.get(k));
-				        boys.setData(statRemote.getConfiguartionChartByCfg(typeAxe, List_Axe_Y.get(k)+")", action,groupby+typeAxe));
-				      
-				        
-				        modelchart.addSeries(boys);
-				}
-				break;
-			case "Aucun":
-				action=" ";
-			
-				groupby= "Group By ";
-				for(int k =0;k<List_Axe_Y.size();k++){
-					 ChartSeries boys = new ChartSeries();
-					 boys.setLabel(typeAxe+" Par "+List_Axe_Y.get(k));
-				        boys.setData(statRemote.getConfiguartionChartByCfg(typeAxe, List_Axe_Y.get(k)+")", action,groupby+typeAxe));
-				      
-				        
-				        modelchart.addSeries(boys);
-				}
-				break;
-			case "COUNT":
-				action="COUNT(";
-				
-				 groupby= "Group By ";
-				 for(int nb=0;nb<List_Axe_Y.size();nb++){
-					 ChartSeries boys = new ChartSeries();
-				        boys.setLabel(typeAxe+" Par"+" "+List_Axe_Y.get(nb));
-				        boys.setData(statRemote.getConfiguartionChartByCfg(typeAxe, List_Axe_Y.get(nb)+")", action,groupby+typeAxe));
-				      
-				       
-				        modelchart.addSeries(boys);
-				 }
-				
-				break;
-
-			default:
-				break;
-			}
-	       
-	        
-	         
-	        return modelchart;
+			 }
+HighChart hichart = new HighChart();
+hichart.setName(libGraphe);
+hichart.setSeries(LinesSeries);
+			 LineMapList.add(hichart);
+			 System.out.println(LineMapList.size());
+			 
+			 chd.setAxe_x(typeAxe);
+			 chd.setList_axe_y(AxeYOperations);
+			 chd.setType_chart("line");
+			 chd.setReport_chart(p);
+			 lst_charts.add(chd);
+			 ChartChoose = true;
+	      
 		
 		
     }
-	private PieChartModel initPieModel() {
-		
+	private void initPieModel() {
+		ChartChoose = true;
+		int endIndex = choix_table.lastIndexOf(".")+1;
+		String table = choix_table.substring(endIndex, choix_table.length());
 		String action;
 		String groupby;
-		//ChartDynamic chartdynamique = new ChartDynamic();
-		
-		 PieChartModel modelchart = new PieChartModel();
-		  ChartSeries boys = new ChartSeries();
-		switch (actiontype) {
-		case "SUM":
-			action="SUM(";
-			
-			 groupby= "Group By ";
-		     System.out.println(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY+")", action,groupby+typeAxe).size());
-		        modelchart.setData(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY+")", action,groupby+typeAxe));
-		      
-		        
-		        
-			break;
-		case "AVG":
-			action="AVG(";
-		
-			groupby= "Group By ";
-			modelchart.setData(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY+")", action,groupby+typeAxe));
-			break;
-		case "COUNT":
-			action="COUNT(";
-		
-			groupby= "Group By ";
-			modelchart.setData(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY+")", action,groupby+typeAxe));
-			break;
-		case "Aucun":
-			action="";
-		
-			groupby= "Group By ";
-			modelchart.setData(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY, action,groupby+typeAxe));
-			break;	
-			
+		ChartDynamic chartdynamique = new ChartDynamic();
 
-		default:
-			break;
-		}
-       
+		
+		
+				switch (actiontype) {
+				case "SUM":
+					action="SUM(";
+					
+					 groupby= "Group By ";
+				    // System.out.println(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY+")", action,groupby+typeAxe).size());
+				        PieSeries.add(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY+")",table, action,groupby+typeAxe));
+				      
+				        
+				        
+					break;
+				case "AVG":
+					action="AVG(";
+				
+					groupby= "Group By ";
+					 PieSeries.add(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY+")",table, action,groupby+typeAxe));
+					break;
+				case "COUNT":
+					action="COUNT(";
+				
+					groupby= "Group By ";
+					 PieSeries.add(statRemote.getConfiguartionChartByCnfg(typeAxe, typeAxeY+")",table, action,groupby+typeAxe));
+					break;
+				
+
+				default:
+					break;
+				}
+				
+				chartdynamique.setAxe_x(typeAxe);
+				chartdynamique.setAxe_y(typeAxeY);
+				chartdynamique.setOperation(actiontype);
+				chartdynamique.setType_chart("pie");
+				chartdynamique.setReport_chart(p);
+				lst_charts.add(chartdynamique);
+				
+		       
+		 }
+		
         
-         
-        return modelchart;
-	
-	
-}
 	
 private void createGrid(){
-	FacesContext facesCtx = FacesContext.getCurrentInstance();
-    ELContext elContext = facesCtx.getELContext();
-    Application app = facesCtx.getApplication();
-	 ExpressionFactory elFactory = app.getExpressionFactory();
-	DataTable table = (DataTable) app.createComponent(DataTable.COMPONENT_TYPE);
-	
-	 Object[] liste = initGridModel();
-	 table.setValue(liste);
-	 table.setVar("exam");
-	 table.setWidgetVar("examTable");
-	 table.setEmptyMessage("aucun résultat trouvé pour votre recherche");
 
-	 table.setPaginator(true);
-	 table.setPaginatorPosition("bottom");
-	 table.setRows(25);
-	 table.setPaginatorTemplate("{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}");
-	 table.setRowsPerPageTemplate("10,25,50,100");
-		 
-	 
-	Column indexColumn = (Column) app.createComponent(Column.COMPONENT_TYPE);
-	 UIOutput indexColumnTitle = (UIOutput) app.createComponent(UIOutput.COMPONENT_TYPE);
-	 indexColumnTitle.setValue("Index");
-	 indexColumn.getFacets().put("header", indexColumnTitle);
-	 //table.getColumns().add(column);
-	 table.getChildren().add(indexColumn);
-
-	 ValueExpression indexValueExp = elFactory.createValueExpression(elContext, "#{exam.key}", Object.class);
-	 HtmlOutputText indexOutput = (HtmlOutputText) app.createComponent(HtmlOutputText.COMPONENT_TYPE);
-	 indexOutput.setValueExpression("value", indexValueExp);
-	 indexColumn.getChildren().add(indexOutput);
-
-	 //Name Column
-	 Column nameColumn = (Column) app.createComponent(Column.COMPONENT_TYPE);
-	 UIOutput nameColumnTitle = (UIOutput) app.createComponent(UIOutput.COMPONENT_TYPE);
-	 nameColumnTitle.setValue("Name");
-	 nameColumn.getFacets().put("header", nameColumnTitle);
-	 table.getChildren().add(nameColumn);
-
-	 ValueExpression nameValueExp = elFactory.createValueExpression(elContext, "#{exam.value}", Object.class);
-	 HtmlOutputText nameOutput = (HtmlOutputText) app.createComponent(HtmlOutputText.COMPONENT_TYPE);
-	 nameOutput.setValueExpression("value", nameValueExp);
-	 nameColumn.getChildren().add(nameOutput);
-	 UIComponent component1 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
-	 UIComponent comp2 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:configuration_dialog");
-	 UIComponent compColChart = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:ChartCol");
-	 compColChart.getChildren().add(table);
-	 Datagrid dg = new Datagrid();
-	 dg.setDaxe_x(typeAxe);
-	   dg.setDaxe_y(typeAxeY);
-	   dg.setOperationD(actiontype);
-	   lst_grids.add(dg);
-	   component1.getChildren().remove(comp2);
-		 Panel comp = (Panel) component1;
-		 width = width+400;
-		 comp.setStyle("height:"+width+"px;");
-		//component1.getChildren()
-		 
-	    RequestContext requestContext = RequestContext.getCurrentInstance();
-		 requestContext.update("form1:myPanelGrid");
 	   
 }
 
-	private BarChartModel initBarModel() {
+	private void initBarModel() {
 		
+		int endIndex = choix_table.lastIndexOf(".")+1;
+		String table = choix_table.substring(endIndex, choix_table.length());
 		String action;
 		String groupby;
 		//ChartDynamic chartdynamique = new ChartDynamic();
 		
-		 BarChartModel modelchart = new BarChartModel();
-		 
-		switch (actiontype) {
-		case "SUM":
-			action="SUM(";
-			
-			 groupby= "Group By ";
-			 for(int nb=0;nb<List_Axe_Y.size();nb++){
-				 ChartSeries boys = new ChartSeries();
-			        boys.setLabel(typeAxe+" Par"+" "+List_Axe_Y.get(nb));
-			        boys.setData(statRemote.getConfiguartionChartByCfg(typeAxe, List_Axe_Y.get(nb)+")", action,groupby+typeAxe));
-			      
+		ChartDynamic chd = new ChartDynamic();
+	
+		 AxeYOperations = new ArrayList<>();
+		 for (Entry<String, Map<String, Boolean>> entry : AxeOperations.entrySet()) {
+			 AxeY axeY =  new AxeY();
+			 opertions = new ArrayList<>();
+		        String office = entry.getKey();
+		        
+		        Map<String, Boolean> services = entry.getValue();
+		        for(Entry e: services.entrySet()){
+		        	if((boolean) e.getValue()==true){
+		        		opertions.add(e.getKey().toString());
+		        		System.out.println(e.getKey().toString());
+		        	}
+		        }
+		        if(opertions.size()>0){
+		        	axeY.setAxey(office);
+		        	axeY.setOperations(opertions);
+		        	 axeY.setChartD(chd);
+			        AxeYOperations.add(axeY);
 			       
-			        modelchart.addSeries(boys);
-			 }
-			
-			break;
-		case "COUNT":
-			action="COUNT(";
-			
-			 groupby= "Group By ";
-			 for(int nb=0;nb<List_Axe_Y.size();nb++){
-				 ChartSeries boys = new ChartSeries();
-			        boys.setLabel(typeAxe+" Par"+" "+List_Axe_Y.get(nb));
-			        boys.setData(statRemote.getConfiguartionChartByCfg(typeAxe, List_Axe_Y.get(nb)+")", action,groupby+typeAxe));
-			      
-			       
-			        modelchart.addSeries(boys);
-			 }
-			
-			break;
-		case "AVG":
-			action="AVG(";
-		
-			groupby= "Group By ";
-			for(int nb=0;nb<List_Axe_Y.size();nb++){
-				 ChartSeries boys = new ChartSeries();
-			        boys.setLabel(typeAxe+" Par"+" "+List_Axe_Y.get(nb));
-			        boys.setData(statRemote.getConfiguartionChartByCfg(typeAxe, List_Axe_Y.get(nb)+")", action,groupby+typeAxe));
-			      
-			        
-			        modelchart.addSeries(boys);
-			 }
-			break;
-		case "Aucun":
-			action="";
-		
-			groupby= "Group By ";
-			for(int nb=0;nb<List_Axe_Y.size();nb++){
-				 ChartSeries boys = new ChartSeries();
-			        boys.setLabel(typeAxe+" Par"+" "+List_Axe_Y.get(nb));
-			        boys.setData(statRemote.getConfiguartionChartByCfg(typeAxe, List_Axe_Y.get(nb)+")", action,groupby+typeAxe));
-			      
-			        
-			        modelchart.addSeries(boys);
-			 }
-			break;
 
-		default:
-			break;
-		}
-       
-        
-         
-        return modelchart;
-	
-	
+		        }
+		        
+		    }
+		 if(AxeYOperations.isEmpty()==false){
+			 BarSeries = new ArrayList<>();
+			 for(AxeY a: AxeYOperations){
+				
+			
+				
+					 for(String bs: a.getOperations()){
+						 
+								
+								 groupby= "Group By ";
+
+								 SerieChart sch = new SerieChart();
+								 sch.setMap(statRemote.getConfiguartionChartByCfg(typeAxe, a.getAxey()+")",table, bs+"(",groupby+typeAxe));
+								 sch.setName(bs+"("+a.getAxey()+")");
+								BarSeries.add(sch);
+							      
+							        
+							
+					 }
+					
+				 
+				
+			 }
+			 HighChart hichart = new HighChart();
+			 hichart.setName(libGraphe);
+			 hichart.setSeries(BarSeries);
+			 BarMapList.add(hichart);
+			 
+			 
+			 chd.setAxe_x(typeAxe);
+			 chd.setList_axe_y(AxeYOperations);
+			 chd.setType_chart("bar");
+			 chd.setReport_chart(p);
+			 lst_charts.add(chd);
+			 ChartChoose = true;
+		 }else{
+			 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,"Erreur",  "Veuillez Choisir Operations" ) );
+		 }
+			
+		
 }
 	
 	
 	
-	public void CreateLineChart(){
-		Chart ch = new Chart();
-
-		
-		LineChartModel lineModel1 =  initLineModel();
 	
-	
-    lineModel1.setTitle("Graphe Linéaire");
-    lineModel1.setLegendPosition("e");
-    lineModel1.setShowPointLabels(true);
-   if(typeAxe.equals("dateAppel")){
-	   DateAxis axis = new DateAxis("Dates");
-       axis.setTickAngle(-50);
-       //axis.setMax("2015-08-01");
-       axis.setTickFormat("%b %#d, %y");
-       lineModel1.getAxes().put(AxisType.X, axis);
-   }else{
-	   Axis xAxis = new CategoryAxis(typeAxe);
-	   xAxis.setTickAngle(-50);
-	   lineModel1.getAxes().put(AxisType.X,xAxis );
-   }
-    	
-    
-    Axis  yAxis = lineModel1.getAxis(AxisType.Y);
-    yAxis.setLabel("Valeurs");
-   
-    ch.setModel(lineModel1);
-    ch.setStyle("width:500px;height:400px;");
-	ch.setType("line");
-	 UIComponent component1 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
-	 UIComponent comp2 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:configuration_dialog");
-	 UIComponent compColChart = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:ChartCol");
-	 compColChart.getChildren().add(ch);
-	   
-	   
-	   
-	   
-	   
-	   ChartDynamic chd = new ChartDynamic();
-	   chd.setAxe_x(typeAxe);
-	   chd.setList_axe_y(List_Axe_Y);
-	   chd.setOperation(actiontype);
-	   chd.setType_chart("line");
-	   
-	   lst_charts.add(chd);
-	   
-	 
-//System.out.println(comp2.getChildCount());
-
-    component1.getChildren().remove(comp2);
-	 Panel comp = (Panel) component1;
-	 width = width+400;
-	 comp.setStyle("height:"+width+"px;");
-	//component1.getChildren()
-	 
-    RequestContext requestContext = RequestContext.getCurrentInstance();
-	 requestContext.update("form1:myPanelGrid");
-		
-	}
-	public void CreatePieChart(){
-		FacesContext facesCtx = FacesContext.getCurrentInstance();
-	    ELContext elContext = facesCtx.getELContext();
-	    Application app = facesCtx.getApplication();
-		 ExpressionFactory elFactory = app.getExpressionFactory();
-		Chart ch = new Chart();
-		
-		PieChartModel lineModel1 =  initPieModel();
-	lineModel1.setMouseoverHighlight(true);
-	lineModel1.setShowDataLabels(true);
-	
-    lineModel1.setTitle("Pie Graphe ");
-    lineModel1.setLegendPosition("w");
-    
-   
-    ch.setModel(lineModel1);
-    ch.setStyle("width:500px;height:400px;");
-	ch.setType("pie");
-	 UIComponent component1 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
-	 UIComponent comp2 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:configuration_dialog");
-	 UIComponent compColChart = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:ChartCol");
-	 compColChart.getChildren().add(ch);
-	
-       //MethodExpression methodExpression =null;
-	  //  methodExpression = elFactory.createMethodExpression(elContext,"#{stat_msc.createRapport}",null, new Class[]{});
-	   
-	   
-	  
-	   ChartDynamic chd = new ChartDynamic();
-	   chd.setAxe_x(typeAxe);
-	   chd.setAxe_y(typeAxeY);
-	   chd.setOperation(actiontype);
-	   chd.setType_chart("pie");
-	 
-	   lst_charts.add(chd);
-	   
-	
-    component1.getChildren().remove(comp2);
-	 Panel comp = (Panel) component1;
-	 width = width+400;
-	 comp.setStyle("height:"+width+"px;");
-	//component1.getChildren()
-	 
-    RequestContext requestContext = RequestContext.getCurrentInstance();
-	 requestContext.update("form1:myPanelGrid");
-		
-	}
-	public void CreateBarChart(){
-		Chart ch = new Chart();
-
-		
-		BarChartModel lineModel1 =  initBarModel();
-	
-	
-    lineModel1.setTitle("Graphe ");
-    lineModel1.setLegendPosition("e");
-    lineModel1.setShowPointLabels(true);
-    if(typeAxe.equals("dateAppel")){
-    	 Axis xAxis = new CategoryAxis("Date");
-  	   xAxis.setTickAngle(-50);
-  	   lineModel1.getAxes().put(AxisType.X,xAxis );
-    }else{
-    	 Axis xAxis = new CategoryAxis(typeAxe);
-  	   xAxis.setTickAngle(-50);
-  	   lineModel1.getAxes().put(AxisType.X,xAxis );
-    }
-  
-    Axis  yAxis = lineModel1.getAxis(AxisType.Y);
-    yAxis.setLabel("Valeurs");
-   
-    ch.setModel(lineModel1);
-    ch.setStyle("width:500px;height:400px;");
-	ch.setType("bar");
-	 UIComponent component1 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:myPanelGrid");
-	 UIComponent comp2 = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:configuration_dialog");
-	 UIComponent compColChart = FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:ChartCol");
-	 compColChart.getChildren().add(ch);
-	   ChartDynamic chd = new ChartDynamic();
-	   chd.setAxe_x(typeAxe);
-	   chd.setList_axe_y(List_Axe_Y);
-	   chd.setOperation(actiontype);
-	   chd.setType_chart("bar");
-	 
-	   lst_charts.add(chd);
-	   
-	
-    component1.getChildren().remove(comp2);
-	 Panel comp = (Panel) component1;
-	 width = width+400;
-	 comp.setStyle("height:"+width+"px;");
-	//component1.getChildren()
-	 
-    RequestContext requestContext = RequestContext.getCurrentInstance();
-	 requestContext.update("form1:myPanelGrid");
-		
-	}
-
 public void createChart(){
 	FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ceci est un simple Preview"));
 	if(chartType=="line"){
-		CreateLineChart();
+		initLineModel();
+		
 	}else if(chartType=="bar"){
-		CreateBarChart();
+		initBarModel();
 	}else if(chartType=="pie"){
-		CreatePieChart();
+		initPieModel();
 	}else{
-		createGrid();
+		initGridModel();
 	}
+
 	
 	 
 }
@@ -913,17 +1083,17 @@ public void createChart(){
 	public void setTypeAxeY(String typeAxeY) {
 		this.typeAxeY = typeAxeY;
 	}
-	public List<String> getListe_filters() {
+	public List<Filter> getListe_filters() {
 		return liste_filters;
 	}
-	public void setListe_filters(List<String> liste_filters) {
+	public void setListe_filters_selected(List<String> liste_filters_selected) {
+		this.liste_filters_selected = liste_filters_selected;
+	}
+	public void setListe_filters(List<Filter> liste_filters) {
 		this.liste_filters = liste_filters;
 	}
 	public List<String> getListe_filters_selected() {
 		return liste_filters_selected;
-	}
-	public void setListe_filters_selected(List<String> liste_filters_selected) {
-		this.liste_filters_selected = liste_filters_selected;
 	}
 	public List<String> getListParDate() {
 		return listParDate;
@@ -947,16 +1117,17 @@ public void createChart(){
 		this.p = p;
 	}
 	public void createRapport() throws IOException{
-		p = new Report();
-		
+	
 		p.setLib_rapport(lib_report);
-		p.setTable_name("StatMsc");
+		int endIndex = choix_table.lastIndexOf(".")+1;
+		String table = choix_table.substring(endIndex, choix_table.length());
+		p.setTable_name(table);
 	p.setLst_chart(lst_charts);
 	  p.setFilters_report(liste_filters_selected);
 	  p.setLst_datagrid(lst_grids);
 	
 	reportRemote.addReport(p);
-		FacesContext.getCurrentInstance().getExternalContext().redirect("rapport.jsf?");
+		//FacesContext.getCurrentInstance().getExternalContext().redirect("rapport.jsf?");
 		//statRemote.getTest();
 	}
 	public List<ChartDynamic> getLst_charts() {

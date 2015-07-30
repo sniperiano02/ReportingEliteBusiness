@@ -6,39 +6,84 @@
       xmlns:p="http://primefaces.org/ui"> 
 
 <h:head>
+       
+<h:outputScript library="primefaces" name="jquery/jquery.js" />
+<h:outputScript library="primefaces" name="jquery/jquery-plugins.js" />
 
-<h:outputScript name="charts/charts.js" library="primefaces" />
-<h:outputStylesheet name="charts/charts.css" library="primefaces" />
+<h:outputScript name="highcharts.js" library="js" />
 
+
+
+               
 <title><ui:insert name="pageTitle" /></title>
+	<style>
+	
+	.ui-widget, .ui-widget .ui-widget {
+font-size: 89% !important;
+}
+	
+			.ui-panelgrid td, .ui-panelgrid tr{
+   border-style: none !important;
+}
+
+	
+	</style>
 	
 </h:head> 
 <body > 
 
-			 <p:layout fullPage="true" resizeTitle="resize" style="background-color:#FFFFFF;">
-        <p:layoutUnit position="north" size="40" id="north" >
+			 <p:layout fullPage="true" resizeTitle="resize" style="background-color:#FFFFFF;"  >
+        <p:layoutUnit position="north" size="80"  id="north"   >
+        <f:facet name="header">
+      <div class="ui-grid-row"   >
+        <div style="text-align: center;">
+        <h:outputText style="font-size:10px;" value="Elite&amp;Business Consulting " escape="false"/>
+       </div>
+     </div>
+       </f:facet>
+          
+      
+     
+       
             <ui:include src="/template/header.xhtml" />
+            
         </p:layoutUnit>
 
-        <p:layoutUnit position="west" id="west" resizable="false" header="Menu" style="height:580px;overflow:hidden;" size="225">
+        <p:layoutUnit position="west" id="west"   header="Menu"  size="225">
+        <h:form id="form">
             <ui:include src="/template/navigation.xhtml" >
           
             </ui:include>
+            </h:form>
         </p:layoutUnit>
 
-        <p:layoutUnit styleClass="layoutUnitCenter" position="center">
+        <p:layoutUnit styleClass="layoutUnitCenter" position="center" id="center">
             
-                <p:messages autoUpdate="true" id="msgs" showDetail="true" showSummary="true" />
-                <ui:insert name="PageContent"  />
+               
+                <ui:insert  name="PageContent"  />
             
         </p:layoutUnit>
+          <p:layoutUnit position="south" id="south"  collapsible="true" >
+          
+     <f:facet name="header">
+      <div class="ui-grid-row"   >
+        <div style="text-align: center;">
+        <h:outputText style="font-size:8px;" value="RafTools  &lt;br/&gt; Copyright © 2014-2015 " escape="false"/>
+       </div>
+          <div style="text-align: right;">
+           <p:themeSwitcher id="basic"  value="#{themeSwitcherView.theme1}" >
+		 
+            <f:selectItem itemLabel="Changer Theme" itemValue="" />
+           
+            <f:selectItems value="#{themeSwitcherView.themes}" var="theme" itemLabel="#{theme.displayName}" itemValue="#{theme.name}"/>
+      
+        </p:themeSwitcher>
+   </div>
+       </div>
+       </f:facet>
+                  </p:layoutUnit>
 
-        <p:layoutUnit position="east" size="0" style="width:0px; display:none;" id="east">
-        </p:layoutUnit>
-
-        <p:layoutUnit position="south" resizable="true" id="south">
-            
-        </p:layoutUnit>
+     
     </p:layout>
 </body> 
 </html>

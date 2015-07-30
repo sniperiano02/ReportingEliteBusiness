@@ -1,3 +1,4 @@
+
 package com.reporting.mbeans;
 
 import static net.sf.dynamicreports.report.builder.DynamicReports.*;
@@ -25,6 +26,44 @@ import java.util.Map;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.Map.Entry;
+
+import javassist.CannotCompileException;
+import javassist.ClassClassPath;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
+import javassist.NotFoundException;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBs;
@@ -42,8 +81,12 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIForm;
+import javax.faces.component.UIGraphic;
 import javax.faces.component.UIOutput;
+import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectItems;
+import javax.faces.component.html.HtmlCommandLink;
+import javax.faces.component.html.HtmlGraphicImage;
 import javax.faces.component.html.HtmlOutputLabel;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.ExternalContext;
@@ -51,6 +94,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.BehaviorEvent;
 import javax.faces.event.MethodExpressionActionListener;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.PostLoad;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -81,6 +126,7 @@ import org.primefaces.component.calendar.Calendar;
 import org.primefaces.component.chart.Chart;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
+import org.primefaces.component.commandlink.CommandLink;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.filedownload.FileDownloadActionListener;
 import org.primefaces.component.graphicimage.GraphicImage;
@@ -110,15 +156,24 @@ import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
 import org.primefaces.model.chart.PieChartModel;
 
+import com.reporting.metier.entities.AxeY;
 import com.reporting.metier.entities.ChartDynamic;
 import com.reporting.metier.entities.Datagrid;
 import com.reporting.metier.entities.Noeud;
+import com.reporting.metier.entities.PlanTarifaire;
 import com.reporting.metier.entities.Report;
+import com.reporting.metier.entities.ToUse;
 import com.reporting.metier.entities.TypeDestination;
 import com.reporting.metier.interfaces.NoeudRemote;
+import com.reporting.metier.interfaces.PlanTarifaireRemote;
 import com.reporting.metier.interfaces.ReportRemote;
 import com.reporting.metier.interfaces.StatMscImplRemote;
 import com.reporting.metier.interfaces.TypeDestinationRemote;
+
+
+
+
+
 import com.sun.faces.taglib.jsf_core.SetPropertyActionListenerImpl;
 
 
@@ -144,23 +199,115 @@ public class RapportGenerationView implements Serializable {
 	private TypeDestinationRemote typdestRemote;
 	@EJB
 	private ReportRemote reportremote;
-	
+	@EJB
+	private PlanTarifaireRemote planTarifaireService;
 	@EJB
 	private NoeudRemote noeudremote;
-
+	private Map<String,String> properties1;
 	
+	
+	public Map<String, String> getProperties1() {
+		return properties1;
+	}
+	public void setProperties1(Map<String, String> properties1) {
+		this.properties1 = properties1;
+	}
+	
+	private Map<String,List<Object[]>> filter_map;
+	
+	
+	public Map<String, List<Object[]>> getFilter_map() {
+		return filter_map;
+	}
+	
+	private List<Object> lst1 = new ArrayList<>();
+	
+	
+	public List<Object> getLst1() {
+		return lst1;
+	}
+	public void setLst1(List<Object> lst1) {
+		this.lst1 = lst1;
+	}
+	
+	public void setFilter_map(Map<String, List<Object[]>> filter_map) {
+		this.filter_map = filter_map;
+	}
+	
+	private String choix_plan;
+	
+	public String getChoix_plan() {
+		return choix_plan;
+	}
+	public void setChoix_plan(String choix_plan) {
+		this.choix_plan = choix_plan;
+	}
+	private List<PlanTarifaire> lst_plan = new ArrayList<>();
+	
+	private List<String> liste = new ArrayList<String>(5);
+	
+	public List<String> getListe() {
+		return liste;
+	}
+	public void setListe(List<String> liste) {
+		this.liste = liste;
+	}
+	
+	private String table;
+	public String getTable() {
+		return table;
+	}
+	public void setTable(String table) {
+		this.table = table;
+	}
+	public List<PlanTarifaire> getLst_plan() {
+		return lst_plan;
+	}
+	public void setLst_plan(List<PlanTarifaire> lst_plan) {
+		this.lst_plan = lst_plan;
+	}
+	
+	private String planFilter;
 	 private UIForm form;
+	 
+	 private Map<String,BigDecimal> highLine;
+	 
+	 
+	 public Map<String, BigDecimal> getHighLine() {
+		return highLine;
+	}
+	 public void setHighLine(Map<String, BigDecimal> highLine) {
+		this.highLine = highLine;
+	}
 
 	 private List<String> listeTypeDest;
 	 
 	 private List<Integer> listeMois = new ArrayList<Integer>();
+	 
+	 private boolean contient = false;
+	 
+	 
+	 public String getPlanFilter() {
+		return planFilter;
+	}
+	 public void setPlanFilter(String planFilter) {
+		this.planFilter = planFilter;
+	}
+	 public boolean isContient() {
+		return contient;
+	}
+	 public void setContient(boolean contient) {
+		this.contient = contient;
+	}
+	 
+	 private Map<String, String> properties;
 	 private Date date_Parheure;
 	 private Date date_ParJourDeb;
 	 private Date date_ParJourFin;
 	 private Integer date_year_deb;
 	 private Integer date_year_fin;
-	 private Integer date_mois_Fin;
-	 private Integer date_mois_debut;
+	 private Date date_mois_Fin;
+	 private Date date_mois_debut;
 	 private Report rapport;
 	 private Integer date_year;
 	private List<String> listTranche = new ArrayList<String>();
@@ -174,7 +321,60 @@ public class RapportGenerationView implements Serializable {
 	private List<Noeud> liste_noeuds;
 	private List<String> liste_noeuds_noms;
 	private List<Integer> liste_desAns = new ArrayList<Integer>();
+	private List<SerieChart> linesSeries ;
+	private List<SerieChart> barsSeries ;
+	private List<List<Object[]>> piesSeries ;
+	private String choix_typeCdr;
 	
+	public Map<String, String> getProperties() {
+		return properties;
+	}
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
+	}
+	
+	
+	public String getChoix_typeCdr() {
+		return choix_typeCdr;
+	}
+	public void setChoix_typeCdr(String choix_typeCdr) {
+		this.choix_typeCdr = choix_typeCdr;
+	}
+	
+	public List<SerieChart> getBarsSeries() {
+		return barsSeries;
+	}
+	public void setBarsSeries(List<SerieChart> barsSeries) {
+		this.barsSeries = barsSeries;
+	}
+	public List<List<Object[]>> getPiesSeries() {
+		return piesSeries;
+	}
+	public void setPiesSeries(List<List<Object[]>> piesSeries) {
+		this.piesSeries = piesSeries;
+	}
+	public List<SerieChart> getLinesSeries() {
+		return linesSeries;
+	}
+	public void setLinesSeries(List<SerieChart> linesSeries) {
+		this.linesSeries = linesSeries;
+	}
+	
+	private List<HighChart> linesMap;
+	private List<HighChart> BarsMap;
+	
+	public List<HighChart> getBarsMap() {
+		return BarsMap;
+	}
+	public List<HighChart> getLinesMap() {
+		return linesMap;
+	}
+	public void setBarsMap(List<HighChart> barsMap) {
+		BarsMap = barsMap;
+	}
+	public void setLinesMap(List<HighChart> linesMap) {
+		this.linesMap = linesMap;
+	}
 	private String typeDestFilter;
 	
 public Report getRapport() {
@@ -214,18 +414,19 @@ public void setRapport(Report rapport) {
 	public void setTypeSubscriber(String typeSubscriber) {
 		TypeSubscriber = typeSubscriber;
 	}
-	public Integer getDate_mois_debut() {
-		return date_mois_debut;
-	}
-	public Integer getDate_mois_Fin() {
-		return date_mois_Fin;
-	}
-	public void setDate_mois_debut(Integer date_mois_debut) {
-		this.date_mois_debut = date_mois_debut;
-	}
-	public void setDate_mois_Fin(Integer date_mois_Fin) {
-		this.date_mois_Fin = date_mois_Fin;
-	}
+public Date getDate_mois_debut() {
+	return date_mois_debut;
+}
+
+public Date getDate_mois_Fin() {
+	return date_mois_Fin;
+}
+public void setDate_mois_debut(Date date_mois_debut) {
+	this.date_mois_debut = date_mois_debut;
+}
+public void setDate_mois_Fin(Date date_mois_Fin) {
+	this.date_mois_Fin = date_mois_Fin;
+}
 	public List<Integer> getListe_desAns() {
 		return liste_desAns;
 	}
@@ -252,17 +453,26 @@ public void setTypeDestFilter(String typeDestFilter) {
 }
 	
 	private String id;
+private SelectOneMenu lstDate ;
 
+public SelectOneMenu getLstDate() {
+	return lstDate;
+}
+public void setLstDate(SelectOneMenu lstDate) {
+	this.lstDate = lstDate;
+}
 	
 	private List<String> where_liste = new ArrayList<String>();
 	
 	private ChartDynamic chartdynamic ;
 	private List<String> where = new ArrayList<String>();
 	private Datagrid datagrid;
-	private Map<Object,Number> data = new HashMap<Object, Number>();
+	private List<Object[]> data = new ArrayList<>();
 	private String choix_filter_date;
 	private String choix_noeud_nom;
 	
+	
+
 
 	
 	
@@ -307,7 +517,31 @@ public void setWhere(List<String> where) {
 	}
 	
 	@PostConstruct
-	public void init(){
+	public void init() {
+		properties= new HashMap<>();
+		properties1= new HashMap<>();
+//		 ClassPool pool = ClassPool.getDefault();
+//		    
+//		    ClassClassPath ccpath = new ClassClassPath(RapportGenerationView.class);
+//		    pool.insertClassPath(ccpath);
+//		   
+//		    CtClass classe = pool.get("com.reporting.mbeans.RapportGenerationView");
+//		    if(classe.getField("testInt")==null){
+//		    	classe.defrost();
+//				   CtField f = new CtField(CtClass.intType, "testInt", classe);
+//				   CtMethod mthd = CtNewMethod.make("public Integer getTestInt() { return 4; }", classe);
+//				   classe.addMethod(mthd);
+//				   classe.addField(f);
+//				   CtField f1 = new CtField(CtClass.intType, "testInte", classe);
+//				   CtMethod mthd1 = CtNewMethod.make("public Integer getTestInte() { return 4; }", classe);
+//				   classe.addMethod(mthd1);
+//				   classe.addField(f1);
+//				  
+//				   for(int i=0;i<classe.getDeclaredFields().length;i++){
+//					   System.out.println(classe.getDeclaredFields()[i].getName());
+//				   }
+//		    }
+		    
 		FacesContext facesCtx = FacesContext.getCurrentInstance();
 	    ELContext elContext = facesCtx.getELContext();
 	    Application app = facesCtx.getApplication();
@@ -347,7 +581,7 @@ public void setWhere(List<String> where) {
 		}
 		liste_desAns = statRemote.getAllYears();
 		listTranche.add(" ");
-		listTranche.add("Par heure");
+		
 		listTranche.add("Par Jour");
 		listTranche.add("Par mois");
 		listTranche.add("Par An");
@@ -360,12 +594,18 @@ public void setWhere(List<String> where) {
 		for(int j=0;j<lst.size();j++){
 			listeTypeDest.add(lst.get(j).getTypeDest());
 		}
+		System.out.println(id);
+		linesMap = new ArrayList<>();
+		BarsMap = new ArrayList<>();
+		piesSeries = new ArrayList<>();
+		 filter_map = new HashMap<>();
+		
 	}
 
 
-public void createForm(){
+public void createForm() throws ClassNotFoundException, NotFoundException, NoSuchFieldException, SecurityException{
 	
-	 form.getChildren().clear();
+
 	FacesContext facesCtx = FacesContext.getCurrentInstance();
     ELContext elContext = facesCtx.getELContext();
     Application app = facesCtx.getApplication();
@@ -379,39 +619,57 @@ public void createForm(){
     
       rapport = reportremote.getReportById(Integer.valueOf(id));
       
-      Layout rapport_layout = new Layout();
-      rapport_layout.setId("rapport_layout");
-      LayoutUnit filter_layout = new LayoutUnit();
-      filter_layout.setHeader("Filters");
-      filter_layout.setPosition("west");
-      rapport_layout.setStyle("background-color:#FFFFFF;");
-      rapport_layout.getChildren().add(filter_layout);
-     LayoutUnit  main_layout = new LayoutUnit();
-      main_layout.setStyleClass("layoutUnitCenter");
-      main_layout.setPosition("center");
-      main_layout.setId("main_layout");
-      rapport_layout.getChildren().add(main_layout);
-    // rapport_layout.setFullPage(true);
- 	 
- 	 
- 	rapport_layout.setStyle("height:600px;");
+//      Layout rapport_layout = new Layout();
+//      rapport_layout.setId("rapport_layout");
+//      LayoutUnit filter_layout = new LayoutUnit();
+//      filter_layout.setHeader("Filters");
+//      filter_layout.setPosition("west");
+//      rapport_layout.setStyle("background-color:#FFFFFF;");
+//      rapport_layout.getChildren().add(filter_layout);
+//     LayoutUnit  main_layout = new LayoutUnit();
+//      main_layout.setStyleClass("layoutUnitCenter");
+//      main_layout.setPosition("center");
+//      main_layout.setId("main_layout");
+//      rapport_layout.getChildren().add(main_layout);
+//    // rapport_layout.setFullPage(true);
+// 	 
+// 	 
+// 	rapport_layout.setStyle("height:600px;");
+      
+      LayoutUnit main_layout = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:main_layout");
+      LayoutUnit filter_layout = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:filter_layout");
  
 // rapport_layout.set
 	   List<String> liste_filters = rapport.getFilters_report();
+	    table = rapport.getTable_name();
+	    FacesContext facesContext = FacesContext.getCurrentInstance();
+	 
+	   
+	   Class c = Class.forName("com.reporting.metier.entities."+table);
+	
+	   for(int verif=0;verif<c.getDeclaredFields().length;verif++){
+		   if(c.getDeclaredFields()[verif].getName().contains("tranche")){
+			   listTranche.add("Par heure");
+		   }
+	   }
 	   PanelGrid pgdate = new PanelGrid();
 	   pgdate.setId("pgdate");
 		   pgdate.setColumns(2);
+		   int nbf=0;
 	   for(int nb=0;nb<liste_filters.size();nb++){
-		   if(liste_filters.get(nb).equals("dateAppel")){
-	 		   
-	 			  SelectOneMenu lstDate = new SelectOneMenu();
+		   
+		   if(liste_filters.get(nb).contains("dateAppel")){
+			   
+			
+	 			 lstDate = new SelectOneMenu();
 	 			 ValueExpression valueExp = elFactory.createValueExpression(elContext, "#{rp_gene.choix_filter_date}",Object.class); 
 		         UISelectItems list_items5 = new UISelectItems();
 		         lstDate.setValueExpression("value", valueExp);
 		         list_items5.setValue(listTranche);
 		         lstDate.getChildren().add(list_items5);
 		         
-		       
+	 	//		 ValueExpression valueExp1 = elFactory.createValueExpression(elContext, "#{rp_gene.testInte}",Object.class); 
+
 		OutputLabel filter_per = new OutputLabel();
 		filter_per.setValue("Periode");
 		
@@ -438,185 +696,130 @@ public void createForm(){
 	
 		
 		
-	 		   }else if(liste_filters.get(nb).equals("duree")){
-	 			  OutputLabel lb_duree = new OutputLabel();
-		    		lb_duree.setValue("Duree ");
-		    	
-		    		Spinner sp_duree = new Spinner();
-		    		
-		    		
-//			         ji.addAjaxBehaviorListener( new AjaxBehaviorListenerImpl( me,me ) );
-//			         ji.setProcess("@this");
-//			        
-//			         lstDate.addClientBehavior("change", ji);
-pgdate.getChildren().add(lb_duree);
-pgdate.getChildren().add(sp_duree);
-				       
-				       
-				        
-	 		   }else if(liste_filters.get(nb).equals("trancheHoraire")){
-		 			  SelectOneMenu lstlmsc = new SelectOneMenu();
-			 			 ValueExpression valueExp = elFactory.createValueExpression(elContext, "#{rp_gene.tranche_horaire}",Object.class); 
-				         UISelectItems list_items5 = new UISelectItems();
-				         lstlmsc.setValueExpression("value", valueExp);
-				         list_items5.setValue(listePeriode);
-				         lstlmsc.getChildren().add(list_items5);
-				         OutputLabel lb_noeud = new OutputLabel();
-				         lb_noeud.setValue("Tranche Horaire");
-				         AjaxBehavior ajax = new AjaxBehavior();
-					       // MethodExpression me = elFactory.createMethodExpression(elContext, "#{sampleMBean.processAction}", null, new Class<?>[]{BehaviorEvent.class});
-					        ajax.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(
-					            createActionMethodExpression("#{rp_gene.handlechange1}"),createActionMethodExpression("#{rp_gene.handlechange1}")));
-					        ajax.setUpdate("@form");
-					       
-
-						      
-				         
-				        
-//						        
-				         
-					         lstlmsc.addClientBehavior("change", ajax);
-				         pgdate.getChildren().add(lb_noeud);
-				         pgdate.getChildren().add(lstlmsc);
-				       
-				         
-		 		   }
-	 		   else if(liste_filters.get(nb).equals("msc")){
-	 			  SelectOneMenu lstlmsc = new SelectOneMenu();
-		 			 ValueExpression valueExp = elFactory.createValueExpression(elContext, "#{rp_gene.choix_noeud_nom}",Object.class); 
-			         UISelectItems list_items5 = new UISelectItems();
-			         lstlmsc.setValueExpression("value", valueExp);
-			         list_items5.setValue(liste_noeuds_noms);
-			         lstlmsc.getChildren().add(list_items5);
-			         OutputLabel lb_noeud = new OutputLabel();
-			         lb_noeud.setValue("MSC");
-			         AjaxBehavior ajax = new AjaxBehavior();
-				       // MethodExpression me = elFactory.createMethodExpression(elContext, "#{sampleMBean.processAction}", null, new Class<?>[]{BehaviorEvent.class});
-				        ajax.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(
-				            createActionMethodExpression("#{rp_gene.handlechange1}"),createActionMethodExpression("#{rp_gene.handlechange1}")));
-				        ajax.setUpdate("@form");
-				       
-
-					      
-			         
-			        
-//					        
-			         
-				         lstlmsc.addClientBehavior("change", ajax);
-			         pgdate.getChildren().add(lb_noeud);
-			         pgdate.getChildren().add(lstlmsc);
-			       
-			         
-	 		   }else if(liste_filters.get(nb).equals("typeDest")){
-		 			  SelectOneMenu lstlmsc = new SelectOneMenu();
-			 			 ValueExpression valueExp = elFactory.createValueExpression(elContext, "#{rp_gene.typeDestFilter}",Object.class); 
-				         UISelectItems list_items5 = new UISelectItems();
-				         lstlmsc.setValueExpression("value", valueExp);
-				         list_items5.setValue(listeTypeDest);
-				         lstlmsc.getChildren().add(list_items5);
-				         OutputLabel lb_noeud = new OutputLabel();
-				         lb_noeud.setValue("Type Destination");
-				         pgdate.getChildren().add(lb_noeud);
-				         pgdate.getChildren().add(lstlmsc);
-				         AjaxBehavior ajax = new AjaxBehavior();
-					       // MethodExpression me = elFactory.createMethodExpression(elContext, "#{sampleMBean.processAction}", null, new Class<?>[]{BehaviorEvent.class});
-					        ajax.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(
-					            createActionMethodExpression("#{rp_gene.handlechange1}"),createActionMethodExpression("#{rp_gene.handlechange1}")));
-					        ajax.setUpdate("@form");
-					       
-
-						      
-				         
-				        
-//						        
-				         
-					         lstlmsc.addClientBehavior("change", ajax);
-				       
-				         
-		 		   }
-	 		
-	 		  else if(liste_filters.get(nb).equals("typeCall")){
-	 			  SelectOneMenu lstlmsc = new SelectOneMenu();
-		 			 ValueExpression valueExp = elFactory.createValueExpression(elContext, "#{rp_gene.typeCall}",Object.class); 
-			         UISelectItems list_items5 = new UISelectItems();
-			         lstlmsc.setValueExpression("value", valueExp);
-			         list_items5.setValue(listeTypeCall);
-			         lstlmsc.getChildren().add(list_items5);
-			         OutputLabel lb_noeud = new OutputLabel();
-			         lb_noeud.setValue("Voix");
-			         pgdate.getChildren().add(lb_noeud);
-			         pgdate.getChildren().add(lstlmsc);
-			         AjaxBehavior ajax = new AjaxBehavior();
-				       // MethodExpression me = elFactory.createMethodExpression(elContext, "#{sampleMBean.processAction}", null, new Class<?>[]{BehaviorEvent.class});
-				        ajax.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(
-				            createActionMethodExpression("#{rp_gene.handlechange1}"),createActionMethodExpression("#{rp_gene.handlechange1}")));
-				        ajax.setUpdate("@form");
-				       
-
-					      
-			         
-			        
-//					        
-			         
-				         lstlmsc.addClientBehavior("change", ajax);
-			       
-			         
-	 		   }
-	 		  else if(liste_filters.get(nb).equals("typeSubscriber")){
-	 			  SelectOneMenu lstlmsc = new SelectOneMenu();
-		 			 ValueExpression valueExp = elFactory.createValueExpression(elContext, "#{rp_gene.typeSubscriber}",Object.class); 
-			         UISelectItems list_items5 = new UISelectItems();
-			         lstlmsc.setValueExpression("value", valueExp);
-			         list_items5.setValue(listeTypeSubscriber);
-			         lstlmsc.getChildren().add(list_items5);
-			         OutputLabel lb_noeud = new OutputLabel();
-			         lb_noeud.setValue("Type Inscris");
-			         pgdate.getChildren().add(lb_noeud);
-			         pgdate.getChildren().add(lstlmsc);
-			         AjaxBehavior ajax = new AjaxBehavior();
-				       // MethodExpression me = elFactory.createMethodExpression(elContext, "#{sampleMBean.processAction}", null, new Class<?>[]{BehaviorEvent.class});
-				        ajax.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(
-				            createActionMethodExpression("#{rp_gene.handlechange1}"),createActionMethodExpression("#{rp_gene.handlechange1}")));
-				        ajax.setUpdate("@form");
-				       
-
-					      
-			         
-			        
-//					        
-			         
-				         lstlmsc.addClientBehavior("change", ajax);
-			       
-			         
-	 		   }
-	 		   else if(liste_filters.get(nb).equals("moyenneDuree")){
-	 			  OutputLabel lb_moyduree = new OutputLabel();
-	 			 lb_moyduree.setValue("Moyenne Duree ");
-		    	
-		    		Spinner sp_moyduree = new Spinner();
-		    		
-		    		
-//			         ji.addAjaxBehaviorListener( new AjaxBehaviorListenerImpl( me,me ) );
-//			         ji.setProcess("@this");
-//			        
-//			         lstDate.addClientBehavior("change", ji);
-pgdate.getChildren().add(lb_moyduree);
-pgdate.getChildren().add(sp_moyduree);
+	 		   }else if(c.getDeclaredField(liste_filters.get(nb)).isAnnotationPresent(ManyToOne.class)) {
 	 			   
-	 		   }else if(liste_filters.get(nb).equals("nbAppel")){
-	 			  OutputLabel lb_nbAppel = new OutputLabel();
-	 			 lb_nbAppel.setValue("Nb Appel ");
-			    	
-			    		Spinner sp_nbAppel = new Spinner();
-			    		
-			    		
-//				         ji.addAjaxBehaviorListener( new AjaxBehaviorListenerImpl( me,me ) );
-//				         ji.setProcess("@this");
-//				        
-//				         lstDate.addClientBehavior("change", ji);
-	pgdate.getChildren().add(lb_nbAppel);
-	pgdate.getChildren().add(sp_nbAppel);
+	 			System.out.println(liste_filters.get(nb)); 
+	 		
+	 		List<Object[]> lst = new ArrayList<>();
+	 		int endIndex = c.getDeclaredField(liste_filters.get(nb)).getType().getName().lastIndexOf(".")+1;
+	 		String table2 = c.getDeclaredField(liste_filters.get(nb)).getType().getName().substring(endIndex, c.getDeclaredField(liste_filters.get(nb)).getType().getName().length());
+	 		lst = statRemote.getFilter(" p ", table2+" p");
+	 		
+	 		Class cl = c.getDeclaredField(liste_filters.get(nb)).getType();
+	 		 String label = null ;
+	 		 String value = null;
+	 		 
+	 		 
+	 		
+	 		 for(int i=0;i<cl.getDeclaredFields().length;i++){
+	 			 if(cl.getDeclaredFields()[i].isAnnotationPresent(ToUse.class)){
+	 				 label = cl.getDeclaredFields()[i].getName();
+	 				 System.out.println(cl.getDeclaredFields()[i].getName());
+	 			 }
+	 			 
+	 			if(cl.getDeclaredFields()[i].isAnnotationPresent(Id.class)){
+	 				String p =null;
+	 				 value = cl.getDeclaredFields()[i].getName();
+	 				 properties1.put(liste_filters.get(nb)+"."+value, p);
+	 				
+	 				 System.out.println(cl.getDeclaredFields()[i].getName());
+	 			 }
+
+	 		 }
+	 		
+	 		 
+	 		
+	 		 
+	 	
+	 			  SelectOneMenu lstlmsc = new SelectOneMenu();
+		 			 ValueExpression valueExp = elFactory.createValueExpression(elContext, "#{rp_gene.properties1['"+liste_filters.get(nb)+"."+value+"']}",Object.class); 
+		 			 UISelectItem selectitem = new UISelectItem();
+		 			 selectitem.setItemLabel("");
+		 			 selectitem.setItemValue(null);	
+    UISelectItems list_items5 = new UISelectItems();
+  ValueExpression valueExp6 = elFactory.createValueExpression(elContext, "plan",Object.class);
+ 
+ 
+			    	   ValueExpression valueExp7 = elFactory.createValueExpression(elContext, "#{plan."+label+"}",Object.class);
+			    	   ValueExpression valueExp8 = elFactory.createValueExpression(elContext, "#{plan."+value+"}",Object.class);
+			         lstlmsc.setValueExpression("value", valueExp);
+			         list_items5.setValueExpression("var", valueExp6);
+			         list_items5.setValueExpression("itemLabel", valueExp7);
+			         list_items5.setValueExpression("itemValue", valueExp8);
+			         list_items5.setValue(lst);
+			         lstlmsc.getChildren().add(selectitem);
+			         lstlmsc.getChildren().add(list_items5);
+			         OutputLabel lb_noeud = new OutputLabel();
+			         lb_noeud.setValue(table2);
+			         AjaxBehavior ajax = new AjaxBehavior();
+				       // MethodExpression me = elFactory.createMethodExpression(elContext, "#{sampleMBean.processAction}", null, new Class<?>[]{BehaviorEvent.class});
+				        ajax.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(
+				            createActionMethodExpression("#{rp_gene.handlechange1}"),createActionMethodExpression("#{rp_gene.handlechange1}")));
+				        ajax.setUpdate("@form");
+				       
+
+					      
+			         
+			        
+				        
+			         
+				         lstlmsc.addClientBehavior("change", ajax);
+			         pgdate.getChildren().add(lb_noeud);
+			         pgdate.getChildren().add(lstlmsc);
+		 			 nbf = nbf+1;
+	 		   }else {
+	 			   System.out.println(liste_filters.get(nb)); 
+	 			  List<Object> lst1 = new ArrayList<>();
+	 			 	
+			 		lst1 = statRemote.getFilterDitinct(liste_filters.get(nb), table);
+			 		
+			 		 String label = null ;
+			 		 String value = null;
+			 		
+			 		 UISelectItem selectitem = new UISelectItem();
+		 			 selectitem.setItemLabel("");
+		 			 selectitem.setItemValue(null);	
+			 	String s=null;
+			 		 
+			 		
+			 		 properties.put(liste_filters.get(nb), s);
+			 	
+			 			  SelectOneMenu lstlmsc = new SelectOneMenu();
+				 			 ValueExpression valueExp = elFactory.createValueExpression(elContext, "#{rp_gene.properties['"+liste_filters.get(nb)+"']}",Object.class); 
+		    UISelectItems list_items5 = new UISelectItems();
+		  ValueExpression valueExp6 = elFactory.createValueExpression(elContext, "plan",Object.class);
+		  
+		 
+					    	   ValueExpression valueExp7 = elFactory.createValueExpression(elContext, "#{plan}",Object.class);
+					    	   ValueExpression valueExp8 = elFactory.createValueExpression(elContext, "#{plan}",Object.class);
+					         lstlmsc.setValueExpression("value", valueExp);
+					         list_items5.setValueExpression("var", valueExp6);
+					         list_items5.setValueExpression("itemLabel", valueExp7);
+					         list_items5.setValueExpression("itemValue", valueExp8);
+					         list_items5.setValue(lst1);
+					        lstlmsc.getChildren().add(selectitem);
+					         lstlmsc.getChildren().add(list_items5);
+					         OutputLabel lb_noeud = new OutputLabel();
+					         lb_noeud.setValue(liste_filters.get(nb));
+					         AjaxBehavior ajax = new AjaxBehavior();
+						       // MethodExpression me = elFactory.createMethodExpression(elContext, "#{sampleMBean.processAction}", null, new Class<?>[]{BehaviorEvent.class});
+						        ajax.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(
+						            createActionMethodExpression("#{rp_gene.handlechange1}"),createActionMethodExpression("#{rp_gene.handlechange1}")));
+						        ajax.setUpdate("@form");
+						       
+
+							      
+					         
+					        
+						        
+					         
+						         lstlmsc.addClientBehavior("change", ajax);
+					         pgdate.getChildren().add(lb_noeud);
+					         pgdate.getChildren().add(lstlmsc);
 	 		   }
+		 		
+		 		
+			 			
 		         
 	   }
 	 
@@ -628,15 +831,16 @@ pgdate.getChildren().add(sp_moyduree);
 	   update_chart.setValue("Valider");
 	   update_chart.setStyle("margin-left:70px;");
 	   filter_layout.getChildren().add(update_chart);
-	   
+	  // RequestContext.getCurrentInstance().update("mainForm:filter_layout");
 
 	   BlockUI bl = new BlockUI();
 		bl.setBlock("mainForm:main_layout");
 		bl.setTrigger("mainForm:BTNUpdate");
 		HtmlOutputText loading = new HtmlOutputText();
 		loading.setValue("Loading");
-		GraphicImage img = new GraphicImage();
-		img.setName("img/ajaxloadingbar.gif");
+	HtmlGraphicImage img = new HtmlGraphicImage();
+	
+		img.setValue("/resources/img/ajaxloadingbar.gif");
 		bl.getChildren().add(loading);
 		bl.getChildren().add(img);
 
@@ -644,7 +848,7 @@ pgdate.getChildren().add(sp_moyduree);
  	update_chart.setUpdate("@form");
  	MethodExpression methode = createActionMethodExpression("#{rp_gene.update_rapport}");
  	update_chart.setActionExpression(methode);
- 	 form.getChildren().add(rapport_layout);
+ 	 
  	form.getChildren().add(bl);
     }
 	
@@ -671,15 +875,19 @@ public void  toPdf(){
 }
 
 public void update_rapport(){
+contient = true;
 	where_liste = new ArrayList<String>();
 	//String text1 = df.format(jour_choisi_fin);
 	//System.out.println(text+"  "+text1);
 
-
+ linesMap = new ArrayList<>();
+ BarsMap = new ArrayList<>();
+ piesSeries = new ArrayList<>();
 	if(this.getChoix_filter_date().equals(" ")){
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,"Erreur",  "Veuillez choisir une Periode " ) );
 	}
 	else{
+		
 		if(this.getChoix_filter_date().equals("Par Jour")){
 			
 				DateFormat df = new SimpleDateFormat("yyyy-MM-dd ");
@@ -700,27 +908,37 @@ public void update_rapport(){
 			Integer fin =this.getDate_year_fin();
 			where_liste.add(" Extract(year from to_date(dateAppel,'YYMMDD')) >= "+deb+" And Extract(year from to_date(dateAppel,'YYMMDD')) <= "+fin+"");
 		}else if(this.getChoix_filter_date().equals("Par mois")){
-			Integer year = this.getDate_year();
-			Integer deb = this.getDate_mois_debut();
-			Integer fin =this.getDate_mois_Fin();
-			System.out.println(year+""+deb+""+fin);
-			where_liste.add(" Extract(year from to_date(dateAppel,'YYMMDD')) = "+year+"  And Extract(month from to_date(dateAppel,'YYMMDD')) >= "+deb+" And Extract(month from to_date(dateAppel,'YYMMDD')) <= "+fin+"");
+			DateFormat df = new SimpleDateFormat("MM/YYYY");
+			System.out.println(date_Parheure);
+			String deb = df.format(this.getDate_mois_debut());
+			String fin = df.format(this.getDate_mois_Fin());
+			
+			where_liste.add(" to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'MM/YYYY') And to_date("+"'"+fin+"'"+",'MM/YYYY')");}
+		System.out.println(properties.size());
+		System.out.println(properties1.size());
+	for(Entry e: properties1.entrySet()){
+		System.out.println(e);
+	}
+	for(Map.Entry<String, String>  e: properties.entrySet()){
+		System.out.println(e);
+	}
+	if(!properties.isEmpty()){
+		for(Map.Entry<String, String>  e:properties.entrySet()){
+			if(properties.get(e.getKey())!="" && properties.get(e.getKey())!=null){
+				where_liste.add("Cast("+e.getKey()+" as text) = '"+properties.get(e.getKey())+"'");
+			}
 		}
-		if(this.getTypeDestFilter()!="" && this.getTypeDestFilter()!=null ){
-			where_liste.add(" s.destination.typeDest="+"'"+this.getTypeDestFilter()+"'");
+	}
+	if(!properties1.isEmpty()){
+		for(Entry e:properties1.entrySet()){
+			if(properties1.get(e.getKey()) != "" && properties1.get(e.getKey())!=null){
+				where_liste.add("Cast("+e.getKey()+" as text) = '"+properties1.get(e.getKey())+"'");
+			}
 		}
-		if(this.getChoix_noeud_nom()!="" && this.getChoix_noeud_nom()!=null){
-			where_liste.add(" msc="+"'"+this.getChoix_noeud_nom()+"'");
-		}
-		if(this.getTypeCall()!="" && this.getTypeCall()!=null){
-			where_liste.add(" typeCall="+"'"+this.getTypeCall()+"'");
-		}
-		if(this.getTranche_horaire()!="" && this.getTranche_horaire()!=null){
-			where_liste.add(" trancheHoraire="+"'"+this.getTranche_horaire()+"'");
-		}
-		if(this.getTypeSubscriber()!="" && this.getTypeSubscriber()!=null){
-			where_liste.add(" typeSubscriber="+"'"+this.getTypeSubscriber()+"'");
-		}	
+	}
+	
+	
+		
 	//System.out.println(where_liste.size());
 		FacesContext facesCtx = FacesContext.getCurrentInstance();
 	    ELContext elContext = facesCtx.getELContext();
@@ -735,46 +953,74 @@ public void update_rapport(){
 		System.out.println(mainLayout.getChildCount());
 
 	mainLayout.getChildren().clear();
-	CommandButton toPdf = new CommandButton();
-	   toPdf.setValue("ToPdf");
-	   toPdf.setStyle("margin-left:70px;");
 	
+	Panel export_panel = new Panel();
+	export_panel.setHeader("Exporter");
+	HtmlCommandLink toPdf = new HtmlCommandLink();
+	GraphicImage img1 = new GraphicImage();
+	img1.setLibrary("img");
+	img1.setName("pdf.png");
+	toPdf.getChildren().add(img1);
+	
+	   
+	HtmlCommandLink toXls = new HtmlCommandLink();
+	GraphicImage img2 = new GraphicImage();
+	img2.setLibrary("img");
+	img2.setName("excel.png");
+	toXls.getChildren().add(img2);
 
 	   MethodExpression methode1 = createActionMethodExpression("#{rp_gene.toPdf}");
 	   toPdf.setActionExpression(methode1);
+	   export_panel.getChildren().add(toPdf);
+	   export_panel.getChildren().add(toXls);
 //	   FileDownloadActionListener fl = new FileDownloadActionListener();
 //	  
 //	toPdf.addActionListener(fl);
 //	
-	   mainLayout.getChildren().add(toPdf);
+	   mainLayout.getChildren().add(export_panel);
 	 for(int i = 0;i<rapport.getLst_chart().size();i++){
  		 chartdynamic= rapport.getLst_chart().get(i);
  		Chart ch = new Chart();
  		 switch (rapport.getLst_chart().get(i).getType_chart()) {
  		 case "line":
- 			 if( createLineChart(chartdynamic)!=null){
- 				 ch= createLineChart(chartdynamic);
- 				mainLayout.getChildren().add(ch);
+ 			 createLineChart(chartdynamic);
+ 			 if(linesSeries.isEmpty()==false){
+ 				System.out.println(chartdynamic.getList_axe_y().get(0).getAxey()) ;
+				 
+				 HighChart hichart = new HighChart();
+				 hichart.setName(chartdynamic.getNom_chart());
+				 hichart.setSeries(linesSeries);
+				 linesMap.add(hichart);
  			 }else{
- 				 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Graphe Linéaire non Affiché!", "0 Resultats pour ces choix de filters  "));
+ 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Graphe Linéaire non Affiché!", "0 Resultats pour ces choix de filters  ")); 
  			 }
+ 			
+ 				//mainLayout.getChildren().add(ch);
+ 			 
 		    		
  		 	
  		 	break;
  		 case "bar":
- 			 if(createBarChart(chartdynamic)!=null){
- 				 ch= createBarChart(chartdynamic);
- 			      mainLayout.getChildren().add(ch);
+ 		 createBarChart(chartdynamic);
+ 			 if(barsSeries.isEmpty()==false){
+ 				
+ 				 HighChart hichart = new HighChart();
+ 				 hichart.setName(chartdynamic.getNom_chart());
+ 				 hichart.setSeries(barsSeries);
+ 				 BarsMap.add(hichart);
+ 			     // mainLayout.getChildren().add(ch);
  			 }else{
- 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Graphe Bar non Affiché!", "0 Resultats pour ces choix de filters  "));
+ 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Graphe Bar non Affiché!", "0 Resultats pour ces choix de filters  "));
  			 }
  			
  		 	
  		 	break;
  		 case "pie":
- 			 if(createPieChart(chartdynamic)!=null){
- 			ch= createPieChart(chartdynamic);
-		      mainLayout.getChildren().add(ch);
+ 			createPieChart(chartdynamic);
+ 			 if(piesSeries.isEmpty()==false){
+ 			
+ 				
+		      //mainLayout.getChildren().add(ch);
  			 }else{
  				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Graphe Pie non Affiché!", "0 Resultats pour ces choix de filters  "));
  			 }
@@ -789,27 +1035,28 @@ public void update_rapport(){
  	if(rapport.getLst_datagrid().size()>0){
 		for (int j=0;j<rapport.getLst_datagrid().size();j++){
 			datagrid = rapport.getLst_datagrid().get(j);
-			 Map<Object, Number> data1 = new HashMap<Object,Number>();
-			 if(datagrid.getDaxe_x().equals("typeDest")){
-		 			data1 =statRemote.getMscByFilters("s.destination.typeDest",datagrid.getDaxe_y()+")", datagrid.getOperationD()+"(","Group By s.destination.typeDest ", where_liste);
+			List<Object[]> liste = new ArrayList<>();
+			 
+			 if(datagrid.getDaxe_x().contains("typeDest")){
+		 			liste =statRemote.getAllStatMsc1("destination.typeDest",datagrid.getList_axe_y(),table, "","Group By destination.typeDest ", where_liste);
 		 		 }
-			 else if(this.getChoix_filter_date().equals("Par An")&&datagrid.getDaxe_x().equals("dateAppel")){
-			 			data1 =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",datagrid.getDaxe_y()+")", datagrid.getOperationD()+"(","Group By Extract (year from  to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 else if(this.getChoix_filter_date().equals("Par An")&&datagrid.getDaxe_x().contains("dateAppel")){
+				 liste =statRemote.getAllStatMsc1("Extract (year from to_date(dateAppel,'YYMMDD'))",datagrid.getList_axe_y(),table, "","Group By Extract (year from  to_date(dateAppel,'YYMMDD')) ", where_liste);
 			 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&datagrid.getDaxe_x().equals("dateAppel")){
-				 			data1 =statRemote.getMscByFilters(" extract(day from  to_date(dateAppel,'YYMMDD'))",datagrid.getDaxe_y()+")", datagrid.getOperationD()+"(","Group By extract(day from  to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 			liste =statRemote.getAllStatMsc1(" extract(day from  to_date(dateAppel,'YYMMDD'))",datagrid.getList_axe_y(),table, "","Group By extract(day from  to_date(dateAppel,'YYMMDD')) ", where_liste);
 				 		 }else if(this.getChoix_filter_date().equals("Par mois")&&datagrid.getDaxe_x().equals("dateAppel")){
-					 			data1 =statRemote.getMscByFilters("Extract (month from to_date(dateAppel,'YYMMDD'))",datagrid.getDaxe_y()+")", datagrid.getOperationD()+"(","Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
+				 			liste =statRemote.getAllStatMsc1("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')",datagrid.getList_axe_y(),table, "","Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
 					 		 }
 				 		else if(this.getChoix_filter_date().equals("Par mois")&&datagrid.getDaxe_x().equals("dateAppel")){
-				 			data1 =statRemote.getMscByFilters(" to_date(dateAppel,'YYMMDD')",datagrid.getDaxe_y()+")", datagrid.getOperationD()+"(","Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
+				 			liste =statRemote.getAllStatMsc1(" to_date(dateAppel,'YYMMDD')",datagrid.getList_axe_y(),table, "","Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
 				 		 }else if(this.getChoix_filter_date().equals("Par heure")&&datagrid.getDaxe_x().equals("dateAppel")){
-					 			data1 =statRemote.getMscByFilters("CAST(trancheHoraire AS integer)",datagrid.getDaxe_y()+")", datagrid.getOperationD()+"(","Group By CAST(trancheHoraire AS integer)  ", where_liste);
+				 			liste =statRemote.getAllStatMsc1("CAST(trancheHoraire AS integer)",datagrid.getList_axe_y(),table, "","Group By CAST(trancheHoraire AS integer)  ", where_liste);
 					 			
 					 		 }
 	 		 else{
-	 			data1 =statRemote.getMscByFilters(datagrid.getDaxe_x(),datagrid.getDaxe_y()+")", datagrid.getOperationD()+"(","Group By "+datagrid.getDaxe_x(), where_liste);
+	 			liste =statRemote.getAllStatMsc1(datagrid.getDaxe_x(),datagrid.getList_axe_y(),table, "","Group By "+datagrid.getDaxe_x(), where_liste);
 	 		 }
-			Object[] liste = data1.entrySet().toArray();
+			
 			DataTable table = (DataTable) app.createComponent(DataTable.COMPONENT_TYPE);
 			
 		//table.setId("Dbgrid"+j);
@@ -821,36 +1068,55 @@ public void update_rapport(){
 			 table.setPaginator(true);
 			 table.setPaginatorPosition("bottom");
 			 table.setRows(25);
-			 HtmlOutputLabel htmlOutputLabelObj = new HtmlOutputLabel();
-			 htmlOutputLabelObj.setValue(rapport.getLst_datagrid().get(j).getDaxe_y()+ "  Par "+rapport.getLst_datagrid().get(j).getDaxe_x());
-			 table.getFacets().put("header", htmlOutputLabelObj);
+			 
 			 table.setPaginatorTemplate("{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}");
 			 table.setRowsPerPageTemplate("10,25,50,100");
 				 
 			 
 			Column indexColumn = (Column) app.createComponent(Column.COMPONENT_TYPE);
 			 UIOutput indexColumnTitle = (UIOutput) app.createComponent(UIOutput.COMPONENT_TYPE);
-			 indexColumnTitle.setValue(datagrid.getDaxe_x());
+			 if(datagrid.getDaxe_x().contains(".")){
+				 int endIndex = datagrid.getDaxe_x().lastIndexOf(".");
+				 String s= datagrid.getDaxe_x().substring(0,endIndex);
+				 indexColumnTitle.setValue(s);
+			 }else{
+				 
+				 indexColumnTitle.setValue(datagrid.getDaxe_x());
+			 }
+			
 			 indexColumn.getFacets().put("header", indexColumnTitle);
 			 //table.getColumns().add(column);
 			 table.getChildren().add(indexColumn);
 
-			 ValueExpression indexValueExp = elFactory.createValueExpression(elContext, "#{exam.key}", Object.class);
+			 ValueExpression indexValueExp = elFactory.createValueExpression(elContext, "#{exam[0]}", Object.class);
 			 HtmlOutputText indexOutput = (HtmlOutputText) app.createComponent(HtmlOutputText.COMPONENT_TYPE);
 			 indexOutput.setValueExpression("value", indexValueExp);
 			 indexColumn.getChildren().add(indexOutput);
 
 			 //Name Column
-			 Column nameColumn = (Column) app.createComponent(Column.COMPONENT_TYPE);
-			 UIOutput nameColumnTitle = (UIOutput) app.createComponent(UIOutput.COMPONENT_TYPE);
-			 nameColumnTitle.setValue(datagrid.getDaxe_y());
-			 nameColumn.getFacets().put("header", nameColumnTitle);
-			 table.getChildren().add(nameColumn);
+			 int nb=1;
+			 for(int k=0;k<datagrid.getList_axe_y().size();k++){
+				 String name = datagrid.getList_axe_y().get(k).getAxey();
+				 for (int p=0;p<datagrid.getList_axe_y().get(k).getOperations().size();p++){
+					
+					 Column nameColumn = new Column();
+					 UIOutput nameColumnTitle = (UIOutput) app.createComponent(UIOutput.COMPONENT_TYPE);
+					 nameColumnTitle.setValue(datagrid.getList_axe_y().get(k).getOperations().get(p)+"("+name+")");
+					 nameColumn.getFacets().put("header", nameColumnTitle);
+					 table.getChildren().add(nameColumn);
 
-			 ValueExpression nameValueExp = elFactory.createValueExpression(elContext, "#{exam.value}", Object.class);
-			 HtmlOutputText nameOutput = (HtmlOutputText) app.createComponent(HtmlOutputText.COMPONENT_TYPE);
-			 nameOutput.setValueExpression("value", nameValueExp);
-			 nameColumn.getChildren().add(nameOutput);
+					 ValueExpression nameValueExp = elFactory.createValueExpression(elContext, "#{exam["+nb+"]}", Object.class);
+					 nb++;
+					 HtmlOutputText nameOutput = new HtmlOutputText();
+					 nameOutput.setValueExpression("value", nameValueExp);
+					 nameColumn.getChildren().add(nameOutput);
+
+				 }
+				 
+			 }
+			 
+			 //Name Column
+			
 		
 			 
 			mainLayout.getChildren().add(table);
@@ -873,196 +1139,132 @@ public void update_rapport(){
 }
 
 
-public Chart createLineChart(ChartDynamic chd){
-	Chart ch = new Chart();
+public void createLineChart(ChartDynamic chd){
+
 	String exist = "" ;
 	String title = "Graphe Linéaire Representant : ";
-	if(chd.getOperation()=="SUM"){
-		title= title+" La Somme";
-	}else{
-		title= title+" La Moyenne";
-	}
+	
 	//Report rapport = reportremote.getReportById(Integer.valueOf(id));
 	LineChartModel lineModel1 = new LineChartModel();
+	 linesSeries = new ArrayList<>();
+	 
 	 	for(int nb_y=0;nb_y<chd.getList_axe_y().size();nb_y++){
-	 		title=title+"("+chd.getList_axe_y().get(nb_y)+")";
-	 		LineChartSeries boys = new LineChartSeries();
-	 		 boys.setLabel(chd.getAxe_x()+" Par"+chd.getList_axe_y().get(nb_y));
-	 		 if(this.getChoix_filter_date().equals("Par heure")&&chd.getAxe_x().equals("dateAppel")){
-	 			data =statRemote.getMscBytranche(chd.getAxe_x(),chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By "+chd.getAxe_x(), where_liste);
-	    		
-	 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getAxe_x().equals("dateAppel")){
-		 			data =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
-		 		 }else if(this.getChoix_filter_date().equals("Par mois")&&chd.getAxe_x().equals("dateAppel")){
-			 			data =statRemote.getMscByFilters("Extract (month from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
-			 		 }
-	 		 else if(chd.getAxe_x().equals("typeDest")){
-			 			data =statRemote.getMscByFilters("s.destination.typeDest",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By s.destination.typeDest ", where_liste);
-			 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getAxe_x().equals("dateAppel")){
-				 			data =statRemote.getMscByFilters(" extract(day from  to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By  extract(day from  to_date(dateAppel,'YYMMDD')) ", where_liste);
+	 		
+	 		for(int nb_op=0;nb_op<chd.getList_axe_y().get(nb_y).getOperations().size();nb_op++){
+	 			System.out.println(chd.getList_axe_y().get(nb_y).getAxey()+":"+chd.getList_axe_y().get(nb_y).getOperations().get(nb_op));
+	 			String operation = chd.getList_axe_y().get(nb_y).getOperations().get(nb_op);
+	 		
+		 		 if(this.getChoix_filter_date().equals("Par heure")&&chd.getAxe_x().equals("dateAppel")){
+		 			data =statRemote.getMscBytranche(chd.getAxe_x(),chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By "+chd.getAxe_x(), where_liste);
+		    		
+		 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getAxe_x().equals("dateAppel")){
+			 			data =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y).getAxey()+")",table,operation+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 		 }else if(this.getChoix_filter_date().equals("Par mois")&&chd.getAxe_x().equals("dateAppel")){
+				 			data =statRemote.getMscByFilters("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')",chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
 				 		 }
-	 		 else{
-	 			data =statRemote.getMscByFilters(chd.getAxe_x(),chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By "+chd.getAxe_x(), where_liste);
-	 		 }
-		     
- 		 if(data!=null){
- 			 boys.setData(data);
- 		    lineModel1.addSeries(boys); 
- 		    
- 		  
- 		 }else{
- 			return null;
- 		 }
-		 	
+		 		 else if(chd.getAxe_x().equals("typeDest")){
+				 			data =statRemote.getMscByFilters("destination.typeDest",chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By destination.typeDest ", where_liste);
+				 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getAxe_x().equals("dateAppel")){
+					 			data =statRemote.getMscByFilters(" extract(day from  to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By  extract(day from  to_date(dateAppel,'YYMMDD')) ", where_liste);
+					 		 }
+		 		 else{
+		 			data =statRemote.getMscByFilters(chd.getAxe_x(),chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By "+chd.getAxe_x(), where_liste);
+		 		 }
+			     
+	 		 if(data!=null){
+	 			SerieChart sch = new SerieChart();
+	 			sch.setMap(data);
+	 			sch.setName(operation+"("+chd.getList_axe_y().get(nb_y).getAxey()+")");
+	 		linesSeries.add(sch);
+	 		
+	 		  
+	 		 
+	 		}
+	 		}
 	 	}
-	 	 title=title+" Par "+chd.getAxe_x();
-	 		 lineModel1.setTitle(title);
-		      lineModel1.setLegendPosition("e");
-		   //lineModel1.setShowPointLabels(true);
-		   //lineModel1.setZoom(true);
-		   Axis xAxis = new CategoryAxis(chd.getAxe_x());
-		   xAxis.setTickAngle(-50);
-		       lineModel1.getAxes().put(AxisType.X, xAxis);
-		      Axis  yAxis =  lineModel1.getAxis(AxisType.Y);
-		      yAxis.setMin(0);
-		      lineModel1.setMouseoverHighlight(true);
-		      //yAxis.setLabel(rapport.getLst_chart().get(i).getAxe_y());
-		     lineModel1.setAnimate(true);
-		      ch.setModel(lineModel1);
-		      //ch.setId("line"+i);
-		     // elements_to_update= elements_to_update+ch.getId();
-		   
-		      
-		 	ch.setType(chd.getType_chart());
-		 	return ch;
+	 		
+		 	
+	 	
+	
 	 	
 	 	
 }
-public Chart createBarChart(ChartDynamic chd ){
-	Chart ch = new Chart();
-	String title = "Graphe Bar Representant : ";
-	if(chd.getOperation().equals("SUM")){
-		title= title+" La Somme";
-	}else{
-		title= title+" La Moyenne";
-	}
+public void createBarChart(ChartDynamic chd ){
+
+	barsSeries = new ArrayList<>();
 	
-	BarChartModel lineModel2 = new BarChartModel();
-	ch.setStyle("height:600px;");
-		for(int nb_y=0;nb_y<chd.getList_axe_y().size();nb_y++){
-	 		BarChartSeries boys = new BarChartSeries();
-	 		title=title+"("+chd.getList_axe_y().get(nb_y)+")/";
-	 		 boys.setLabel(chd.getAxe_x()+" Par "+chd.getList_axe_y().get(nb_y));
+	String name;
+ 	for(int nb_y=0;nb_y<chd.getList_axe_y().size();nb_y++){
+ 		for(int nb_op=0;nb_op<chd.getList_axe_y().get(nb_y).getOperations().size();nb_op++){
+ 			String operation = chd.getList_axe_y().get(nb_y).getOperations().get(nb_op);
+	 		
 	 		 if(this.getChoix_filter_date().equals("Par heure")&&chd.getAxe_x().equals("dateAppel")){
-		 			data =statRemote.getMscBytranche(chd.getAxe_x(),chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By "+chd.getAxe_x(), where_liste);
-		 			ch.setStyle("height:600px;");
+		 			data =statRemote.getMscBytranche(chd.getAxe_x(),chd.getList_axe_y().get(nb_y).getAxey()+")",table,operation+"(","Group By "+chd.getAxe_x(), where_liste);
+		 		
 		 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getAxe_x().equals("dateAppel")){
-			 			data =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 			data =statRemote.getMscByFilters("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y).getAxey()+")",table,operation+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
 			 		 }else if(chd.getAxe_x().equals("typeDest")){
-		 			data =statRemote.getMscByFilters("s.destination.typeDest",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By s.destination.typeDest ", where_liste);
+		 			data =statRemote.getMscByFilters("destination.typeDest",chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By destination.typeDest ", where_liste);
 			 		}else if(this.getChoix_filter_date().equals("Par mois")&&chd.getAxe_x().equals("dateAppel")){
-			 			data =statRemote.getMscByFilters("Extract (month from to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 			data =statRemote.getMscByFilters("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')",chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
 			 		 }
 			 		 else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getAxe_x().equals("dateAppel")){
-			 			data =statRemote.getMscByFilters(" extract(day from  to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By  extract(day from  to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 			data =statRemote.getMscByFilters(" extract(day from  to_date(dateAppel,'YYMMDD'))",chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By    to_date(dateAppel,'YYMMDD')", where_liste);
 			 			
 			 		 }
 	 		 else{
-	 			data =statRemote.getMscByFilters(chd.getAxe_x(),chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By "+chd.getAxe_x(), where_liste);
+	 			data =statRemote.getMscByFilters(chd.getAxe_x(),chd.getList_axe_y().get(nb_y).getAxey()+")",table, operation+"(","Group By "+chd.getAxe_x(), where_liste);
 	 		 }
 	 		if(data!=null){
+	 			SerieChart sch = new SerieChart();
+	 			sch.setMap(data);
+	 			sch.setName(operation+"("+chd.getList_axe_y().get(nb_y).getAxey()+")");
+	 		barsSeries.add(sch);
 	 		
-	 			 boys.setData(data);
-			     lineModel2.addSeries(boys);
 			    
 			     
-	 		}else{
-	 			return null;
 	 		}
+ 		}
 		    
 		}
-		title=title+" Par "+chd.getAxe_x();
-	 		 lineModel2.setTitle(title);
-		     lineModel2.setLegendPosition("e");
-		     lineModel2.setShowPointLabels(true);
-		     lineModel2.setShadow(true);
-		    // lineModel2.setShowDatatip(true);
-		     
-		     lineModel2.setAnimate(true);
-		     //lineModel2.setZoom(true);
-		     lineModel2.setMouseoverHighlight(true);
-		     Axis xAxis = new CategoryAxis(chd.getAxe_x());
-			   xAxis.setTickAngle(-50);
-			       lineModel2.getAxes().put(AxisType.X, xAxis);
-			      Axis  yAxis =  lineModel2.getAxis(AxisType.Y);
-			      yAxis.setMin(0);
-		     yAxis.setLabel("Valeurs");
-		    
-		     ch.setModel(lineModel2);
-		     
-		 	ch.setType(chd.getType_chart());
-		return ch;
+	
 	 	
 	    
 }
-public Chart createPieChart(ChartDynamic chd){
-	Chart ch = new Chart();
-	ChartSeries boys = new ChartSeries();
-String title="Graphe Pie Representant";
-	 	PieChartModel lineModel3 = new PieChartModel();
-	 	 boys.setLabel(chd.getAxe_x()+" Par "+chd.getAxe_y());
-	 	 Map<String, Number> data1 = new HashMap<String,Number>();
+public void createPieChart(ChartDynamic chd){
+
+	 	 List<Object[]> datapie = new ArrayList<>();
 	 	if(chd.getAxe_x().equals("typeDest")){
-	 			data1 =statRemote.getMscByFilters1("s.destination.typeDest",chd.getAxe_y()+")", chd.getOperation()+"(","Group By s.destination.typeDest ", where_liste);
+	 		datapie =statRemote.getMscByFilters1("destination.typeDest",chd.getAxe_y()+")",table, chd.getOperation()+"(","Group By destination.typeDest ", where_liste);
 	 		 }else if(this.getChoix_filter_date().equals("Par An")&&chd.getAxe_x().equals("dateAppel")){
-		 			data1 =statRemote.getMscByFilters1("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getAxe_y()+")", chd.getOperation()+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
+	 			datapie =statRemote.getMscByFilters1("Extract (year from to_date(dateAppel,'YYMMDD'))",chd.getAxe_y()+")",table, chd.getOperation()+"(","Group By Extract (year from to_date(dateAppel,'YYMMDD')) ", where_liste);
 		 		 }else if(this.getChoix_filter_date().equals("Par Jour")&&chd.getAxe_x().equals("dateAppel")){
-			 			data1 =statRemote.getMscByFilters1(" to_date(dateAppel,'YYMMDD')",chd.getAxe_y()+")", chd.getOperation()+"(","Group By  to_date(dateAppel,'YYMMDD') ", where_liste);
+		 			datapie =statRemote.getMscByFilters1(" to_date(dateAppel,'YYMMDD')",chd.getAxe_y()+")",table, chd.getOperation()+"(","Group By  to_date(dateAppel,'YYMMDD') ", where_liste);
 			 		 }else if(this.getChoix_filter_date().equals("Par mois")&&chd.getAxe_x().equals("dateAppel")){
-				 			data1 =statRemote.getMscByFilters1("Extract (month from to_date(dateAppel,'YYMMDD'))",chd.getAxe_y()+")", chd.getOperation()+"(","Group By Extract (month from to_date(dateAppel,'YYMMDD')) ", where_liste);
+			 			datapie =statRemote.getMscByFilters1("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')",chd.getAxe_y()+")",table, chd.getOperation()+"(","Group By to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ", where_liste);
 				 		 }else if(this.getChoix_filter_date().equals("Par heure")&&chd.getAxe_x().equals("dateAppel")){
-				 			data1 =statRemote.getMscByFilters1("trancheHoraire",chd.getAxe_y()+")", chd.getOperation()+"(","Group By trancheHoraire  ", where_liste);
+				 			datapie =statRemote.getMscByFilters1("trancheHoraire",chd.getAxe_y()+")",table, chd.getOperation()+"(","Group By trancheHoraire  ", where_liste);
 				 			
 				 		 }
  		 else{
- 			data1 =statRemote.getMscByFilters1(chd.getAxe_x(),chd.getAxe_y()+")", chd.getOperation()+"(","Group By "+chd.getAxe_x(), where_liste);
+ 			datapie =statRemote.getMscByFilters1(chd.getAxe_x(),chd.getAxe_y()+")",table, chd.getOperation()+"(","Group By "+chd.getAxe_x(), where_liste);
  		 }
-	 	if(data1!=null && data1.size()>0){
-	 		System.out.println(data1.size());
-	 		 lineModel3.setData(data1);
-	 		ch.setStyle("height:600px;");
+	 	if(datapie!=null && datapie.size()>0){
+	 		System.out.println(datapie.size());
+	 		piesSeries.add(datapie);
+	 	
 		     
-		}else{
-			return null;
 		}
-	 	if(chd.getOperation().equals("SUM")){
-			title= title+" La Somme("+chd.getAxe_y()+") Par "+chd.getAxe_x();
-		}else{
-			title= title+" La Moyenne("+chd.getAxe_y()+") Par "+chd.getAxe_x();
-		}
-	   
-	     lineModel3.setTitle(title);
-	     lineModel3.setLegendPosition("e");
-	     lineModel3.setShowDataLabels(true);
-	     //lineModel3.setTitle(chd.getAxe_y()+" Par  "+chd.getAxe_x());
-	  lineModel3.setFill(true);
-	  lineModel3.setShadow(true);
-	  lineModel3.setMouseoverHighlight(true);
-	  
-	   
-	    
-	     ch.setModel(lineModel3);
-	   
-	 	ch.setType(chd.getType_chart());
-	 	return ch;
-	
 }
 public void handlechange(){
+	contient = true;
 	LayoutUnit mainLayout = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:main_layout");
 	System.out.println(mainLayout.getChildCount());
 
 mainLayout.getChildren().clear();
-
+BarsMap = new ArrayList<>();
+linesMap= new ArrayList<>();
+piesSeries = new ArrayList<>();
 	FacesContext facesCtx = FacesContext.getCurrentInstance();
     ELContext elContext = facesCtx.getELContext();
     Application app = facesCtx.getApplication();
@@ -1080,25 +1282,26 @@ mainLayout.getChildren().clear();
 		UIComponent compJourOutputYearFin=FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lstDateYearsFin");
 		UIComponent compJourLBY =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lb_year_debut");
 		UIComponent compJourLBYF =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lb_year_fin");
-		UIComponent compSLYearMois =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lstDateYearsMois");
-		UIComponent compSLMois =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lstMois");
-		UIComponent compSLMoisFin =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lstMoisFin");
+		
+
 		UIComponent compLBMoisDeb =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lb_mois_debut");
 		UIComponent compLBMoisFin =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lb_mois_fin");
-		UIComponent compLBMoisYear =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:lb_year");
+		UIComponent compMoisDeb =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:cld_mois_debut");
+		UIComponent compMoisFin =FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:cld_mois_fin");
+		
 		if(compJourLB0!=null){
 			comp.getChildren().remove(compJourLB1);
 			comp.getChildren().remove(compJourLB0);
 			comp.getChildren().remove(compJourOutput0);
 			comp.getChildren().remove(compJourOutput1);
 		}
-		if(compSLMois!=null){
-			comp.getChildren().remove(compSLYearMois);
-			comp.getChildren().remove(compSLMois);
-			comp.getChildren().remove(compSLMoisFin);
+		if(compMoisDeb!=null){
+	
+		
 			comp.getChildren().remove(compLBMoisDeb);
 			comp.getChildren().remove(compLBMoisFin);
-			comp.getChildren().remove(compLBMoisYear);
+			comp.getChildren().remove(compMoisDeb);
+			comp.getChildren().remove(compMoisFin);
 			
 		}
 		if(compJourLBY!=null){
@@ -1185,42 +1388,41 @@ mainLayout.getChildren().clear();
 		comp.getChildren().add(lb_year_fin);
 		comp.getChildren().add(lstDateYearsFin);
 		}else if (this.getChoix_filter_date().equals("Par mois")){
-			SelectOneMenu lstDateYearsMois = new SelectOneMenu();
-			lstDateYearsMois.setId("lstDateYearsMois");
-			 ValueExpression valueExp = createValueExpression("#{rp_gene.date_year}", Integer.class);
-	         UISelectItems list_items0 = new UISelectItems();
-	         lstDateYearsMois.setValueExpression("value", valueExp);
-	         list_items0.setValue(liste_desAns);
-	         lstDateYearsMois.getChildren().add(list_items0);
-			OutputLabel lb_year_debut= new OutputLabel();
-			lb_year_debut.setValue("Choisir Année");
-			lb_year_debut.setId("lb_year");
-			SelectOneMenu lstMois = new SelectOneMenu();
-			lstMois.setId("lstMois");
-			 ValueExpression valueExp1 = createValueExpression("#{rp_gene.date_mois_debut}", Integer.class);
-	         UISelectItems list_items = new UISelectItems();
-	         lstMois.setValueExpression("value", valueExp1);
-	         list_items.setValue(listeMois);
-	         lstMois.getChildren().add(list_items);
+			
+
+			Calendar cld_mois_debut = new Calendar();
+			cld_mois_debut.setId("cld_mois_debut");
+			cld_mois_debut.setRequired(true);
 			OutputLabel lb_mois_debut= new OutputLabel();
-			lb_mois_debut.setValue("Choisir Mois Debut");
 			lb_mois_debut.setId("lb_mois_debut");
-			SelectOneMenu lstMoisFin = new SelectOneMenu();
-			lstMoisFin.setId("lstMoisFin");
-			 ValueExpression valueExp2 = createValueExpression("#{rp_gene.date_mois_Fin}", Integer.class);
-	         UISelectItems list_items2 = new UISelectItems();
-	         lstMoisFin.setValueExpression("value", valueExp2);
-	         list_items2.setValue(listeMois);
-	         lstMoisFin.getChildren().add(list_items2);
+			cld_mois_debut.setRequiredMessage("Veuillez choisir la date debut");
+		ValueExpression valjour = createValueExpression("#{rp_gene.date_mois_debut}", Date.class);
+		cld_mois_debut.setValueExpression("value", valjour);
+		lb_mois_debut.setValue("Choisir Debut");
+			Calendar cld_mois_fin = new Calendar();
+			cld_mois_fin.setPattern("MM/yyyy");
+			cld_mois_fin.setMask("true");
+			cld_mois_debut.setPattern("MM/yyyy");
+			cld_mois_debut.setMask("true");
+			cld_mois_fin.setRequired(true);
+			cld_mois_fin.setRequiredMessage("Veuillez choisir la date fin");
+			cld_mois_fin.setId("cld_mois_fin");
 			OutputLabel lb_mois_fin= new OutputLabel();
-			lb_mois_fin.setValue("Choisir Mois Fin");
 			lb_mois_fin.setId("lb_mois_fin");
-			comp.getChildren().add(lb_year_debut);
-			comp.getChildren().add(lstDateYearsMois);
+		ValueExpression valjourfin = createValueExpression("#{rp_gene.date_mois_Fin}", Date.class);
+		cld_mois_fin.setValueExpression("value", valjourfin);
+		lb_mois_fin.setValue("Choisir Fin");
+		
+			
+		
 			comp.getChildren().add(lb_mois_debut);
-			comp.getChildren().add(lstMois);
+			comp.getChildren().add(cld_mois_debut);
 			comp.getChildren().add(lb_mois_fin);
-			comp.getChildren().add(lstMoisFin);
+			comp.getChildren().add(cld_mois_fin);
+		
+			
+			/////////////////////////////
+			
 		}
 		
 			
@@ -1260,8 +1462,12 @@ mainLayout.getChildren().clear();
 public void handlechange1(){
 	LayoutUnit mainLayout = (LayoutUnit) FacesContext.getCurrentInstance().getViewRoot().findComponent("mainForm:main_layout");
 	System.out.println(mainLayout.getChildCount());
-
+System.out.println(choix_plan);
 mainLayout.getChildren().clear();
+
+BarsMap = new ArrayList<>();
+linesMap= new ArrayList<>();
+piesSeries = new ArrayList<>();
 }
 
 public void testid(){
@@ -1316,16 +1522,12 @@ public void testid(){
 	}
 
 
-
-	public Map<Object,Number> getData() {
-		return data;
-	}
-
-
-
-	public void setData(Map<Object,Number> data) {
-		this.data = data;
-	}
+public List<Object[]> getData() {
+	return data;
+}
+public void setData(List<Object[]> data) {
+	this.data = data;
+}
 
 
 
@@ -1403,3 +1605,4 @@ public void testid(){
 		
 		
 }
+

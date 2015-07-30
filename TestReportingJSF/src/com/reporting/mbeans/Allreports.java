@@ -55,6 +55,7 @@ public class Allreports  implements Serializable{
 		this.selected_report = selected_report;
 	}
 	
+
 	public String ViewRapport(Report p ){
 		FacesContext.getCurrentInstance().getExternalContext().getFlash()
         .put("param", p.getId_rapport()+"");
@@ -63,7 +64,6 @@ public class Allreports  implements Serializable{
 	
 		
 	}
-
 	public String getId() {
 		return id;
 	}

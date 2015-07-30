@@ -27,6 +27,7 @@
    <booleanType horizontalAlignment="CENTER"/>
    <characterType horizontalAlignment="LEFT"/>
    <stringType horizontalAlignment="LEFT"/>
+   
  
    <loadSystemFonts>true</loadSystemFonts>
    

@@ -27,9 +27,18 @@ public class PlanTarifaireMbean implements Serializable {
 	@EJB
 	private PlanTarifaireRemote plan_remote;
 	
-	private PlanTarifaire plan ;
+	private PlanTarifaire planTarifaire ;
 	
-	private String code;
+	private PlanTarifaire plan;
+	
+	public PlanTarifaire getPlan() {
+		return plan;
+	}
+	public void setPlan(PlanTarifaire plan) {
+		this.plan = plan;
+	}
+	
+
 	
 	private List<PlanTarifaire> list_plans = new ArrayList<PlanTarifaire>();
 	
@@ -38,18 +47,32 @@ public class PlanTarifaireMbean implements Serializable {
 	}
 	@PostConstruct
 	public void init(){
-		plan = new PlanTarifaire();
+		planTarifaire = new PlanTarifaire();
 		list_plans= plan_remote.getAllPlanTarifaires();
 	}
 	
 	
 	public void createPlan(){
-//	PlanTarifaire p = new PlanTarifaire();
-plan.setCodePlanTarifaire("1234567");
 
-		plan_remote.createPlanT(plan);
+
+		plan_remote.createPlanT(planTarifaire);
+		list_plans= plan_remote.getAllPlanTarifaires();
+		planTarifaire = new PlanTarifaire();
 	}
-	
+	public void modifPlan(){
+
+
+		plan_remote.updatePlanT(plan);
+		list_plans= plan_remote.getAllPlanTarifaires();
+		
+	}
+	public void deletePlan(){
+
+
+		plan_remote.deletePlanT(plan);
+		list_plans= plan_remote.getAllPlanTarifaires();
+		
+	}
 	
 
 
@@ -67,27 +90,17 @@ plan.setCodePlanTarifaire("1234567");
 
 
 
-
-	public PlanTarifaire getPlan() {
-		return plan;
-	}
-
+public PlanTarifaire getPlanTarifaire() {
+	return planTarifaire;
+}
 
 
 
-	public void setPlan(PlanTarifaire plan) {
-		this.plan = plan;
-	}
+public void setPlanTarifaire(PlanTarifaire planTarifaire) {
+	this.planTarifaire = planTarifaire;
+}
 
 
-	public String getCode() {
-		return code;
-	}
-
-
-	public void setCode(String code) {
-		this.code = code;
-	}
 	
 	
 

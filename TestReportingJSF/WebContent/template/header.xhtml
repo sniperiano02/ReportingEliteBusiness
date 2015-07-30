@@ -5,15 +5,134 @@
              
                 xmlns:p="http://primefaces.org/ui">
                 
+                 <script type="text/javascript">Highcharts.createElement('link', {
+            	   href: '//fonts.googleapis.com/css?family=Signika:400,700',
+            	   rel: 'stylesheet',
+            	   type: 'text/css'
+            	}, null, document.getElementsByTagName('head')[0]);
+
+            	// Add the background image to the container
+            	Highcharts.wrap(Highcharts.Chart.prototype, 'getContainer', function (proceed) {
+            	   proceed.call(this);
+            	   this.container.style.background = 'url(http://www.highcharts.com/samples/graphics/sand.png)';
+            	});
+
+
+            	Highcharts.theme = {
+            	   colors: ["#f45b5b", "#8085e9", "#8d4654", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+            	      "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+            	   chart: {
+            	      backgroundColor: null,
+            	      style: {
+            	         fontFamily: "Signika, serif"
+            	      }
+            	   },
+            	   title: {
+            	      style: {
+            	         color: 'black',
+            	         fontSize: '16px',
+            	         fontWeight: 'bold'
+            	      }
+            	   },
+            	   subtitle: {
+            	      style: {
+            	         color: 'black'
+            	      }
+            	   },
+            	   tooltip: {
+            	      borderWidth: 0
+            	   },
+            	   legend: {
+            	      itemStyle: {
+            	         fontWeight: 'bold',
+            	         fontSize: '13px'
+            	      }
+            	   },
+            	   xAxis: {
+            	      labels: {
+            	    	  rotation: -45,
+            	         style: {
+            	            color: '#6e6e70'
+                	            
+            	         }
+            	      }
+            	   },
+            	   credits: {
+            		      enabled: false
+            		  },
+            	   yAxis: {
+            	      labels: {
+            	         style: {
+            	            color: '#6e6e70'
+            	         }
+            	      }
+            	   },
+            	   plotOptions: {
+            	      series: {
+            	         shadow: true
+            	      },
+            	      candlestick: {
+            	         lineColor: '#404048'
+            	      },
+            	      map: {
+            	         shadow: false
+            	      }
+            	   },
+
+            	   // Highstock specific
+            	   navigator: {
+            	      xAxis: {
+            	         gridLineColor: '#D0D0D8'
+            	      }
+            	   },
+            	   rangeSelector: {
+            	      buttonTheme: {
+            	         fill: 'white',
+            	         stroke: '#C0C0C8',
+            	         'stroke-width': 1,
+            	         states: {
+            	            select: {
+            	               fill: '#D0D0D8'
+            	            }
+            	         }
+            	      }
+            	   },
+            	   scrollbar: {
+            	      trackBorderColor: '#C0C0C8'
+            	   },
+
+            	   // General
+            	   background2: '#E0E0E8'
+            	   
+            	};
+
+            	// Apply the theme
+            	Highcharts.setOptions(Highcharts.theme);</script>
                 
 
-<h:form>
-<p:tabMenu activeIndex="#{tabMenuNavigationBean.activeIndex}">
-  <p:menuitem value="Administration" action="#{tabMenuNavigationBean.changeActiveIndex(0)}"   icon="ui-icon-star"/>
-  <p:menuitem value="Mobile Prepayé" action="#{tabMenuNavigationBean.changeActiveIndex(1)}" icon="ui-icon-search" />
-  <p:menuitem value="Mobile PostPayé"  icon="ui-icon-document"/>
+<h:form id="fp">
+  <div class="ui-grid-row"   >
+<p:tabMenu activeIndex="#{tabMenuNavigationBean.activeIndex}" style="height:8px;" >
+  <p:menuitem ajax="true" value="Administration" action="#{tabMenuNavigationBean.changeActiveIndex(0)}" rendered="#{login_bean.administration}" update=":form fp "  />
+  <p:menuitem value="Mobile Prepayé" action="#{tabMenuNavigationBean.changeActiveIndex(1)}" update=":form fp"  rendered="#{login_bean.prepaye}" />
+  <p:menuitem  ajax="true" value="Reporting" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update=":form fp"  icon="ui-icon-document"  />
+  <p:menuitem value="Mobile PostPayé" action="#{tabMenuNavigationBean.changeActiveIndex(3)}" update=":form fp" rendered="#{login_bean.postpaye}"  />
+  <p:menuitem value="Interco International" action="#{tabMenuNavigationBean.changeActiveIndex(4)}" update=":form fp" rendered="#{login_bean.interco_inter}" />
+  <p:menuitem value="Interco National" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.interco_national}"/>
+  <p:menuitem value="Roaming IN" action="#{tabMenuNavigationBean.changeActiveIndex(0)}" rendered="#{login_bean.roa_in}"  />
+  <p:menuitem value="Roaming OUT" action="#{tabMenuNavigationBean.changeActiveIndex(1)}" update="@form" rendered="#{login_bean.roa_out}"  />
+    <p:menuitem value="Smart Closing" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.smart}"/>
+    <p:menuitem value="Fraude" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.fraude}"/>
+  
+    <p:menuitem value="KPIs" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.KPI}"/>
+  
+  
 </p:tabMenu>
 
+  <div style="text-align: right;">
+        <p:commandButton  value="Logout" icon="ui-icon-extlink" actionListener="#{login_bean.logout()}" />
+        </div>
+        </div>
 </h:form>
 
 
