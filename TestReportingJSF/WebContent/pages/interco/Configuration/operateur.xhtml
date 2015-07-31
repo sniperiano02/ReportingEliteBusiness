@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+	
+				<p:dataTable var="oper" id="singleDT" paginator="true" rows="10" value="#{operateur.lst_oper}"  rowKey="#{oper.id}"   selectionMode="single" selection="#{operateur.operateur1}"  >
+				    <f:facet name="header">
+  				 	<p:outputLabel value="Gestion Des Operateurs"></p:outputLabel>
+        			</f:facet>
+					<p:column headerText="Operateurs">
+       				 <h:outputText value="#{oper.operateur}" />
+    				</p:column>
+				 	<p:column headerText="Code operateur">
+       				 <h:outputText value="#{oper.codeOperateurs}" />
+    				</p:column>
+     				<p:column headerText="Pays">
+        			 <h:outputText value="#{oper.pays.nom}" />
+    				</p:column>
+    				<p:column headerText="Monnaie">
+       				 <h:outputText value="#{oper.monnaie.monnai}" />
+    				</p:column>
+    				<p:column headerText="Utilisateur">
+      				 <h:outputText value="#{oper.nomUtilisateur}" />
+    				</p:column>
+   					<p:column headerText="Date Creation">
+       				 <h:outputText value="#{oper.dateModif}" />
+    				</p:column>
+    
+    	<f:facet name="footer">
+   			<p:panelGrid columns="3">
+   			
+            	<p:commandButton  process="singleDT" update="@form"  value="Modifier"  oncomplete="PF('dlg5').show()"  />
+             	<p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter"  oncomplete="PF('dlg3').show()" />
+          		<p:commandButton  process="singleDT" update="singleDT"  value="Supprimer" actionListener="#{operateur.SupprimerOperateur()}"  />
+             
+        	</p:panelGrid>
+        </f:facet>
+				
+				</p:dataTable>
+				
+  		<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce"  width="500px">
+			<h:panelGrid>
+				<p:outputLabel value="Operateur" />
+     				<p:inputText value="#{operateur.operateur.operateur}"  >
+     				</p:inputText>
+     				<p:outputLabel value="Code Operateur" />
+     				<p:inputText value="#{operateur.operateur.codeOperateurs}"  >
+     				</p:inputText>
+     				
+     				
+     				<p:outputLabel value="Pays" />
+   <p:selectOneMenu value="#{operateur.operateur.pays}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{operateur.liste_pays}" var="type" itemLabel="#{type.nom}" itemValue="#{type}" />
+	   
+	      
+	</p:selectOneMenu>
+		<p:outputLabel value="Monnaie" />
+   <p:selectOneMenu value="#{operateur.operateur.monnaie}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{operateur.liste_monnai}" var="type" itemLabel="#{type.monnai}" itemValue="#{type}" />
+	   
+	      
+	</p:selectOneMenu>
+     
+	
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{operateur.ajouterOperateur}" process="@this"   oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg3').hide()" />
+    </h:panelGrid>
+    
+       
+</p:dialog>
+
+<p:dialog header="Details" widgetVar="dlg5"  showEffect="explode" hideEffect="bounce" >
+	 <p:outputLabel value="Operateur" />
+     				<p:inputText value="#{operateur.operateur.operateur}"  >
+     				</p:inputText>
+     <p:outputLabel value="Code Operateur" />
+     				<p:inputText value="#{operateur.operateur.codeOperateurs}"  >
+     				</p:inputText>
+     <p:outputLabel value="Pays" />
+  					<p:selectOneMenu value="#{operateur.operateur.pays}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{operateur.liste_pays}" var="type" itemLabel="#{type.nom}" itemValue="#{type}" />
+	   
+	      
+	</p:selectOneMenu>
+	 <p:outputLabel value="Monnaie" />
+   					<p:selectOneMenu value="#{operateur.operateur.monnaie}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{operateur.liste_monnai}" var="type" itemLabel="#{type.monnai}" itemValue="#{type}" />
+	   
+	      
+	</p:selectOneMenu>
+     
+    
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{pays.ModifierPays()}"  oncomplete="PF('dlg5').hide()"/>
+    <p:commandButton value="Annuler"  onclick="PF('dlg5').hide()"/>
+    
+
+</p:dialog>
+	
+	
+	
+	</h:form>		
+</ui:define>
+</ui:composition>

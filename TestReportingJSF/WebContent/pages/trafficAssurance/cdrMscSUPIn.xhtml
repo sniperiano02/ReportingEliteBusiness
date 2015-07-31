@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		
+			<h:form id="form1" >
+			<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{msc_sup_in.choix_periode}" >
+		 <p:ajax listener="#{msc_sup_in.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{msc_sup_in.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+		
+		<p:panelGrid id="ColLineChart" columns="1" rendered="#{msc_sup_in.chartDisplayed}">
+		<hf:chart  type="line"  title="Rapport CDR MSC SUP IN" subTitle="#{msc_sup_in.subTitle}"    >
+		<hf:chartSerie   value="#{msc_sup_in.resultCDRInexistant}" var="point" point="#{point[6]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie   value="#{msc_sup_in.resultCDRInexistant}" var="point1" point="#{point1[5]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
+		<hf:chartSerie  value="#{msc_sup_in.resultCDRInexistant}" var="point2" point="#{point2[2]}"  tickLabel="#{point2[0]}"></hf:chartSerie>
+		 
+		</hf:chart>
+		
+		<p:dataTable id="dt1" value="#{msc_sup_in.resultCDRInexistant}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" selection="#{msc_sup_in.selectedRecon}" selectionMode="single" rowKey="#{cdr[0]}">
+		  <p:column   headerText="Date">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+     <p:column headerText="Nb Anomalie">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+     <p:column headerText="Duree Anomalie">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+     <p:column headerText="Nb d'appel MSC">
+        <h:outputText value="#{cdr[3]}" />
+    </p:column>
+     <p:column headerText="Nb d'appels IN">
+        <h:outputText value="#{cdr[4]}" />
+    </p:column>
+     <p:column headerText="Duree MSC">
+        <h:outputText value="#{cdr[5]}" />
+    </p:column>
+     <p:column headerText="Duree IN">
+        <h:outputText value="#{cdr[6]}" />
+    </p:column>
+    <p:column headerText="Nb KPI">
+        <h:outputText value="#{cdr[7]}" />
+    </p:column>
+    <p:column headerText="Duree KPI">
+        <h:outputText value="#{cdr[8]}" />
+    </p:column>
+      <p:column headerText="Impact(UM)">
+        <h:outputText value="#{cdr[9]}" />
+    </p:column>
+ 
+    <f:facet name="footer"  >
+            <p:commandButton process="dt1" id="btnn" actionListener="#{msc_sup_in.getDetail}" update=":form1:DetailAnomalie" icon="ui-icon-search" value="View" oncomplete="PF('DetailsDialog').show()"  />
+        </f:facet>
+		
+		
+		</p:dataTable>
+		
+
+		</p:panelGrid>
+			<p:dialog header="Analyse De l'anomalie cdrs MSC Sup IN" widgetVar="DetailsDialog"   width="1043px">
+        <p:outputPanel id="DetailAnomalie" >
+            <p:panelGrid  columns="2" rendered="#{msc_sup_in.detailDisplayed}" >
+              <p:panel>
+		<hf:chart width="300px" type="pie" selectedPoint="#{msc_sup_in.selectedPoint}"    title="Repartition par MSC"   subTitle="#{msc_sup_in.subtitle1}"  >
+		<p:ajax listener="#{msc_sup_in.clicked}" event="select" update="form1:DetailAnomalie"   />
+		<hf:chartSerie value="#{msc_sup_in.pieChartDetails.getSeries().get(0).getMap()}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		</hf:chart>
+		</p:panel>
+		  <p:panel rendered="#{msc_sup_in.choixSelect}" id="pan1">
+		<hf:chart  width="600px" type="line"   title="Rapport CDR MSC SUP IN"  subTitle="#{msc_sup_in.lineChartDetails.name}"   >
+		<hf:chartSerie    name="#{msc_sup_in.lineChartDetails.getSeries().get(0).name}" value="#{msc_sup_in.lineChartDetails.getSeries().get(0).getMap()}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie yaxis="kpiaxis"  name="#{msc_sup_in.lineChartDetails.getSeries().get(1).name}" value="#{msc_sup_in.lineChartDetails.getSeries().get(1).getMap()}" var="point1" point="#{point1[2]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
+		<hf:chartAxis position="w" title="Duree IN" min="0" ></hf:chartAxis>
+		<hf:chartAxis position="e" title="Duree KPI" id="kpiaxis" min="0" ></hf:chartAxis>
+		
+		</hf:chart>
+		  </p:panel>
+         
+            	<p:dataTable id="dt2"  value="#{msc_sup_in.resultCDRDetailsInexistant}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" selectionMode="single" selection="#{msc_sup_in.selectedTypeDestination}"  rowKey="#{det[0]}">
+ <p:column sortBy="#{det[0]}" headerText=" Type Destination">
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column sortBy="#{det[1]}" headerText="Nb Anomalie">
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+     <p:column sortBy="#{det[2]}" headerText="Duree Anomalie">
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+     <p:column sortBy="#{det[3]}" headerText="Nb d'appel MSC">
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+     <p:column sortBy="#{det[4]}" headerText="Duree MSC">
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+     <p:column sortBy="#{det[5]}" headerText=" Nb d'appels IN">
+        <h:outputText value="#{det[5]}" />
+    </p:column>
+     <p:column sortBy="#{det[6]}" headerText="Duree IN">
+        <h:outputText value="#{det[6]}" />
+    </p:column>
+    <p:column sortBy="#{det[7]}" headerText="Nb KPI">
+        <h:outputText value="#{det[7]}" />
+    </p:column>
+    <p:column sortBy="#{det[8]}" headerText="Duree KPI">
+        <h:outputText value="#{det[8]}" />
+    </p:column>
+      <p:column sortBy="#{det[9]}" headerText="Impact(UM)">
+        <h:outputText value="#{det[9]}" />
+    </p:column>
+    <f:facet name="footer">
+            <p:commandButton process="dt2"  actionListener="#{msc_sup_in.loadDestinations()}" update=":form1:DetailAnomalie" icon="ui-icon-search" value="View"  />
+    </f:facet>
+		</p:dataTable>
+		
+		       	<p:dataTable id="dt3" rendered="#{msc_sup_in.bytypedest}" value="#{msc_sup_in.listbyDest}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" >
+		  <p:column sortBy="#{det[0]}" headerText="Destination">
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column sortBy="#{det[1]}" headerText="Nb Anomalie">
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+     <p:column sortBy="#{det[2]}" headerText="Duree Anomalie">
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+     <p:column sortBy="#{det[3]}" headerText="Nb d'appel MSC">
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+     <p:column sortBy="#{det[4]}" headerText="Duree MSC">
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+     <p:column sortBy="#{det[5]}" headerText=" Nb d'appels IN">
+        <h:outputText value="#{det[5]}" />
+    </p:column>
+     <p:column sortBy="#{det[6]}" headerText="Duree IN">
+        <h:outputText value="#{det[6]}" />
+    </p:column>
+    <p:column sortBy="#{det[7]}" headerText="Nb KPI">
+        <h:outputText value="#{det[7]}" />
+    </p:column>
+    <p:column sortBy="#{det[8]}" headerText="Duree KPI">
+        <h:outputText value="#{det[8]}" />
+    </p:column>
+      <p:column sortBy="#{det[9]}" headerText="Impact(UM)">
+        <h:outputText value="#{det[9]}" />
+    </p:column>
+		</p:dataTable>
+		   </p:panelGrid>
+        </p:outputPanel>
+    </p:dialog>
+		</p:layoutUnit>
+		   <p:blockUI block="layoutUnit" trigger="dt1:btnn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</p:layout>
+		   <p:blockUI block="layoutUnit" trigger="btn">
+        Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+  
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>

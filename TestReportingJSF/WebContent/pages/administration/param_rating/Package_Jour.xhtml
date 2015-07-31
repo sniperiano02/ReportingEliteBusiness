@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+           	
+			<ui:define name="pageTitle">Gestion Package Jour</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+			<h1 style="text-align:center;"></h1>
+			
+		
+			<p:dataTable  id="singleDT"   rowKey="#{package.id}" var="package" value="#{package_jour.jours}"  >
+    <f:facet name="header" >
+    <h:outputText value="Gestion Package Jour" />
+    </f:facet>
+    <p:column filterBy="#{package.nom}" filterMatchMode="contains" headerText="Nom Package">
+        <h:outputText value="#{package.nom}" />
+    </p:column>
+      <p:column filterBy="#{package.codePakage}" filterMatchMode="contains" headerText="Description Package">
+        <h:outputText value="#{package.codePakage}" />
+    </p:column>
+    <p:column filterBy="#{day.journee}" filterMatchMode="contains" headerText="Jours">
+    <ui:repeat var="day" value="#{package.jours}">
+        <h:outputText value="#{day.journee}   " />
+        </ui:repeat> 
+    </p:column>
+  
+    <p:column filterBy="#{package.nomUtilisateur}" filterMatchMode="contains" headerText="Utilisateur">
+        <h:outputText value="#{package.nomUtilisateur}" />
+    </p:column>
+
+     <p:column filterBy="#{package.dateModif}" filterMatchMode="contains" headerText="Date Insertion">
+        <h:outputText value="#{package.dateModif}" />
+    </p:column>
+         <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{package}" target="#{package_jour.packagejour1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{package_jour.deletePackage}"  >
+                <f:setPropertyActionListener value="#{package}" target="#{package_jour.packagejour1}" />
+            </p:commandButton>
+        </p:column>
+     
+    
+      
+   <f:facet name="footer">
+
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+        
+       
+        </f:facet>
+</p:dataTable>
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+			
+    <p:outputLabel value="Nom" />
+    <p:inputText value="#{package_jour.packagejour.nom}" ></p:inputText> 
+    <p:outputLabel value="Descrition" />
+    <p:inputText value="#{package_jour.packagejour.codePakage}" ></p:inputText> 
+     <h3 style="margin-top:0px">Choisir Journée</h3>
+    <p:selectManyCheckbox id="basic" value="#{package_jour.selectedConsoles}">
+        <f:selectItem itemLabel="Lundi" itemValue="monday" />
+        <f:selectItem itemLabel="Mardi" itemValue="tuesday" />
+        <f:selectItem itemLabel="Mercredi" itemValue="wednesday" />
+        <f:selectItem itemLabel="Jeudi" itemValue="thursday" />
+        <f:selectItem itemLabel="Vendredi" itemValue="friday" />
+        <f:selectItem itemLabel="Samedi" itemValue="saturday" />
+        <f:selectItem itemLabel="Dimanche" itemValue="sunday" />
+    </p:selectManyCheckbox>
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{package_jour.addPackage}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty package_jour.packagejour1}" columnClasses="label,value" columns="2">
+       			
+    <p:outputLabel value="Nom" />
+    <p:inputText value="#{package_jour.packagejour1.nom}" ></p:inputText> 
+    <p:outputLabel value="Descrition" />
+    <p:inputText value="#{package_jour.packagejour1.codePakage}" ></p:inputText> 
+     <h3 style="margin-top:0px">Choisir Journée</h3>
+    <p:selectManyCheckbox id="basic1" value="#{package_jour.selectedConsoles1}">
+        <f:selectItem itemLabel="Lundi" itemValue="monday" />
+        <f:selectItem itemLabel="Mardi" itemValue="tuesday" />
+        <f:selectItem itemLabel="Mercredi" itemValue="wednesday" />
+        <f:selectItem itemLabel="Jeudi" itemValue="thursday" />
+        <f:selectItem itemLabel="Vendredi" itemValue="friday" />
+        <f:selectItem itemLabel="Samedi" itemValue="saturday" />
+        <f:selectItem itemLabel="Dimanche" itemValue="sunday" />
+    </p:selectManyCheckbox> 
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{package_jour.modifPackage()}" oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+			
+	</h:form>		
+			</ui:define>
+			</ui:composition>

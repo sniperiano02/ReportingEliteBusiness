@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"> 
+
+<h:head>
+<h:outputStylesheet name="styles.css" library="css"></h:outputStylesheet>
+</h:head> 
+<body> 
+<h:form id="login">
+
+    <h1 id="ff-proof" class="ribbon">RafTools &nbsp;&nbsp;</h1>
+
+   
+    <fieldset id="inputs">
+
+        <p:inputText   onblur="if(this.value=='')this.value='Pseudo ID';" onfocus="if(this.value=='Pseudo ID')this.value='';" value="#{login_bean.user.ULogin}" />
+
+        <p:password id="password"  onblur="if(this.value=='')this.value='Mot de passe';" onfocus="if(this.value=='Mot de passe')this.value='';" value="#{login_bean.user.UPwd}"/>
+
+    </fieldset>
+
+    <fieldset id="actions">
+
+           <p:commandButton id="submit" value="Login" update="@form" ajax="true"  actionListener="#{login_bean.authenticate}"/>
+
+       <p class="option"><a href="#">Mot de pass oubli&eacute;</a>&nbsp;&nbsp;</p>
+
+    </fieldset>
+
+
+
+
+<p:growl id="msg" showDetail="true" life="3000" />
+
+           </h:form>
+            
+                                 
+</body> 
+</html>

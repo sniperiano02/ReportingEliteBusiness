@@ -1,0 +1,122 @@
+ <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org"
+                 xmlns:pe="http://primefaces.org/ui/extensions">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{arpmRoaming.choix_periode}" >
+		 <p:ajax listener="#{arpmRoaming.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par Heure" itemValue="Par Heure" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="Type" >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{arpmRoaming.choix_Voix}" >
+		<p:ajax listener="#{arpmRoaming.handlechange1}" event="change" update="@form" process="@this"/>
+		<f:selectItems value="#{arpmRoaming.listeVoix}" var="voix" itemLabel="#{voix}" itemValue="#{voix}" />
+            
+		
+		</p:selectOneMenu>
+		
+		
+		</p:panelGrid>
+		</p:panel>
+	
+	
+		<p:panel header="Plan Tarifaire">
+			<p:panelGrid columns="1" >
+		
+		<p:selectOneMenu value="#{arpmRoaming.plan}" >
+		<p:ajax listener="#{arpmRoaming.handlechange1}" event="change" update="@form" process="@this"/>
+		<f:selectItem itemLabel="" itemValue="" />
+		<f:selectItems value="#{arpmRoaming.planTarifaires}" var="type" itemLabel="#{type.planTarifaire}" itemValue="#{type.codePlanTarifaire}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{arpmRoaming.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+		<p:menuButton value="Options">
+        <p:menuitem value="Creer Votre propre Rapport"  icon="ui-icon-disk"/>
+        <p:menuitem value="Voir Un rapport Existant"  icon="ui-icon-arrowrefresh-1-w"/>
+        
+        
+    </p:menuButton>
+		
+			<p:outputPanel id="ColLineChart1" rendered="#{arpmRoaming.chartDisplayed}">
+	<div class="ui-grid-row"   >
+	
+		<hf:chart  type="line" subTitle="#{arpmRoaming.subTitle}" title="Rapport ARPM Roaming"  >
+		<hf:chartSerie name="Tarif Moyen" value="#{arpmRoaming.resultarpmRoaming}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		
+		<hf:chartAxis title="Tarif Moyen" position="w" min="0" ></hf:chartAxis>
+		</hf:chart>
+		
+		</div>
+		
+		<p:dataTable  value="#{arpmRoaming.resultarpmRoaming}" var="cdr" paginator="true" rows="8"     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl2">
+          <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl2" fileName="RpDuree" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter type="pdf" target="tbl2" fileName="RpDuree"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column headerText="Date">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+     <p:column headerText="Tarif Moyen">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+     <p:column headerText="Nb Appel">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+     <p:column headerText="Duree Total">
+        <h:outputText value="#{cdr[3]}" />
+    </p:column>
+     <p:column headerText="Revenue Total">
+        <h:outputText value="#{cdr[4]}" />
+    </p:column>
+		</p:dataTable>
+		</p:outputPanel>
+				
+		</p:layoutUnit>
+		 <p:blockUI block="layoutUnit" trigger="btn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</p:layout>
+		
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>
+		

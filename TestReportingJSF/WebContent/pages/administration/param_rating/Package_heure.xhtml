@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+           	
+			<ui:define name="pageTitle">Gestion Package Heure</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+			<h1 style="text-align:center;"></h1>
+			
+		
+			<p:dataTable  id="singleDT"   rowKey="#{package.id}" var="package" value="#{package_heure.liste_package}"  >
+    <f:facet name="header" >
+    <h:outputText value="Gestion Package Heure" />
+    </f:facet>
+    <p:column filterBy="#{package.nom}" filterMatchMode="contains" headerText="Nom Package">
+        <h:outputText value="#{package.nom}" />
+    </p:column>
+      <p:column filterBy="#{package.codeInterval}" filterMatchMode="contains" headerText="Description Package">
+        <h:outputText value="#{package.codeInterval}" />
+    </p:column>
+    <p:column filterBy="#{package.debutInterval}" filterMatchMode="contains" headerText="Intervalle Debut">
+   
+        <h:outputText value="#{package.debutInterval}   " />
+      
+    </p:column>
+    <p:column filterBy="#{package.finInterval}" filterMatchMode="contains" headerText="Intervalle Fin">
+   
+        <h:outputText value="#{package.finInterval}   " />
+      
+    </p:column>
+  
+    <p:column filterBy="#{package.nomUtilisateur}" filterMatchMode="contains" headerText="Utilisateur">
+        <h:outputText value="#{package.nomUtilisateur}" />
+    </p:column>
+
+     <p:column filterBy="#{package.dateModif}" filterMatchMode="contains" headerText="Date Insertion">
+        <h:outputText value="#{package.dateModif}" />
+    </p:column>
+          <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{package}" target="#{package_heure.package_heure1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{package_heure.supprimerPackage}"  >
+                <f:setPropertyActionListener value="#{package}" target="#{package_heure.package_heure1}" />
+            </p:commandButton>
+        </p:column>
+     
+    
+      
+   <f:facet name="footer">
+   
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+
+        
+     
+        </f:facet>
+</p:dataTable>
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+			
+    <p:outputLabel value="Nom" />
+    <p:inputText value="#{package_heure.package_heure.nom}" ></p:inputText> 
+    <p:outputLabel value="Description" />
+    <p:inputText value="#{package_heure.package_heure.codeInterval}" ></p:inputText> 
+      <p:outputLabel value="Debut Intervalle" />
+   <p:spinner value="#{package_heure.package_heure.debutInterval}" min="0" max="23" />
+     <p:outputLabel value="Fin Intervalle" />
+   <p:spinner value="#{package_heure.package_heure.finInterval}" min="0" max="23"></p:spinner>
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{package_heure.ajouterPackage}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg3').hide()" />
+    </h:panelGrid>
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty package_heure.package_heure1}" columnClasses="label,value" columns="2">
+       			
+    <p:outputLabel value="Nom" />
+    <p:inputText value="#{package_heure.package_heure1.nom}" ></p:inputText> 
+    <p:outputLabel value="Description" />
+    <p:inputText value="#{package_heure.package_heure1.codeInterval}" ></p:inputText> 
+      <p:outputLabel value="Debut Intervalle" />
+   <p:spinner value="#{package_heure.package_heure1.debutInterval}" min="0" max="23" />
+     <p:outputLabel value="Fin Intervalle" />
+   <p:spinner value="#{package_heure.package_heure1.finInterval}" min="0" max="23"></p:spinner>
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{package_heure.modifPackage}" oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+			
+	</h:form>		
+			</ui:define>
+			</ui:composition>

@@ -1,0 +1,79 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent" >
+		<h:form  id="form1" >
+		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{mou_pop.choix_periode}" >
+		 <p:ajax listener="#{mou_pop.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+	 <f:selectItem itemLabel="Par An" itemValue="Par An" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+           <f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+	
+	
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{mou_pop.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+ 
+ 
+ 
+ 
+		<p:panel rendered="#{mou_pop.chartDisplayed}"  >
+		
+		<hf:chart   type="line" subTitle="#{mou_pop.subTitle}"  title="MOU "   >
+		<hf:chartSerie   name="MOU" value="#{mou_pop.listeArpu}" var="point" point="#{point[3]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		
+		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
+		
+		</hf:chart>
+		</p:panel>
+		
+          <p:dataTable rendered="#{mou_pop.chartDisplayed}"  value="#{mou_pop.listeArpu}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" >
+		  <p:column headerText="Date">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+     <p:column headerText="MOU">
+        <h:outputText value="#{cdr[3]}" />
+    </p:column>
+     <p:column headerText="Minutes ">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+    <p:column headerText="Nombre du Parc ">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+   
+		</p:dataTable>
+        
+
+		</p:layoutUnit>
+		 <p:blockUI block="layoutUnit" trigger="btn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</p:layout>
+		
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>
+
+

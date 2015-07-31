@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+	
+				<p:dataTable var="alarme" id="singleDT" value="#{alarmes_bean.liste_alarme}"  rowKey="#{alarme.id}"   selectionMode="single" selection="#{alarmes_bean.alertpro1}"  >
+		<f:facet name="header" >
+    <h:outputText value="Liste des Alarmes" />
+    </f:facet>
+				<p:column headerText="Noeud">
+        <h:outputText value="#{alarme.noeud}" />
+    </p:column>
+				 <p:column headerText="Type Alerte">
+        <h:outputText value="#{alarme.typeAl}" />
+    </p:column>
+     <p:column headerText="Seuil">
+        <h:outputText value="#{alarme.seuil}" />
+    </p:column>
+     <p:column headerText="Flag">
+        <h:outputText value="#{alarme.flag}" />
+    </p:column>
+    <p:column headerText="Repetition Alerte">
+        <h:outputText value="#{alarme.repAlert}" />
+    </p:column>
+     		<p:column headerText="Description">
+        <h:outputText value="#{alarme.nomAlert}" />
+    </p:column>
+  
+				
+				</p:dataTable>
+    
+ 
+	</h:form>		
+</ui:define>
+</ui:composition>

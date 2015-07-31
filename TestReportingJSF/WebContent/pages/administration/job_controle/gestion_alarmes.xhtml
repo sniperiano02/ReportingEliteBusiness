@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+	
+				<p:dataTable var="alarme" id="singleDT" value="#{alarmes_bean.liste_alarme}"  rowKey="#{alarme.id}"   selectionMode="single" selection="#{alarmes_bean.alertpro1}"  >
+		<f:facet name="header" >
+    <h:outputText value="Gestion Alarme" />
+    </f:facet>
+				<p:column headerText="Noeud">
+        <h:outputText value="#{alarme.noeud}" />
+    </p:column>
+				 <p:column headerText="Type Alerte">
+        <h:outputText value="#{alarme.typeAl}" />
+    </p:column>
+     <p:column headerText="Seuil">
+        <h:outputText value="#{alarme.seuil}" />
+    </p:column>
+     <p:column headerText="Flag">
+        <h:outputText value="#{alarme.flag}" />
+    </p:column>
+    <p:column headerText="Repetition Alerte">
+        <h:outputText value="#{alarme.repAlert}" />
+    </p:column>
+     		<p:column headerText="Description">
+        <h:outputText value="#{alarme.nomAlert}" />
+    </p:column>
+      <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{alarme}" target="#{alarmes_bean.alertpro1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{alarmes_bean.deleteALert}"  >
+                <f:setPropertyActionListener value="#{alarme}" target="#{alarmes_bean.alertpro1}" />
+            </p:commandButton>
+        </p:column>
+    <f:facet name="footer">
+   
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+  
+             
+       
+        </f:facet>
+				
+				</p:dataTable>
+    
+ <p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+    
+    <p:outputLabel value="Noeud" />
+   <p:selectOneMenu value="#{alarmes_bean.alertpro.noeud}"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" noSelectionOption="true" />
+	  <f:selectItems value="#{alarmes_bean.liste_noeud}" var="noeud" itemLabel="#{noeud}" itemValue="#{noeud}"/>
+	</p:selectOneMenu>
+	 <p:outputLabel value="Flag" />
+   <p:selectOneMenu value="#{alarmes_bean.alertpro.flag}"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" noSelectionOption="true" />
+	  <f:selectItem  itemLabel="0" itemValue="0"/>
+	  <f:selectItem  itemLabel="1" itemValue="1"/>
+	</p:selectOneMenu>
+    <p:outputLabel value="Seuil" />
+    <p:spinner value="#{alarmes_bean.alertpro.seuil}" /> 
+     
+     <p:outputLabel value="Description" />
+    <p:inputText value="#{alarmes_bean.alertpro.nomAlert}" ></p:inputText> 
+     <p:outputLabel value="Reptition Alerte" />
+    <p:spinner value="#{alarmes_bean.alertpro.repAlert}" /> 
+     
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{alarmes_bean.addAlert}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty alarmes_bean.alertpro1}"  columnClasses="label,value" columns="2">
+  
+    <p:outputLabel value="Noeud" />
+   <p:selectOneMenu value="#{alarmes_bean.alertpro1.noeud}"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" noSelectionOption="true" />
+	  <f:selectItems value="#{alarmes_bean.liste_noeud}" var="noeud" itemLabel="#{noeud}" itemValue="#{noeud}"/>
+	</p:selectOneMenu>
+	 <p:outputLabel value="Flag" />
+   <p:selectOneMenu value="#{alarmes_bean.alertpro1.flag}"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" noSelectionOption="true" />
+	  <f:selectItem  itemLabel="0" itemValue="0"/>
+	  <f:selectItem  itemLabel="1" itemValue="1"/>
+	</p:selectOneMenu>
+    <p:outputLabel value="Seuil" />
+    <p:spinner value="#{alarmes_bean.alertpro1.seuil}" /> 
+     
+     <p:outputLabel value="Description" />
+    <p:inputText value="#{alarmes_bean.alertpro1.nomAlert}" ></p:inputText> 
+     <p:outputLabel value="Reptition Alerte" />
+    <p:spinner value="#{alarmes_bean.alertpro1.repAlert}" /> 
+    <h:outputText value="Utilisateur" />
+			 <p:selectManyCheckbox id="basic" value="#{alarmes_bean.liste_selected_user}" layout="grid"  columns="5" converter="omnifaces.SelectItemsConverter">
+        <f:selectItems value="#{alarmes_bean.liste_users}" var="usr" itemValue="#{usr}" itemLabel="#{usr.UMail}" />
+    </p:selectManyCheckbox>
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{alarmes_bean.updateAlert}"  oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+	</h:form>		
+</ui:define>
+</ui:composition>

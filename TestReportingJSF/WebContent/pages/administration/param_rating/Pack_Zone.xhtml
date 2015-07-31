@@ -1,0 +1,207 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+		
+		
+			<p:dataTable  id="singleDT" rows="7" paginator="true"    var="user" value="#{package_zone.liste_package_zone}" rowKey="#{user.id}" selection="#{package_zone.pack1}" selectionMode="single"  >
+    <f:facet name="header" >
+    <h:outputText value="Gestion Pack Zone" />
+    </f:facet>
+    <p:column filterBy="#{user.codePackage}" filterMatchMode="contains" headerText="Code Package">
+        <h:outputText value="#{user.codePackage}" />
+    </p:column>
+    <p:column filterBy="#{user.nom}" filterMatchMode="contains" headerText="Nom Package">
+        <h:outputText value="#{user.nom}" />
+    </p:column> 
+
+ <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail" oncomplete="PF('dlgModifPack').show();" >
+                <f:setPropertyActionListener value="#{user}" target="#{package_zone.pack1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{package_zone.supprimer_pack}"  >
+                <f:setPropertyActionListener value="#{user}" target="#{package_zone.pack1}" />
+            </p:commandButton>
+        </p:column>
+    
+      
+   <f:facet name="footer">
+   <h:panelGrid columns="2" >
+   
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter"  />
+                                <p:commandButton update=":form1:packDetail" actionListener="#{package_zone.loadZones}" oncomplete="PF('dlgDetailsPack').show();PF('bui').hide();" onclick="PF('bui').show();" icon="ui-icon-search" value="Details"/>
+             
+        </h:panelGrid>
+        </f:facet>
+</p:dataTable>
+
+			
+			<p:dialog header="Ajout Package Zone" widgetVar="dlgajoutPack" showEffect="explode" hideEffect="bounce" >
+			
+			<h:panelGrid>
+			 
+    <p:outputLabel value="Code Package" />
+    <p:inputText value="#{package_zone.pack.codePackage}"  >   
+     
+     </p:inputText>
+    
+    <p:outputLabel value="Nom" />
+    <p:inputText value="#{package_zone.pack.nom}" ></p:inputText> 
+   
+    <p:commandButton value="Ajouter" actionListener="#{package_zone.createpack}"  update="singleDT"  oncomplete="PF('dlgajoutPack').hide();"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+    
+</p:dialog>
+<p:dialog header="Modifier" widgetVar="dlgModifPack" showEffect="explode" hideEffect="bounce" dynamic="true" >
+			<p:outputPanel id="planDetail" style="text-align:center;">
+			<h:panelGrid>
+			 
+    <p:outputLabel value="Code Package" />
+    <p:inputText value="#{package_zone.pack1.codePackage}"  >   
+     
+     </p:inputText>
+    
+    <p:outputLabel value="Nom" />
+    <p:inputText value="#{package_zone.pack1.nom}" ></p:inputText> 
+   
+    <p:commandButton value="Valider" actionListener="#{package_zone.modifier_pack}" update="singleDT"   oncomplete="PF('dlgModifPack').hide();"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+
+
+
+<p:dialog header="Details Package Zone" widgetVar="dlgDetailsPack" showEffect="explode" hideEffect="bounce"  >
+			  <p:outputPanel id="packDetail" style="text-align:center;">
+			 
+    <p:dataTable id="zonesDT"  value="#{package_zone.list_zone_package}" var="zone" selectionMode="single" rowKey="#{zone.id}"  selection="#{package_zone.selected_zone}">
+    <f:facet name="header" >
+    <h:outputText value="Gestion Zones " />
+    </f:facet>
+    <p:column filterBy="#{zone.nom}" filterMatchMode="contains" headerText="Nom Zone">
+        <h:outputText value="#{zone.nom}" />
+    </p:column>
+     <p:column filterBy="#{zone.codeZones}" filterMatchMode="contains" headerText="Code Zone">
+        <h:outputText value="#{zone.codeZones}" />
+    </p:column>
+      <p:column style="width:32px;text-align: center">
+             <p:commandButton process="zonesDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:zoneDetail" oncomplete="PF('dlgmodifZone').show();" >
+                <f:setPropertyActionListener value="#{zone}" target="#{package_zone.selected_zone}" />
+            </p:commandButton>
+        </p:column>
+        <p:column style="width:32px;text-align: center">
+                        <p:commandButton process=":form1:zonesDT" update=":form1:zonesDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{package_zone.deleteZone}"  >
+                <f:setPropertyActionListener value="#{zone}" target="#{package_zone.selected_zone}" />
+            </p:commandButton>
+        </p:column>
+    
+    
+      
+
+   <f:facet name="footer">
+   <p:panelGrid columns="2">
+   
+                           <p:commandButton process="zonesDT" update=":form1:zoneDestinationDT" actionListener="#{package_zone.loadDestinations}" oncomplete="PF('dlgallzonedest').show()" icon="ui-icon-search" value="Details"/>
+             <p:commandButton process="zonesDT" icon="ui-icon-plusthick" value="Ajouter"  oncomplete="PF('dlgajoutZone').show();" />
+        </p:panelGrid>
+        </f:facet>
+  </p:dataTable>
+  </p:outputPanel>
+</p:dialog  >
+<p:dialog header="Ajout Zone " widgetVar="dlgajoutZone" showEffect="explode" hideEffect="bounce" dynamic="true">
+
+<h:panelGrid>
+ <p:outputLabel value="Zone" for="zonecode" />
+    <p:inputText id="zonecode" value="#{package_zone.zone.codeZones}"  >   
+     </p:inputText>
+    
+    <p:outputLabel value="Nom"  for="nom"/>
+    <p:inputText id="nom"  value="#{package_zone.zone.nom}"  ></p:inputText> 
+   
+       <p:commandButton  value="Ajouter"  actionListener="#{package_zone.addZOne}" update="zonesDT"   oncomplete="PF('dlgajoutZone').hide();"/>
+    <p:commandButton value="Annuler" />
+  
+    </h:panelGrid>
+   
+</p:dialog>
+
+<p:dialog header="Modifier Zone " widgetVar="dlgmodifZone" showEffect="explode" hideEffect="bounce" dynamic="true">
+<p:outputPanel id="zoneDetail" style="text-align:center;">
+<h:panelGrid>
+ <p:outputLabel value="Zone" for="zonecode1" />
+    <p:inputText id="zonecode1" value="#{package_zone.selected_zone.codeZones}"  >   
+     </p:inputText>
+    
+    <p:outputLabel value="Nom"  for="nom1"/>
+    <p:inputText id="nom1"  value="#{package_zone.selected_zone.nom}"  ></p:inputText> 
+   
+       <p:commandButton value="Valider"  actionListener="#{package_zone.modifZone}" update="zonesDT"  oncomplete="PF('dlgmodifZone').hide();"/>
+    <p:commandButton value="Annuler" />
+  
+    </h:panelGrid>
+   </p:outputPanel>
+</p:dialog>
+
+
+<p:dialog header="Liste Zone Destination" widgetVar="dlgallzonedest" showEffect="explode" hideEffect="bounce"    >
+  <p:dataTable id="zoneDestinationDT"  value="#{package_zone.liste_zone_destination}" var="zonedest" selectionMode="single" rowKey="#{zonedest.id}" selection="#{package_zone.zonedest}">
+    
+    
+    
+    <p:column filterBy="#{zonesdest}" filterMatchMode="contains" headerText="Nom Zone">
+        <h:outputText value="#{zonedest.zone.nom}" />
+    </p:column>
+     <p:column filterBy="#{zonedest.destination.dest}" filterMatchMode="contains" headerText="Destination">
+        <h:outputText value="#{zonedest.destination.dest}" />
+    </p:column>
+   <f:facet name="footer">
+   <p:panelGrid columns="3">
+       
+             <p:commandButton process="zoneDestinationDT"  icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlgAjoutZoneDest').show()" />
+                     <p:commandButton process="zoneDestinationDT" update="zoneDestinationDT" icon="ui-icon-plusthick" value="Supprimer" actionListener="#{package_zone.deleteDestination}"/>
+        </p:panelGrid>
+        </f:facet>
+    </p:dataTable>
+
+</p:dialog>
+
+<p:dialog header="Ajout Zone Destination" widgetVar="dlgAjoutZoneDest" showEffect="explode" hideEffect="bounce" dynamic="true"  >
+		<h:form >
+			<h:panelGrid>
+  <p:outputLabel value="Date Debut Validité" />
+     <p:calendar value="#{package_zone.date1}">
+      <p:ajax event="dateSelect" listener="#{package_zone.change}" update="pickList" />
+     </p:calendar>
+	  
+	    <p:outputLabel value="Destination" for="pickList" />
+     <p:pickList id="pickList" value="#{package_zone.allTabs}" converter="entityConverter" var="tab" itemLabel="#{tab.dest}" itemValue="#{tab}" >
+     </p:pickList>
+    
+     <p:commandButton  value="Valider"  actionListener="#{package_zone.addZonesDestination}" process="@form" update=":form1:zoneDestinationDT"  oncomplete="PF('dlgAjoutZoneDest').hide();"/>
+    <p:commandButton value="Annuler" oncomplete="PF('dlg3').hide()" />
+	   
+	  </h:panelGrid>
+	    </h:form>
+   
+   
+</p:dialog>
+
+
+ <p:blockUI block="singleDT" widgetVar="bui">
+        Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+	</h:form>		
+			</ui:define>
+			</ui:composition>

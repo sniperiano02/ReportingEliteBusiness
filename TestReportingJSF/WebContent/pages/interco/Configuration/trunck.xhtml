@@ -1,0 +1,136 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+	
+				<p:dataTable var="trunc" id="singleDT" paginator="true" rows="10" value="#{trunck.lst_trunck}"  rowKey="#{trunc.id}"   selectionMode="single" selection="#{trunck.trunck1}"  >
+				    <f:facet name="header">
+  				 	<p:outputLabel value="Gestion Des Truncks"></p:outputLabel>
+        			</f:facet>
+					<p:column headerText="ID Trunck">
+       				 <h:outputText value="#{trunc.idTrunck}" />
+    				</p:column>
+				 	<p:column headerText="Nom">
+       				 <h:outputText value="#{trunc.nom}" />
+    				</p:column>
+     				<p:column headerText="Noeud">
+        			 <h:outputText value="#{trunc.noeud}" />
+    				</p:column>
+    				<p:column headerText="Date début">
+       				 <h:outputText value="#{trunc.dateDebut}" />
+    				</p:column>
+    				<p:column headerText="Date fin">
+       				 <h:outputText value="#{trunc.dateFin}" />
+    				</p:column>
+    				<p:column headerText="Operateur">
+       				 <h:outputText value="#{trunc.operateur.operateur}" />
+    				</p:column>
+    				<p:column headerText="International">
+       				 <h:outputText value="#{trunc.international}" />
+    				</p:column>
+    				<p:column headerText="Utilisateur">
+      				 <h:outputText value="#{trunc.nomUtilisateur}" />
+    				</p:column>
+   					<p:column headerText="Date Creation">
+       				 <h:outputText value="#{trunc.dateModif}" />
+    				</p:column>
+    
+    	<f:facet name="footer">
+   			<p:panelGrid columns="3">
+   			
+            	<p:commandButton  process="singleDT" value="Modifier"  oncomplete="PF('dlg5').show()"  />
+             	<p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter"  oncomplete="PF('dlg3').show()" />
+          		<p:commandButton  process="singleDT" update="singleDT"  value="Supprimer" actionListener="#{trunck.SupprimerTrunck()}"  />
+             
+        	</p:panelGrid>
+        </f:facet>
+				
+				</p:dataTable>
+				
+  		<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce"  width="500px">
+			<h:panelGrid>
+				<p:outputLabel value="ID Trunck" />
+     				<p:inputText value="#{trunck.trunck.idTrunck}"  >
+     				</p:inputText>
+     				<p:outputLabel value="Nom" />
+     				<p:inputText value="#{trunck.trunck.nom}"  >
+     				</p:inputText>    				
+     				
+     					<p:outputLabel value="Date debut" />
+     				<p:calendar value="#{trunck.trunck.dateDebut}"  >
+     				</p:calendar>
+     				<p:outputLabel value="Date fin" />
+     				<p:calendar value="#{trunck.trunck.dateFin}"  >
+     				</p:calendar>
+     				<p:outputLabel value="Noeud" />
+					   <p:selectOneMenu value="#{trunck.trunck.noeud}" converter="omnifaces.SelectItemsConverter"    >
+					   <f:selectItem itemLabel="Choisir..." itemValue="" />
+						  <f:selectItems value="#{trunck.lst_noeud}" var="type" itemLabel="#{type.nom}" itemValue="#{type.codeNoeud}" />	
+	      
+	</p:selectOneMenu>
+		<p:outputLabel value="Operateur" />
+   <p:selectOneMenu value="#{trunck.trunck.operateur}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{trunck.lst_oper}" var="type" itemLabel="#{type.operateur}" itemValue="#{type}" />
+	   
+	      
+	</p:selectOneMenu>
+     
+	
+    <p:commandButton process="@this" value="Valider" update=":form1:singleDT" actionListener="#{trunck.ajouterTrunck}"   oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg3').hide()" />
+    </h:panelGrid>
+    
+       
+</p:dialog>
+
+<p:dialog header="Details" widgetVar="dlg5"  showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="out1">
+	<p:outputLabel value="ID Trunck" />
+     				<p:inputText value="#{trunck.trunck.idTrunck}"  >
+     				</p:inputText>
+     				<p:outputLabel value="Nom" />
+     				<p:inputText value="#{trunck.trunck.nom}"  >
+     				</p:inputText>    				
+     				
+     				<p:outputLabel value="Noeud" />
+					   <p:selectOneMenu value="#{trunck.trunck.noeud}" converter="omnifaces.SelectItemsConverter"    >
+					   <f:selectItem itemLabel="Choisir..." itemValue="" />
+						  <f:selectItems value="#{trunck.lst_noeud}" var="type" itemLabel="#{type.nom}" itemValue="#{type}" />
+						  	</p:selectOneMenu>
+					<p:outputLabel value="Date debut" />
+     				<p:inputText value="#{trunck.trunck.dateDebut}"  >
+     				</p:inputText> 	
+     				<p:outputLabel value="Date fin" />
+     				<p:inputText value="#{trunck.trunck.dateFin}"  >
+     				</p:inputText>    				
+	      
+
+		<p:outputLabel value="Operateur" />
+   <p:selectOneMenu value="#{trunck.trunck.operateur}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{trunck.lst_oper}" var="type" itemLabel="#{type.operateur}" itemValue="#{type.id}" />
+	   
+	      
+	</p:selectOneMenu>
+     
+	
+   
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{trunck.ModifierTrunck}"  oncomplete="PF('dlg5').hide()"/>
+    <p:commandButton value="Annuler"  onclick="PF('dlg5').hide()"/>
+    
+</p:outputPanel>
+</p:dialog>
+	
+	
+	
+	</h:form>		
+</ui:define>
+</ui:composition>

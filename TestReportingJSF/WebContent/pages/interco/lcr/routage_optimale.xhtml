@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">Routage Optimale</ui:define>	
+
+			<ui:define name="PageContent">
+		
+			<h:form id="form1">
+			<p:dataTable id="singleDT" value="#{routage.listeroutage}" var="offre" selectionMode="single" rowKey="#{offre.id}" selection="#{lcr_offre_manage.fichierlcrprocess}" >
+			<f:facet name="header">
+			 <h:outputText value="Routage Optimale" />
+			</f:facet>
+			<p:column headerText="Pays">
+			<h:outputText value="#{offre.pays.nom}" />
+			</p:column>
+			<p:column headerText="Destination">
+			<h:outputText value="#{offre.destination}" />
+			</p:column>
+			<p:column headerText="Operateur 1" filterMatchMode="exact" filterBy="#{offre.operateur1.operateur}" filterOptions="#{lcr_offre_manage.lcrOffreFilterOptions}">
+			<h:outputText value="#{offre.operateur1.operateur}" />
+			</p:column>
+			<p:column filterBy="#{offre.codeDest2}" filterMatchMode="contains"  headerText="Code Destination">
+			<h:outputText value="#{offre.codeDest1}" />
+			</p:column>
+			<p:column filterBy="#{offre.codeDest2}" filterMatchMode="contains"  headerText="Qualité 1">
+			<h:outputText value="#{offre.qualite1}" />
+			</p:column>
+			<p:column filterBy="#{offre.minTarifs1}" filterMatchMode="contains"  headerText="Min Tarif 1">
+			<h:outputText value="#{offre.minTarifs1}" />
+			</p:column>
+			<p:column filterBy="#{offre.maxTarifs1}" filterMatchMode="contains"  headerText="Max Tarif 1">
+			<h:outputText value="#{offre.maxTarifs1}" />
+			</p:column>
+				<p:column headerText="Operateur 2" filterMatchMode="exact" filterBy="#{offre.operateur2.operateur}" filterOptions="#{lcr_offre_manage.lcrOffreFilterOptions}">
+			<h:outputText value="#{offre.operateur2.operateur}" />
+			</p:column>
+			<p:column  filterBy="#{offre.codeDest2}" filterMatchMode="contains" headerText="Code Destination 2">
+			<h:outputText value="#{offre.codeDest2}" />
+			</p:column>
+			<p:column filterBy="#{offre.qualite2}" filterMatchMode="contains"  headerText="Qualité 2">
+			<h:outputText value="#{offre.qualite2}" />
+			</p:column>
+			<p:column filterBy="#{offre.minTarifs2}" filterMatchMode="contains"  headerText="Min Tarif 2">
+			<h:outputText value="#{offre.minTarifs2}" />
+			</p:column>
+			<p:column filterBy="#{offre.maxTarifs2}" filterMatchMode="contains" headerText="Max Tarif 2">
+			<h:outputText value="#{offre.maxTarifs2}" />
+			</p:column>
+				<p:column headerText="Operateur 3" filterMatchMode="exact" filterBy="#{offre.operateur3.operateur}" filterOptions="#{lcr_offre_manage.lcrOffreFilterOptions}">
+			<h:outputText value="#{offre.operateur3.operateur}" />
+			</p:column>
+			<p:column  filterBy="#{offre.codeDest3}" filterMatchMode="contains" headerText="Code Destination 3">
+			<h:outputText value="#{offre.codeDest3}" />
+			</p:column>
+			<p:column filterBy="#{offre.qualite3}" filterMatchMode="contains"  headerText="Qualité 3">
+			<h:outputText value="#{offre.qualite3}" />
+			</p:column>
+			<p:column filterBy="#{offre.minTarifs3}" filterMatchMode="contains"  headerText="Min Tarif 3">
+			<h:outputText value="#{offre.minTarifs3}" />
+			</p:column>
+			<p:column filterBy="#{offre.maxTarifs3}" filterMatchMode="contains" headerText="Max Tarif 3">
+			<h:outputText value="#{offre.maxTarifs3}" />
+			</p:column>
+			
+			</p:dataTable>
+			
+			</h:form>
+			
+			
+			</ui:define>
+			</ui:composition>
+			
+

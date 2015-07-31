@@ -1,0 +1,142 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Export" rendered="#{taxe_transfert.chartDisplayed}">
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="dt1" fileName="RapportTransfert" datasetPadding="4" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="dt1" fileName="RapportTransfert" datasetPadding="4"  />
+            </h:commandLink>
+		</p:panel>
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{taxe_transfert.choix_periode}" >
+		 <p:ajax listener="#{taxe_transfert.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		 <f:selectItem itemLabel="Par Heure" itemValue="Par Heure" />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	
+		<p:panel header="Plan Tarifaire">
+			<p:panelGrid columns="1" >
+		
+		<p:selectOneMenu value="#{taxe_transfert.plan}" >
+		<p:ajax listener="#{taxe_transfert.handlechange}" event="change" update="@form" process="@this"/>
+		<f:selectItem itemLabel="" itemValue="" />
+		<f:selectItems value="#{taxe_transfert.plans}" var="type" itemLabel="#{type.planTarifaire}" itemValue="#{type.codePlanTarifaire}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+	
+	
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{taxe_transfert.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+		
+			<p:outputPanel id="ColLineChart1" rendered="#{taxe_transfert.chartDisplayed}">
+	<div class="ui-grid-row">
+	
+		<hf:chart  type="line" subTitle="#{taxe_transfert.subTitle}" title="Rapport Taxe Transfert"  >
+		<hf:chartSerie name="Nb Taxe" value="#{taxe_transfert.listeTaxeTransfert}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie name="Taxe Transfert" value="#{taxe_transfert.listeTaxeTransfert}" var="point" point="#{point[2]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		
+		
+		</hf:chart>
+		
+		</div>
+		
+		<p:dataTable id="dt1" value="#{taxe_transfert.listeTaxeTransfert}" var="cdr" selection="#{taxe_transfert.selectedRecon}" selectionMode="single" rowKey="#{cdr[0]}" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" >
+		  <p:column headerText="Date Appel">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+     <p:column headerText="Nb Transfert">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+     <p:column headerText="Taxe Transfert">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+    <f:facet name="footer"  >
+            <p:commandButton process="dt1" id="btnn"  actionListener="#{taxe_transfert.getDetail}" update="@form" icon="ui-icon-search" value="View" oncomplete="PF('DetailsDialog').show()"  />
+        </f:facet>
+		</p:dataTable>
+		</p:outputPanel>
+		
+				<p:dialog header="Details Taxe Transfert" widgetVar="DetailsDialog" rendered="#{taxe_transfert.detail_displayed}"    width="1043px">
+  
+            	<p:dataTable id="dt2"  value="#{taxe_transfert.listeDetailsTaxeTransfert}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16">
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="dt2" fileName="DetailsTransfert" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter type="pdf" target="dt2" fileName="DetailsTransfert"/>
+            </h:commandLink>
+
+        </f:facet>
+      
+		  <p:column headerText="Type Destination">
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column headerText="Plan Tarifaire">
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+     <p:column headerText="Nb Taxe">
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+     <p:column headerText="Duree Taxe">
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+   
+   
+		</p:dataTable>
+		
+  
+    </p:dialog>
+		</p:layoutUnit>
+		 <p:blockUI block="layoutUnit" trigger="btn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+     <p:blockUI block="layoutUnit" trigger="dt1:btnn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		
+		</p:layout>
+		
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>

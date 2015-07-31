@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form>
+	
+				<p:dataTable var="alarme" value="#{alarm_ser.liste_alarmes}" >
+				<p:column headerText="Serveur">
+        <h:outputText value="#{alarme.serveur.hostname}" />
+    </p:column>
+				 <p:column headerText="Type Alerte">
+        <h:outputText value="#{alarme.typeAl}" />
+    </p:column>
+     <p:column headerText="Description">
+        <h:outputText value="#{alarme.descAl}" />
+    </p:column>
+     <p:column headerText="Date Execution">
+        <h:outputText value="#{alarme.dateEx}" />
+    </p:column>
+				
+				</p:dataTable>
+    
+ 
+   
+    
+
+			
+		
+		
+</h:form>
+</ui:define>
+</ui:composition>

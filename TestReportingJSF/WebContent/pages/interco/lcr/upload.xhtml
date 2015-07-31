@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+		<style>
+    .animated .ui-progressbar-value { 
+        background-image: url("../resources/img/progress.gif"); 
+    		}
+		</style>
+			<h:form id="form1">
+			<p:panel id="pan1">
+			<p:panel>
+			<p:panelGrid columns="2">
+			<h:outputLabel value="Template" for="tempList" />
+			<p:selectOneMenu value="#{fileUploadView.template}" id="tempList" converter="omnifaces.SelectItemsConverter">
+			 <p:ajax listener="#{fileUploadView.change()}" event="change" update="@form" process="@this" />
+			<f:selectItem itemValue=" " itemLabel="Choisir..." />
+			<f:selectItems value="#{fileUploadView.list_template}" var="template" itemLabel="#{template.nomTemplate}" itemValue="#{template}"   />
+			
+			</p:selectOneMenu>
+			<h:outputLabel value="Date effective" for="calend" rendered="#{fileUploadView.dateDisplayed}" />
+			<p:calendar id="calend" value="#{fileUploadView.dateeffective}" rendered="#{fileUploadView.dateDisplayed}"></p:calendar>
+			<h:outputLabel value="Type" for="typ" />
+				<p:selectOneMenu id="typ" value="#{fileUploadView.type}"  >
+			<f:selectItem itemValue=" " itemLabel="Choisir..." />
+			<f:selectItem itemValue="Full" itemLabel="Full" />
+			<f:selectItem itemValue="Partial" itemLabel="Partial" />
+			</p:selectOneMenu>
+			  <p:fileUpload id="fileup" fileUploadListener="#{fileUploadView.handleFileUpload}" mode="advanced" dragDropSupport="false"
+           update="@form" sizeLimit="10000000" fileLimit="3" allowTypes="/(\.|\/)(xlsx|xls)$/" process="@this"  />
+           
+ 
+			
+			</p:panelGrid>
+			</p:panel>
+			
+			<p:dataTable id="dt1" value="#{fileUploadView.listTarif}" var="tarif" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16"  rendered="#{fileUploadView.dataTableDisplayed}">
+       
+        <p:column headerText="Destination">
+        <h:outputText value="#{tarif.destination}" />
+        </p:column>
+         <p:column headerText="Code Destination">
+        <h:outputText value="#{tarif.codeDest}" />
+        </p:column>
+         <p:column headerText="Tarif">
+        <h:outputText value="#{tarif.tarifs}" />
+        </p:column>
+          <p:column headerText="Date Validité">
+        <h:outputText value="#{tarif.dateValidite}" />
+        </p:column>
+         <p:column headerText="Qualité">
+        <h:outputText value="#{tarif.qualite}" />
+        </p:column>
+         <p:column headerText="Operateur">
+        <h:outputText value="#{tarif.operateur.operateur}" />
+        </p:column>
+          <p:column headerText="Pays">
+        <h:outputText value="#{tarif.pays.nom}" />
+        </p:column>
+          <p:column headerText="Groupe Destination">
+        <h:outputText value="#{tarif.groupDestination}" />
+        </p:column>
+           <p:column headerText="Nom Fichier">
+        <h:outputText value="#{tarif.nomFichier}" />
+        </p:column>
+        </p:dataTable>
+        <p:commandButton id="btn" value="Valider" update="@form" widgetVar="startButton2" onclick="PF('pbAjax').start();PF('startButton2').disable();"  rendered="#{fileUploadView.valideDisplayed}" actionListener="#{fileUploadView.launch}" process="@this"></p:commandButton>
+		
+   
+			 <p:blockUI block="pan1" trigger="btn" >
+			  Patientez<br />
+        <p:progressBar style="width:400px;height:40px;" widgetVar="pbAjax" ajax="true" value="#{fileUploadView.progress}" labelTemplate="{value}%" styleClass="animated" global="false">
+        <p:ajax event="complete" listener="#{fileUploadView.onComplete}" update="messages" oncomplete="PF('startButton2').enable()"/>
+    </p:progressBar>
+    </p:blockUI>
+    </p:panel>
+     <p:growl id="messages" showDetail="true" />
+			</h:form>
+		
+			</ui:define>
+			
+			</ui:composition>
+			

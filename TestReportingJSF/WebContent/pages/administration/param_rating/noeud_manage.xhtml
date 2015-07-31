@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+			<h1 style="text-align:center;"></h1>
+			
+		
+			<p:dataTable  id="singleDT"   rowKey="#{user.codeNoeud}" var="user" value="#{noeud_bean.liste_noeuds}"  >
+    <f:facet name="header" >
+    <h:outputText value="Gestion Noeud" />
+    </f:facet>
+    <p:column filterBy="#{user.codeNoeud}" filterMatchMode="contains" headerText="Code Noeud">
+        <h:outputText value="#{user.codeNoeud}" />
+    </p:column>
+    <p:column filterBy="#{user.nom}" filterMatchMode="contains" headerText="Nom">
+        <h:outputText value="#{user.nom}" />
+    </p:column>
+  <p:column filterBy="#{user.type}" filterMatchMode="contains" headerText="Type">
+        <h:outputText value="#{user.type}" />
+    </p:column>
+ 
+    <p:column filterBy="#{user.nomUtilisateur}" filterMatchMode="contains" headerText="Utilisateur">
+        <h:outputText value="#{user.nomUtilisateur}" />
+    </p:column>
+
+     <p:column filterBy="#{user.dateModif}" filterMatchMode="contains" headerText="Date Insertion">
+        <h:outputText value="#{user.dateModif}" />
+    </p:column>
+      <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{user}" target="#{noeud_bean.noeud1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{noeud_bean.DeleteNoeud()}"  >
+                <f:setPropertyActionListener value="#{user}" target="#{noeud_bean.noeud1}" />
+            </p:commandButton>
+        </p:column>
+    
+      
+   <f:facet name="footer">
+  
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+        
+       
+        </f:facet>
+</p:dataTable>
+
+			
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+			 
+    <p:outputLabel value="Code Noeud" />
+   <h:panelGroup>
+    <p:inputText value="#{noeud_bean.noeud.codeNoeud}" binding="#{noeud_bean.p}" >   
+     <p:ajax event="blur"
+                        onstart="$('#progressind').css('visibility','visible');"
+                        oncomplete="$('#progressind').css('visibility','hidden');"
+                        listener="#{noeud_bean.checkId()}"
+                        update="messages1" />
+     </p:inputText>
+     <img id="progressind" src="../../../resources/img/ajaxloadingbar.gif" width="20"
+                 style="margin-left: 10px;border:0px;visibility:hidden"  />
+                 </h:panelGroup>
+                 <p:messages id="messages1" showDetail="true" showSummary="true"
+                    closable="true" />
+    <p:outputLabel value="Nom" />
+    <p:inputText value="#{noeud_bean.noeud.nom}" ></p:inputText> 
+    <p:outputLabel value="Type" />
+    <p:inputText value="#{noeud_bean.noeud.type}" ></p:inputText> 
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{noeud_bean.addNoeud()}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty noeud_bean.noeud1}" columnClasses="label,value" columns="2">
+       <p:outputLabel value="Code Noeud" />
+       <h:panelGroup>
+    <p:inputText value="#{noeud_bean.noeud1.codeNoeud}" binding="#{noeud_bean.p1}" >    
+    <p:ajax event="blur"
+                        onstart="$('#progressind').css('visibility','visible');"
+                        oncomplete="$('#progressind').css('visibility','hidden');"
+                        listener="#{noeud_bean.checkId1()}"
+                        update="messages2" />
+     </p:inputText>
+     <img id="progressind" src="../../../resources/img/ajaxloadingbar.gif" width="20"
+                 style="margin-left: 10px;border:0px;visibility:hidden"  />
+                 </h:panelGroup>
+                 <p:messages id="messages2" showDetail="true" showSummary="true"
+                    closable="true" />
+    <p:outputLabel value="Nom" />
+    <p:inputText value="#{noeud_bean.noeud1.nom}" ></p:inputText> 
+    <p:outputLabel value="Type" />
+    <p:inputText value="#{noeud_bean.noeud1.type}" ></p:inputText> 
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{noeud_bean.updateNoeud()}" oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+	</h:form>		
+			</ui:define>
+			</ui:composition>

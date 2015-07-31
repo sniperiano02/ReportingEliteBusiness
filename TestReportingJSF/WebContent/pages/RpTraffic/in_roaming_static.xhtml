@@ -1,0 +1,272 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" 
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		<p:layout  onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" header="Menu" collapsible="true" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Export" rendered="#{in_roaming.chartDisplayed}">
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="tbl1,tbl2,tbl3" fileName="RapportRoamingIN" datasetPadding="4" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="tbl1,tbl2,tbl3" fileName="RapportMSC" datasetPadding="4"  />
+            </h:commandLink>
+		</p:panel>
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{in_roaming.choix_periode}" >
+		 <p:ajax listener="#{in_roaming.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par Heure" itemValue="Par Heure" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="Type" >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{in_roaming.choix_Voix}" >
+		<p:ajax listener="#{in_roaming.handlechange1}" event="change" update="@form" process="@this"/>
+		<f:selectItems value="#{in_roaming.listeVoix}" var="voix" itemLabel="#{voix}" itemValue="#{voix}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	
+			<p:panel header="Type Destination">
+			<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{in_roaming.choix_typeDest}" >
+		<p:ajax listener="#{in_roaming.handlechange1}" event="change" update="@form" process="@this"/>
+		<f:selectItems value="#{in_roaming.listetypeDest}" var="type" itemLabel="#{type}" itemValue="#{type}" />
+            
+		
+		</p:selectOneMenu>
+		
+		</p:panelGrid>
+		
+		</p:panel>
+		<p:panel header="Type Destination">
+			<p:panelGrid columns="1" >
+		
+		<p:selectOneMenu value="#{in_roaming.plan}" >
+		<p:ajax listener="#{in_roaming.handlechange1}" event="change" update="@form" process="@this"/>
+		<f:selectItem itemLabel="" itemValue="" />
+		<f:selectItems value="#{in_roaming.planTarifaires}" var="type" itemLabel="#{type.planTarifaire}" itemValue="#{type.codePlanTarifaire}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{in_roaming.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+	
+	  
+   <div class="ui-grid-row"  >
+		<div class="ui-grid-col-6"   >
+		<p:panel header=" "  rendered="#{in_roaming.chartDisplayed}">
+		<hf:chart  height="250px"  type="line" subTitle="#{in_roaming.subTitle}"  title="Rapport Traffic IN Roaming(Revenue)"   >
+		<hf:chartSerie   name="Revenue" value="#{in_roaming.staticListINLocal}" var="point" point="#{point[3]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie  name="Revenue Moyenne" value="#{in_roaming.staticListINLocal}" var="point1" point="#{point1[4]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
+		
+		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetailRevenue').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+		</p:panel>
+		</div>
+	<div class="ui-grid-col-6"   >
+		<p:panel header=""  rendered="#{in_roaming.chartDisplayed}">
+		<hf:chart  height="250px"  type="pie" title="R. du Traffic par Plan Tarifaire"  subTitle="#{in_roaming.subTitle}" >
+		<hf:chartSerie value="#{in_roaming.pie2.entrySet()}" var="point" point="#{point.value}"  tickLabel="#{point.key.toString()}"></hf:chartSerie>
+		
+		
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetailsPlan').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+	</p:panel>
+	</div>
+	</div>
+		  <div class="ui-grid-row"  >
+			
+		<p:panel header=""  rendered="#{in_roaming.chartDisplayed}" toggleable="true"> 
+	
+		<hf:chart height="250px" type="line" subTitle="#{in_roaming.subTitle}" title="Rapport Traffic IN Roaming(Durée)"   >
+		<hf:chartSerie name="Duree" value="#{in_roaming.staticListINLocal}" var="point" point="#{point[2]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie  name="Duree Moyenne" value="#{in_roaming.staticListINLocal}" var="point1" point="#{point1[1]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
+		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
+		
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetailsDuree').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+		
+	</p:panel>
+	
+	</div>
+	<p:dialog resizable="true" header="Rapport du durée CDRs enregistré au niveau au niveau IN Roaming" widgetVar="DetailRevenue" modal="true"  appendTo="@(body)"   width="1043px">
+        <p:outputPanel id="Detail0" rendered="#{in_roaming.chartDisplayed}" >
+		 <p:dataTable  value="#{in_roaming.staticListINLocal}" var="det" paginator="true" rows="5"   paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl3">
+           <f:facet name="header">  
+             <h:outputText value="Rapport du durée CDRs enregistré au niveau IN Roaming #{in_roaming.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl3" fileName="RpRevenue" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter type="pdf" target="tbl3" fileName="RpRevenue"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Date"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Revenue"/>  
+         </f:facet> 
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+      <p:column >
+       <f:facet name="header">  
+             <h:outputText value="Moyenne Revenue"/>  
+         </f:facet> 
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+		</p:dataTable>
+        </p:outputPanel>
+        </p:dialog>
+        
+        
+		<p:dialog resizable="true" header="Rapport du nombre CDRs enregistré au IN Roaming"  modal="true"  appendTo="@(body)" widgetVar="DetailsDuree"   width="1043px">
+        <p:outputPanel id="DetailDuree" rendered="#{in_roaming.chartDisplayed}" >
+		 <p:dataTable  value="#{in_roaming.staticListINLocal}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl2">
+          <f:facet name="header">  
+             <h:outputText value="Rapport du Nombre CDRs enregistré au IN Roaming #{in_roaming.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl2" fileName="RpDuree" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter  type="pdf" target="tbl2" fileName="RpDuree"/>
+            </h:commandLink>
+
+        </f:facet>
+         <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Date"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Moyenne Duree "/>  
+         </f:facet>  
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Duree"/>  
+         </f:facet> 
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+   </p:dataTable>
+</p:outputPanel>
+</p:dialog>
+              
+		<p:dialog resizable="true" header="Rapport du nombre CDRs enregistré au IN Roaming"  modal="true"  appendTo="@(body)" widgetVar="DetailsPlan"   width="1043px">
+        <p:outputPanel id="DetailParAnomalie" rendered="#{in_roaming.chartDisplayed}" >
+		 <p:dataTable  value="#{in_roaming.pie2.entrySet()}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl1">
+          <f:facet name="header">  
+             <h:outputText value="Rapport du Nombre CDRs enregistré au IN Roaming #{in_roaming.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl1" fileName="RpParPlan" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter  type="pdf" target="tbl1" fileName="RpParPlan"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Moyenne"/>  
+         </f:facet>  
+        <h:outputText value="#{det.key}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Duree"/>  
+         </f:facet> 
+        <h:outputText value="#{det.value}" />
+    </p:column>
+   </p:dataTable>
+</p:outputPanel>
+</p:dialog>
+      
+		
+		</p:layoutUnit>
+		 <p:blockUI block="layoutUnit" trigger="btn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</p:layout>
+		
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>
+		

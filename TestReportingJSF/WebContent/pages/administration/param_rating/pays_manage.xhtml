@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+	
+				<p:dataTable var="dest" id="singleDT" paginator="true" rows="10" value="#{pays.lst_pays}"  rowKey="#{dest.id}"   selectionMode="single" selection="#{pays.pays1}"  >
+				    <f:facet name="header">
+   <p:outputLabel value="Gestion Des Pays"></p:outputLabel>
+        </f:facet>
+				<p:column filterBy="#{dest.nom}" filterMatchMode="contains" headerText="Pays">
+        <h:outputText value="#{dest.nom}" />
+    </p:column>
+				 <p:column filterBy="#{dest.dateModif}" filterMatchMode="contains" headerText="Date">
+        <h:outputText value="#{dest.dateModif}" />
+    </p:column>
+     <p:column filterBy="#{dest.nomUtilisateur}" filterMatchMode="contains" headerText="Utilisateur">
+        <h:outputText value="#{dest.nomUtilisateur}" />
+    </p:column>
+    
+    
+    <f:facet name="footer">
+   <p:panelGrid columns="3">
+            <p:commandButton  process="singleDT" update="@form"  value="Modifier"  oncomplete="PF('dlg5').show()"  />
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter"  oncomplete="PF('dlg3').show()" />
+          <p:commandButton  process="singleDT" update="singleDT"  value="Supprimer" actionListener="#{pays.SupprimerPays()}"  />
+             
+        </p:panelGrid>
+        </f:facet>
+				
+				</p:dataTable>
+  <p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce"  width="500px">
+			<h:panelGrid>
+			 <p:outputLabel value="Pays" />
+     <p:inputText value="#{pays.pays.nom}"  >
+     
+     </p:inputText>
+     <p:panel header="Details">
+    <p:outputLabel value="Code Pays" />
+     <p:inputText value="#{pays.detailsPay.codePays}"  >
+     
+     </p:inputText>
+     <p:commandButton update="form1:detail1" value="Ajouter" actionListener="#{pays.AjouterDetails()}"></p:commandButton>
+   
+<p:dataTable rows="5" value="#{pays.liste_details}" id="detail1" var="det" style="width:400px;" selectionMode="single" selection="#{pays.details1}" rowKey="#{det.codePays}" >
+<p:column headerText="Code Pays">
+<h:outputText value="#{det.codePays}" />
+</p:column>
+<p:column>
+<h:outputText value="#{det.dateModif}" />
+</p:column>
+   <f:facet name="footer">
+   
+          <p:commandButton  process="detail1" update="detail1"  value="Supprimer" actionListener="#{pays.deleteDetails()}"  />
+     
+        </f:facet>
+</p:dataTable>
+    
+
+   </p:panel>
+	
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{pays.ajouterPays()}"   oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg3').hide()" />
+    </h:panelGrid>
+    
+       
+</p:dialog>
+
+<p:dialog header="Details" widgetVar="dlg5"  showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="out1">
+<p:outputLabel value="Code Pays" />
+     <p:inputText value="#{pays.details.codePays}"  >
+     
+     </p:inputText>
+     <p:commandButton value="Ajouter" update="form1:out1" actionListener="#{pays.AjouterDetails1()}"></p:commandButton>
+     
+    <p:dataTable rows="5" id="DetTable" style="width:400px;" value="#{pays.pays1.list_details}" paginator="true" rowKey="#{det.codePays}" var="det" selectionMode="single" selection="#{pays.details1}">
+    <p:column headerText="Code Pays">
+        <h:outputText value="#{det.codePays}" />
+    </p:column>
+     
+    <p:column headerText="Date Fin">
+        <h:outputText value="#{det.nomUtilisateur}" />
+    </p:column>
+    
+    <f:facet name="footer">
+   <p:panelGrid columns="3">
+  
+         
+          <p:commandButton  process="DetTable" update="DetTable"  value="Supprimer" actionListener="#{pays.deleteDetails1()}"  />
+             
+        </p:panelGrid>
+        </f:facet>
+    </p:dataTable>
+    
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{pays.ModifierPays()}"  oncomplete="PF('dlg5').hide()"/>
+    <p:commandButton value="Annuler"  onclick="PF('dlg5').hide()"/>
+    
+</p:outputPanel>
+</p:dialog>
+	</h:form>		
+</ui:define>
+</ui:composition>

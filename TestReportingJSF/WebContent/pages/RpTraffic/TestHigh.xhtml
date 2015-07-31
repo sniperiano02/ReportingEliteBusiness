@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                 xmlns:hf="http://highfaces.org"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+              
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+						
+			<ui:define name="PageContent">
+			 
+			<h:form id="form1" >
+			<table>
+    <thead>
+        <tr>
+            <th>Office</th>
+            <ui:repeat value="#{navigationMbeanPP.services.values().toArray()}" var="service">
+                <th>#{service}</th>
+            </ui:repeat>
+        </tr>
+    </thead>
+    <tbody>
+        <ui:repeat value="#{navigationMbeanPP.offices.entrySet().toArray()}" var="office">
+            <tr>
+                <td>#{office.value}</td>
+                <ui:repeat value="#{navigationMbeanPP.services.keySet().toArray()}" var="service">
+                    <td><p:selectBooleanCheckbox value="#{navigationMbeanPP.officeServices[office.key][service]}" /></td>
+                </ui:repeat>
+            </tr>
+        </ui:repeat>
+        
+        <p:commandButton value="Test" actionListener="#{navigationMbeanPP.submit()}"></p:commandButton>
+    </tbody>
+</table>
+			</h:form>
+	
+
+
+			</ui:define>
+			</ui:composition>

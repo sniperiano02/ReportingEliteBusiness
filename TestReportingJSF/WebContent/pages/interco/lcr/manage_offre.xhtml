@@ -1,0 +1,83 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">Gestion des Offres</ui:define>	
+
+			<ui:define name="PageContent">
+		
+			<h:form id="form1">
+			<p:dataTable id="dt2" value="#{lcr_offre_manage.liste_fichierLcrProcess}" var="offre"  selectionMode="single" rowKey="#{offre.id}" selection="#{lcr_offre_manage.fichierlcrprocess}" >
+			<f:facet name="header">
+			 <h:outputText value="Liste des Offres" />
+			</f:facet>
+			<p:column headerText="Nom Fichier">
+			<h:outputText value="#{offre.nomFichier}" />
+			</p:column>
+			<p:column headerText="Template">
+			<h:outputText value="#{offre.template}" />
+			</p:column>
+			<p:column headerText="Operateur" filterMatchMode="exact" filterBy="#{offre.operateur.operateur}" >
+			<h:outputText value="#{offre.operateur.operateur}" />
+			</p:column>
+			<p:column headerText="Etat">
+			<h:outputText value="#{offre.etat}" />
+			</p:column>
+			<p:column headerText="Type">
+			<h:outputText value="#{offre.type}" />
+			</p:column>
+			
+			<f:facet name="footer">
+			<p:commandButton value="Supprimer" actionListener="#{lcr_offre_manage.deleteOffreLcr}" update="dt2" />
+			<p:commandButton value="Detail Offre" oncomplete="PF('dlg1').show();" actionListener="#{lcr_offre_manage.change}" update=":form1:panDetail"></p:commandButton>
+			
+			</f:facet>
+			
+			</p:dataTable>
+			
+			
+			<p:dialog header="Detail" widgetVar="dlg1" showEffect="explode" hideEffect="bounce"  >
+			<p:outputPanel id="panDetail">
+					<p:dataTable id="dt1" value="#{lcr_offre_manage.listeTarifs}" var="tarif" paginator="true" rows="4"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16"  >
+       
+        <p:column headerText="Destination">
+        <h:outputText value="#{tarif.destination}" />
+        </p:column>
+         <p:column headerText="Code Destination">
+        <h:outputText value="#{tarif.codeDest}" />
+        </p:column>
+         <p:column headerText="Tarif">
+        <h:outputText value="#{tarif.tarifs}" />
+        </p:column>
+          <p:column headerText="Date Validité">
+        <h:outputText value="#{tarif.dateValidite}" />
+        </p:column>
+         <p:column headerText="Qualité">
+        <h:outputText value="#{tarif.qualite}" />
+        </p:column>
+         <p:column headerText="Operateur">
+        <h:outputText value="#{tarif.operateur.operateur}" />
+        </p:column>
+          <p:column headerText="Pays">
+        <h:outputText value="#{tarif.pays.nom}" />
+        </p:column>
+          <p:column headerText="Groupe Destination">
+        <h:outputText value="#{tarif.groupDestination}" />
+        </p:column>
+           <p:column headerText="Nom Fichier">
+        <h:outputText value="#{tarif.nomFichier}" />
+        </p:column>
+        </p:dataTable>
+			</p:outputPanel>
+			</p:dialog>
+			</h:form>
+			
+			
+			</ui:define>
+			</ui:composition>
+			

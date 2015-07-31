@@ -1,0 +1,48 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">UZONE</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form>
+	
+				<p:dataTable var="cdr" value="#{cdr_erreurs.listeUZone}" paginator="true" rows="7" >
+				<p:column  headerText="Code Anomalie">
+        <h:outputText   value="#{cdr.codeAnomalie}" />
+    </p:column>
+				 <p:column filterBy="#{cdr.erreur}" filterMatchMode="contains" headerText="Erreur">
+        <h:outputText value="#{cdr.erreur}" />
+    </p:column>
+     <p:column filterBy="#{cdr.minDate}" filterMatchMode="contains" headerText="Date Min">
+        <h:outputText value="#{cdr.minDate}" />
+    </p:column>
+     <p:column filterBy="#{cdr.maxDate}" filterMatchMode="contains" headerText="Date Max">
+        <h:outputText value="#{cdr.maxDate}" />
+    </p:column>
+        <p:column filterBy="#{cdr.noeud}" filterMatchMode="contains" headerText="Noeud">
+        <h:outputText value="#{cdr.noeud}" />
+    </p:column>
+        <p:column  filterBy="#{cdr.nbCdr}" filterMatchMode="contains" headerText="Nombre CDR">
+        <h:outputText value="#{cdr.nbCdr}" />
+    </p:column>
+        <p:column filterBy="#{cdr.planTarifaire.planTarifaire}" filterMatchMode="contains" headerText="Plan Tarifaire">
+        <h:outputText value="#{cdr.planTarifaire.planTarifaire}" />
+    </p:column>
+    
+				
+				</p:dataTable>
+    
+ 
+   
+    
+
+			
+		
+		
+</h:form>
+</ui:define>
+</ui:composition>

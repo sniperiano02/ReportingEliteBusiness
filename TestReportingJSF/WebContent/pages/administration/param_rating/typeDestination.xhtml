@@ -1,0 +1,80 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+			<h1 style="text-align:center;"></h1>
+			
+		
+			<p:dataTable  id="singleDT"   rowKey="#{user.id}" var="user" value="#{typeDest.liste_typeDests}"  >
+    <f:facet name="header" >
+    <h:outputText value="Gestion Type Destination" />
+    </f:facet>
+    <p:column filterBy="#{user.typeDest}" filterMatchMode="contains" headerText="Type Destination">
+        <h:outputText value="#{user.typeDest}" />
+    </p:column>
+ 
+    <p:column filterBy="#{user.description}" filterMatchMode="contains" headerText="Description">
+        <h:outputText value="#{user.description}" />
+    </p:column>
+
+     <p:column filterBy="#{user.nomUtilisateur}" filterMatchMode="contains" headerText="Utilisateur">
+        <h:outputText value="#{user.nomUtilisateur}" />
+    </p:column>
+     <p:column filterBy="#{user.dateModif}" filterMatchMode="contains" headerText="Date Insertion">
+        <h:outputText value="#{user.dateModif}" />
+    </p:column>
+        <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{user}" target="#{typeDest.typeDest1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{typeDest.DeletetypeDest()}"  >
+                <f:setPropertyActionListener value="#{user}" target="#{typeDest.typeDest1}" />
+            </p:commandButton>
+        </p:column>
+     
+      
+   <f:facet name="footer">
+ 
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+        
+       
+        </f:facet>
+</p:dataTable>
+
+			
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+    <p:outputLabel value="Type Destination" />
+    <p:inputText value="#{typeDest.typeDest.typeDest}" ></p:inputText> 
+    <p:outputLabel value="Description" />
+    <p:inputText value="#{typeDest.typeDest.description}" ></p:inputText> 
+  
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{typeDest.addtypeDest()}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty typeDest.typeDest1}" columnClasses="label,value" columns="2">
+       <p:outputLabel value="Type Destination" />
+    <p:inputText value="#{typeDest.typeDest1.typeDest}" ></p:inputText> 
+    <p:outputLabel value="Description" />
+    <p:inputText value="#{typeDest.typeDest1.description}" ></p:inputText> 
+  
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{typeDest.updatetypeDest()}" oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+	</h:form>		
+			</ui:define>
+			</ui:composition>

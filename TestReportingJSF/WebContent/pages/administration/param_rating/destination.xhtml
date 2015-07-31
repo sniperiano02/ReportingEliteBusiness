@@ -1,0 +1,162 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+	
+				<p:dataTable var="dest" id="singleDT" paginator="true" rows="6" value="#{dest_manage.liste_destination}"  rowKey="#{dest.id}"   selectionMode="single" selection="#{dest_manage.destination1}"  >
+				    <f:facet name="header">
+   <p:outputLabel value="Gestion Destination"></p:outputLabel>
+        </f:facet>
+				<p:column  headerText="Destination">
+        <h:outputText  value="#{dest.dest}" />
+    </p:column>
+				 <p:column headerText="Type Destination">
+        <h:outputText value="#{dest.destination.typeDest}" />
+    </p:column>
+     <p:column headerText="Date Debut">
+        <h:outputText value="#{dest.dateDebut}" />
+    </p:column>
+     <p:column headerText="Date Fin">
+        <h:outputText value="#{account.typeAccount}" />
+    </p:column>
+       <p:column headerText="Utilisateur">
+        <h:outputText value="#{dest.nomUtilisateur}" />
+    </p:column>
+     <p:column headerText="Date Insertion">
+        <h:outputText value="#{dest.dateModif}" />
+    </p:column>
+    <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:Modif"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{dest}" target="#{dest_manage.destination1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{dest_manage.deleteDestination}"  >
+                <f:setPropertyActionListener value="#{dest}" target="#{dest_manage.destination1}" />
+            </p:commandButton>
+        </p:column>
+    
+    <f:facet name="footer">
+    <h:panelGrid columns="2" >
+   
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg_ajout_dest').show()"  />
+                          <p:commandButton process="singleDT" update=":form1:CodeDetails"  icon="ui-icon-plusthick" value="Details"  oncomplete="PF('dlg5').show()" />
+             
+        </h:panelGrid>
+        </f:facet>
+				
+				</p:dataTable>
+				
+  <p:dialog header="Ajout" widgetVar="dlg_ajout_dest" showEffect="explode" hideEffect="bounce"   >
+
+			<h:panelGrid columns="2" id="pn1">
+			
+    <p:outputLabel value="Destination" />
+     <p:inputText value="#{dest_manage.destination.dest}"  >
+     
+     </p:inputText>
+   
+
+    <p:outputLabel value="Type Destination" />
+   <p:selectOneMenu value="#{dest_manage.destination.destination}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{dest_manage.liste_typeDest}" var="type" itemLabel="#{type.typeDest}" itemValue="#{type}" />
+	   
+	      
+	</p:selectOneMenu>
+ <p:commandButton process="pn1"  value="Ajouter" actionListener="#{dest_manage.addDestination}" update="singleDT"  oncomplete="PF('dlg_ajout_dest').hide();"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg_ajout_dest').hide()" />
+  
+       
+     
+    </h:panelGrid>
+    
+    
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce"  >
+<p:outputPanel id="Modif" style="text-align:center;">
+			<h:panelGrid>
+			
+    <p:outputLabel value="Destination" />
+     <p:inputText value="#{dest_manage.destination1.dest}"  >
+     
+     </p:inputText>
+   
+
+    <p:outputLabel value="Type Destination" />
+   <p:selectOneMenu value="#{dest_manage.destination1.destination}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{dest_manage.liste_typeDest}" var="type" itemLabel="#{type.typeDest}" itemValue="#{type}" />
+	   
+	      
+	</p:selectOneMenu>
+
+   
+
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{dest_manage.updateDestination()}"  oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg4').hide()" />
+    </h:panelGrid>
+    
+       </p:outputPanel>
+</p:dialog>
+
+
+<p:dialog header="Details" widgetVar="dlg5" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="CodeDetails" style="text-align:center;">
+			 <p:dataTable id="DetTable" value="#{dest_manage.destination1.lst_details}" rowKey="#{det.codeDest}" var="det" selectionMode="single" selection="#{dest_manage.detail1}">
+    <p:column headerText="Code Destination">
+        <h:outputText value="#{det.codeDest}" />
+    </p:column>
+     <p:column headerText="Date Debut">
+        <h:outputText value="#{det.dateDebut}" />
+    </p:column>
+    <p:column headerText="Date Fin">
+        <h:outputText value="#{det.dateFin}" />
+    </p:column>
+      
+    <f:facet name="footer">
+   
+           <h:panelGrid columns="2" >
+   
+             <p:commandButton process="DetTable" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()"  />
+               
+           
+          <p:commandButton  process="DetTable" update="DetTable"  value="Supprimer" actionListener="#{dest_manage.deleteDetail()}" />
+             </h:panelGrid>
+       
+        </f:facet>
+    </p:dataTable>
+    
+    <p:commandButton value="Valider"   oncomplete="PF('dlg5').hide()"/>
+    <p:commandButton value="Annuler"  onclick="PF('dlg5').hide()"/>
+    
+    </p:outputPanel>
+</p:dialog>
+<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+    
+    <p:outputLabel value="Code Destination" />
+  <p:inputText  value="#{dest_manage.detail.codeDest}"   />
+ 
+    <p:outputLabel value="Date Debut  " />
+    <p:calendar value="#{dest_manage.detail.dateDebut}" /> 
+     
+     <p:outputLabel value="Date Fin " />
+    <p:calendar value="#{dest_manage.detail.dateFin}" /> 
+    
+    
+    <p:commandButton  update="DetTable"  value="Ajouter" actionListener="#{dest_manage.addDetail}" />
+   
+    </h:panelGrid>
+</p:dialog>
+
+	</h:form>		
+</ui:define>
+</ui:composition>
