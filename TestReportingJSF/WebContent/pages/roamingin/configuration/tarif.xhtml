@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1" >
+				
+			
+		
+			<p:dataTable  id="singleDT" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16"   rowKey="#{user.id}" var="user" value="#{tarif_gestion_in.allTarifs}" filteredValue="#{tarif_gestion_in.filtredTarif}" selectionMode="single" selection="#{tarif_gestion_in.tarif}" >
+    <f:facet name="header" >
+    <h:outputText value="Liste des Tarifs" />
+  
+    </f:facet>
+    <p:column filterBy="#{user.dateDebutValidite}" filterMatchMode="contains"  headerText="Date De validité">
+        <h:outputText value="#{user.dateDebutValidite}" />
+    </p:column>
+ 
+       <p:column filterBy="#{user.group_roaming.nom}" filterMatchMode="contains" headerText="Group Roaming "   >
+        <h:outputText value="#{user.group_roaming.nom}" />
+    </p:column>
+        <p:column filterBy="#{user.zone.nom}" filterMatchMode="contains" headerText="Zone "   >
+        <h:outputText value="#{user.zone.nom}" />
+    </p:column>
+     <p:column filterBy="#{user.packZone.nom}" filterMatchMode="contains" headerText="Package Zone">
+        <h:outputText value="#{user.packZone.nom}" />
+    </p:column>
+     <p:column filterBy="#{user.intervalle.nom}" filterMatchMode="contains" headerText="Intervalle">
+        <h:outputText value="#{user.intervalle.nom}" />
+    </p:column>
+     <p:column filterBy="#{user.paliertype.description}" filterMatchMode="contains" headerText="Type Palier">
+        <h:outputText value="#{user.paliertype.description}" />
+    </p:column>
+    <p:column filterBy="#{user.packJour.nom}" filterMatchMode="contains" headerText="Package Jour">
+        <h:outputText value="#{user.packJour.nom}" />
+    </p:column>
+      <p:column filterBy="#{user.codeService}" filterMatchMode="contains" headerText="Service">
+        <h:outputText value="#{user.codeService}" />
+    </p:column>
+      <p:column filterBy="#{user.palierTaxation}" filterMatchMode="contains" headerText="Palier taxation">
+        <h:outputText value="#{user.palierTaxation}" />
+    </p:column>
+      <p:column filterBy="#{user.prixTarif}" filterMatchMode="contains" headerText="Tarif">
+        <h:outputText value="#{user.prixTarif}" />
+    </p:column>
+       
+   <f:facet name="footer">
+   <p:panelGrid columns="3">
+            <p:commandButton  process="singleDT" update=":form1:planDetail"  value="Modifier" oncomplete="PF('dlg4').show()"  />
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+                     <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-plusthick" value="Supprimer" actionListener="#{tarif_gestion_in.deleteTarifRoaOut}"  />
+        
+        </p:panelGrid>
+        </f:facet>
+</p:dataTable>
+
+			
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+    <p:outputLabel value="Groupe Roaming" />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif1.group_roaming}"  converter="omnifaces.SelectItemsConverter" >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.plans}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+  
+	<p:outputLabel value="Package Zone " />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif1.packZone}"  converter="omnifaces.SelectItemsConverter" >
+     <p:ajax event="change" listener="#{tarif_gestion_in.changePackage1()}" update="zr1"></p:ajax>
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.package_zones}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	 <p:outputLabel value="Zone " />
+    <p:selectOneMenu id="zr1" value="#{tarif_gestion_in.tarif1.zone}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.zones}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	<p:outputLabel value="Type Palier " />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif1.paliertype}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.paliers}" var="cat" itemValue="#{cat}" itemLabel="#{cat.description}"/>
+	</p:selectOneMenu>
+    
+    
+     <p:outputLabel value="Tranche Horaire" />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif1.intervalle}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.intervalles}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+     <p:outputLabel value="Jour" />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif1.packJour}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.jours}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+     <p:outputLabel value="Service" />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif1.codeService}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItem itemLabel="VOIX Entrant" itemValue="MT"/>
+	<f:selectItem itemLabel="VOIX Sortant" itemValue="MO"/>
+	<f:selectItem itemLabel="Data" itemValue="GPRS"/>
+	<f:selectItem itemLabel="MMS" itemValue="MMSMO"/>
+	<f:selectItem itemLabel="SMS Entrant" itemValue="SMSMT"/>
+		<f:selectItem itemLabel="SMS Sortant" itemValue="SMSMO"/>
+	
+	
+	</p:selectOneMenu>
+	<p:outputLabel value="Prix Tarif" />
+     <p:inputText value="#{tarif_gestion_in.tarif.prixTarif}" >
+     <f:converter converterId="javax.faces.BigDecimal" />
+     </p:inputText>
+	 <p:outputLabel value="Date Debut Validité" />
+     <p:calendar value="#{tarif_gestion_in.tarif1.dateDebutValidite}" >
+     </p:calendar>
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{tarif_gestion_in.addTarif}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty tarif_gestion_in.tarif}" columnClasses="label,value" columns="2">
+         <p:outputLabel value="Groupe Roaming" />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif.group_roaming}"  converter="omnifaces.SelectItemsConverter" >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.plans}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+   
+	<p:outputLabel value="Package Zone " />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif.packZone}"  converter="omnifaces.SelectItemsConverter" >
+     <p:ajax event="change" listener="#{tarif_gestion_in.changePackage()}" update="zr3"></p:ajax>
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.package_zones}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	 <p:outputLabel value="Zone " />
+    <p:selectOneMenu id="zr3" value="#{tarif_gestion_in.tarif.zone}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.zones}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	<p:outputLabel value="Type Palier " />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif.paliertype}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.paliers}" var="cat" itemValue="#{cat}" itemLabel="#{cat.description}"/>
+	</p:selectOneMenu>
+    
+    
+     <p:outputLabel value="Tranche Horaire" />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif.intervalle}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.intervalles}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+     <p:outputLabel value="Jour" />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif.packJour}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_in.jours}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+     <p:outputLabel value="Service" />
+     <p:selectOneMenu value="#{tarif_gestion_in.tarif1.codeService}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItem itemLabel="VOIX Entrant" itemValue="MT"/>
+	<f:selectItem itemLabel="VOIX Sortant" itemValue="MO"/>
+	<f:selectItem itemLabel="Data" itemValue="GPRS"/>
+	<f:selectItem itemLabel="MMS" itemValue="MMSMO"/>
+	<f:selectItem itemLabel="SMS Entrant" itemValue="SMSMT"/>
+		<f:selectItem itemLabel="SMS Sortant" itemValue="SMSMO"/>
+	
+	
+	</p:selectOneMenu>
+	<p:outputLabel value="Prix Tarif" />
+     <p:inputText value="#{tarif_gestion_in.tarif.prixTarif}" >
+     <f:converter converterId="javax.faces.BigDecimal" />
+     </p:inputText>
+
+	 <p:outputLabel value="Date Debut Validité" />
+     <p:calendar value="#{tarif_gestion_in.tarif.dateDebutValidite}" >
+     </p:calendar>
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{tarif_gestion_in.updateTarifRoaOut()}"  oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+	</h:form>		
+			</ui:define>
+			</ui:composition>
+			

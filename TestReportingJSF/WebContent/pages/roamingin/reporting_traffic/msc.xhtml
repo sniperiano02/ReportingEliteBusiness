@@ -1,0 +1,353 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:hf="http://highfaces.org"
+                template="/template/template.xhtml"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+                <ui:define name="pageTitle">Rapport MSC</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+	
+        
+  
+		<p:layout id="layo"  widgetVar="layvar" onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east"  header="Menu" id="esat" style="height:480px;overflow:hidden;" size="300" collapsible="true" >
+		<p:outputPanel id="expPan">
+		<p:panel header="Export" rendered="#{staticMscBean.chartDisplayed}" >
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="tbl1,tbl2,tblDest,tblMSC" fileName="RapportMSC" datasetPadding="4" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="tbl1,tbl2,tblDest,tblMSC" fileName="RapportMSC" datasetPadding="4"  />
+            </h:commandLink>
+		</p:panel>
+		</p:outputPanel>
+	
+		<p:panel  >
+		   <f:facet name="header" >
+		   
+             <h:outputText value="Periode"/>  
+            
+         </f:facet>  
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{staticMscBean.choix_periode}" >
+		 <p:ajax listener="#{staticMscBean.handlechange}" event="change" update="@form" process="@this"/>
+		<f:selectItem itemLabel=" " itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par Heure" itemValue="Par Heure" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="Type" >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{staticMscBean.choix_Voix}"  >
+		<p:ajax listener="#{staticMscBean.handlechange1}" event="change" update="@form" process="@this"/>
+		<f:selectItem itemLabel="Voix" itemValue="MO" />
+		<f:selectItem itemLabel="SMS" itemValue="SMSMO" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	
+			<p:panel header="Type Destination">
+			<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{staticMscBean.choix_typeDest}" >
+		<p:ajax listener="#{staticMscBean.handlechange1}" event="change" update="ip1,expPan" process="@this"/>
+		<f:selectItems value="#{staticMscBean.listetypeDest}" var="type" itemLabel="#{type}" itemValue="#{type}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="MSC">
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{staticMscBean.choix_msc}" >
+		<p:ajax listener="#{staticMscBean.handlechange1}" event="change" update="layoutUnit" process="@this"/>
+		<f:selectItems value="#{staticMscBean.listeMSC}" var="msc" itemLabel="#{msc}" itemValue="#{msc}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"   actionListener="#{staticMscBean.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit"   position="center" resizable="true" >
+     <p:outputPanel id="ip1">
+   <div class="ui-grid-row"  >
+		<div class="ui-grid-col-6"   >
+		<p:panel header=" " rendered="#{staticMscBean.chartDisplayed}"  >
+		
+		<hf:chart  height="220"   type="line" subTitle="#{staticMscBean.subTitle}"  title="Rapport du durée CDRs enregistré au niveau MSC"   >
+		<hf:chartSerie   name="Moyenne Duree" value="#{staticMscBean.staticListStatMsc}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie  name="Duree" value="#{staticMscBean.staticListStatMsc}" var="point1" point="#{point1[2]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
+		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
+		
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetailsDialog').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+		</p:panel>
+		</div>
+		
+		<div class="ui-grid-col-6"     >
+		<p:panel header=" " rendered="#{staticMscBean.chartDisplayed}">
+		<hf:chart  height="220"   type="pie" title="R. du Traffic par Destination"  subTitle="#{staticMscBean.subTitle}" >
+		<hf:chartSerie value="#{staticMscBean.pie1}" var="point" point="#{point[1]}" dataLabel="&lt;b>{point.name}&lt;/b>: {point.percentage:.1f} % "  tickLabel="#{point[0]}"></hf:chartSerie>
+		
+		
+		</hf:chart>
+		
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetailsDestination').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+	</p:panel>
+		</div>
+		</div>
+		
+			<div class="ui-grid-row"   >
+	<div class="ui-grid-col-6"    >
+	<p:panel header=" " rendered="#{staticMscBean.chartDisplayed}">
+	
+		<hf:chart  height="220"  type="line" subTitle="#{staticMscBean.subTitle}" title="Rapport du nombre CDRs enregistré au niveau MSC"   >
+		<hf:chartSerie   name="Moy Appel" value="#{staticMscBean.staticListStatMsc}" var="point" point="#{point[3]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie  name="Nb Appel" value="#{staticMscBean.staticListStatMsc}" var="point1" point="#{point1[4]}"  tickLabel="#{point1[0]}"></hf:chartSerie><hf:chartAxis position="w" min="0" ></hf:chartAxis>
+		
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetaitDuree').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+		</p:panel>
+		</div>
+		<div class="ui-grid-col-6"     >
+		<p:panel header=" " rendered="#{staticMscBean.chartDisplayed}" >
+			<hf:chart height="220"  type="pie"  title="R. du Traffic par MSC" subTitle="#{staticMscBean.subTitle}"  >
+			
+		<hf:chartSerie value="#{staticMscBean.pie2}" var="point"  point="#{point[1]}"  dataLabel="&lt;b>{point.name}&lt;/b>: {point.percentage:.1f} %  "   tickLabel="#{point[0]}"></hf:chartSerie>
+		
+		
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetailsMSC').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+	</p:panel>
+		</div>
+		</div>
+		
+			<p:dialog resizable="true" header="Rapport du durée CDRs enregistré au niveau MSC" widgetVar="DetaitDuree" modal="true"  appendTo="@(body)"   width="1043px">
+        <p:outputPanel id="Detail0" rendered="#{staticMscBean.chartDisplayed}" >
+		 <p:dataTable  value="#{staticMscBean.staticListStatMsc}" var="det" paginator="true" rows="5"   paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl2">
+           <f:facet name="header">  
+             <h:outputText value="Rapport du durée CDRs enregistré au niveau MSC #{staticMscBean.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl2" fileName="RpDuree" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter type="pdf" target="tbl2" fileName="RpDuree"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Date"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Moyenne Duree"/>  
+         </f:facet> 
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+      <p:column >
+       <f:facet name="header">  
+             <h:outputText value="Duree"/>  
+         </f:facet> 
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+ 
+ 
+		</p:dataTable>
+	
+  
+ 
+  
+        </p:outputPanel>
+        </p:dialog>
+		<p:dialog resizable="true" header="Rapport du nombre CDRs enregistré au niveau MSC"  modal="true"  appendTo="@(body)" widgetVar="DetailsDialog"   width="1043px">
+        <p:outputPanel id="DetailAnomalie" rendered="#{staticMscBean.chartDisplayed}" >
+		 <p:dataTable  value="#{staticMscBean.staticListStatMsc}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl1">
+          <f:facet name="header">  
+             <h:outputText value="Rapport du Nombre CDRs enregistré au niveau MSC #{staticMscBean.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl1" fileName="RpNombre" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter  type="pdf" target="tbl1" fileName="RpNombre"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Date"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Moyenne Appels"/>  
+         </f:facet> 
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+      <p:column >
+       <f:facet name="header">  
+             <h:outputText value="Nombre Appels"/>  
+         </f:facet> 
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+ 
+ 
+		</p:dataTable>
+	
+  
+ 
+  
+        </p:outputPanel>
+        </p:dialog>
+        <p:dialog resizable="true" header="R. du Traffic par Destination"  modal="true"  appendTo="@(body)" widgetVar="DetailsDestination"   width="1043px">
+        <p:outputPanel id="DetailDest" rendered="#{staticMscBean.chartDisplayed}" >
+		 <p:dataTable  value="#{staticMscBean.pie1}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tblDest">
+          <f:facet name="header">  
+             <h:outputText value="R. du Traffic par Destination #{staticMscBean.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tblDest" fileName="RpNombre" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter  type="pdf" target="tblDest" fileName="RpNombre"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Destination"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Traffic"/>  
+         </f:facet> 
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+     
+ 
+		</p:dataTable>
+	
+  
+ 
+  
+        </p:outputPanel>
+        </p:dialog>
+            <p:dialog resizable="true" header="R. du Traffic par MSC"  modal="true"  appendTo="@(body)" widgetVar="DetailsMSC"   width="1043px">
+        <p:outputPanel id="DetailMSC" rendered="#{staticMscBean.chartDisplayed}" >
+		 <p:dataTable  value="#{staticMscBean.pie2}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tblMSC">
+          <f:facet name="header">  
+             <h:outputText value="R. du Traffic par MSC #{staticMscBean.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tblMSC" fileName="RpNombre" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter  type="pdf" target="tblMSC" fileName="RpNombre"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="MSC"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Traffic"/>  
+         </f:facet> 
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+     
+ 
+		</p:dataTable>
+	
+  
+ 
+  
+        </p:outputPanel>
+        </p:dialog>
+        </p:outputPanel>
+		</p:layoutUnit>
+		 
+		</p:layout>
+		<p:blockUI block="layoutUnit" trigger="btn">
+        Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>
+		

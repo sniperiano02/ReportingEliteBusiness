@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{qualiteInterco.choix_periode}" >
+		 <p:ajax listener="#{qualiteInterco.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par Heure" itemValue="Par Heure" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="Type Stat"  >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{qualiteInterco.choix_stat}" >
+		 <p:ajax listener="#{qualiteInterco.handlechange1}" event="change" update="@form" process="@this"/>
+	
+		<f:selectItem itemLabel="charge" itemValue="charge" />
+         <f:selectItem itemLabel="produit" itemValue="produit" />
+           
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+		
+	
+	
+			
+			<p:panel header="Operateur">
+			<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{qualiteInterco.choix_oper}"  converter="omnifaces.SelectItemsConverter" >
+		<p:ajax listener="#{qualiteInterco.handlechange1}" event="change" update="layoutUnit" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue="" />
+		<f:selectItems value="#{qualiteInterco.listeoper}" var="type" itemLabel="#{type.operateur}" itemValue="#{type}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	
+	<p:panel header="Type Trafic"  >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{qualiteInterco.choix_type}" >
+		 <p:ajax listener="#{qualiteInterco.handlechange1}" event="change" update="layoutUnit" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue="" />
+		<f:selectItem itemLabel="hubbing" itemValue="hubbing" />
+            <f:selectItem itemLabel="bilateral" itemValue="bilateral" />
+           
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+		
+	
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{qualiteInterco.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+		
+	<p:outputPanel id="ColLineChart1" rendered="#{qualiteInterco.chartDisplayed}">
+			<div class="ui-grid-row"   >
+	<div class="ui-grid-col-6"    >
+	<p:panel>
+		<hf:chart height="220" type="line" subTitle="#{qualiteInterco.subTitle}" title="Rapport ARPM Local"   >
+		<hf:chartSerie name="ASR" value="#{qualiteInterco.resultQualite}" var="point" point="#{point[4]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie yaxis="kpiaxis" name="Nb Appel" value="#{qualiteInterco.resultQualite}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartAxis title="ASR" position="w" min="0" ></hf:chartAxis>
+		<hf:chartAxis position="e" title="Nb Appel" id="kpiaxis" ></hf:chartAxis>
+		</hf:chart>
+		</p:panel>
+		</div>
+		<div class="ui-grid-col-6"    >
+		<p:panel>
+		<hf:chart  height="220" type="pie" title="Repartition Qualité"  subTitle="#{qualiteInterco.subTitle}" >
+		<hf:chartSerie value="#{qualiteInterco.resultTaxe}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		
+		
+		</hf:chart>
+		
+		</p:panel>
+		</div>
+		</div>
+		
+		<p:dataTable id="dt1" value="#{qualiteInterco.resultQualite}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" >
+		  <p:column headerText="Date">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+     <p:column headerText="Nb Appel">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+     <p:column headerText="Nb Reussi">
+        <h:outputText value="#{cdr[3]}" />
+    </p:column>
+     <p:column headerText="Duree Total">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+     <p:column headerText="ASR">
+        <h:outputText value="#{cdr[4]}" />
+    </p:column>
+		</p:dataTable>
+</p:outputPanel>
+		</p:layoutUnit>
+		 <p:blockUI block="layoutUnit" trigger="btn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</p:layout>
+		
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>
+		

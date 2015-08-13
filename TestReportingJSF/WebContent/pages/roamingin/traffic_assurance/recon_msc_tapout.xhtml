@@ -1,0 +1,229 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		
+			<h:form id="form1" >
+			<p:layout id="layo"  widgetVar="layvar" onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east"  header="Menu" id="esat" style="height:480px;overflow:hidden;" size="300" collapsible="true" >
+		
+		<p:panel header="Export" rendered="#{recon_msc_tapout.chartDisplayed}">
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="dt2,dt3" fileName="RapportMSC" datasetPadding="4" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="dt2,dt3" fileName="RapportMSC" datasetPadding="4"  />
+            </h:commandLink>
+		</p:panel>
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{recon_msc_tapout.choix_periode}" >
+		 <p:ajax listener="#{recon_msc_tapout.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+		<p:panel header="Type" >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{recon_msc_tapout.choix_voix}"  >
+		<p:ajax listener="#{recon_msc_tapout.handlechange1}" event="change" update="layoutUnit" process="@this"/>
+		<f:selectItem itemLabel="Voix" itemValue="MO" />
+		<f:selectItem itemLabel="SMS" itemValue="SMSMO" />
+		<f:selectItem itemLabel="SMS Sortant" itemValue="SMSMO" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{recon_msc_tapout.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center" resizable="true">
+	
+		 <div class="ui-grid-row"  >
+		
+		<p:panel header=" " rendered="#{recon_msc_tapout.chartDisplayed}">
+		<hf:chart  type="line"  title="Reconciliation MSC Tapout Roaming IN" subTitle="#{recon_msc_tapout.subTitle}"    >
+		<hf:chartSerie name="Durée KPI"  value="#{recon_msc_tapout.resultCDRInexistant}" var="point" point="#{point[6]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie name="Durée MSC"  value="#{recon_msc_tapout.resultCDRInexistant}" var="point1" point="#{point1[5]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
+		<hf:chartSerie name="Durée Anomalie"  value="#{recon_msc_tapout.resultCDRInexistant}" var="point2" point="#{point2[2]}"  tickLabel="#{point2[0]}"></hf:chartSerie>
+		 <hf:chartAxis position="w" min="0"></hf:chartAxis>:
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetailsDialog').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+		</p:panel>
+		</div>
+		 <div class="ui-grid-row"   >
+		<p:dataTable id="dt1" value="#{recon_msc_tapout.resultCDRInexistant}" var="cdr" paginator="true" rows="3"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" selection="#{recon_msc_tapout.selectedRecon}" rendered="#{recon_msc_tapout.chartDisplayed}" selectionMode="single" rowKey="#{cdr[0]}">
+		  <p:column headerText="Date">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+     <p:column headerText="Nb Anomalie">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+     <p:column headerText="Duree Anomalie">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+     <p:column headerText="Nb d'appel MSC">
+        <h:outputText value="#{cdr[3]}" />
+    </p:column>
+     <p:column headerText="Nb d'appels Tapout">
+        <h:outputText value="#{cdr[4]}" />
+    </p:column>
+     <p:column headerText="Duree MSC">
+        <h:outputText value="#{cdr[5]}" />
+    </p:column>
+     <p:column headerText="Duree Tapout">
+        <h:outputText value="#{cdr[6]}" />
+    </p:column>
+    <p:column headerText="Nb KPI">
+        <h:outputText value="#{cdr[7]}" />
+    </p:column>
+    <p:column headerText="Duree KPI">
+        <h:outputText value="#{cdr[8]}" />
+    </p:column>
+      <p:column headerText="Impact(UM)">
+        <h:outputText value="#{cdr[9]}" />
+    </p:column>
+ 
+    <f:facet name="footer"  >
+            <p:commandButton process="dt1" id="btnn" actionListener="#{recon_msc_tapout.getDetail}" update=":form1:DetailAnomalie" icon="ui-icon-search" value="Voir" oncomplete="PF('DetailsDialog').show()"  />
+        </f:facet>
+		
+		
+		</p:dataTable>
+		
+
+	</div>
+			<p:dialog header="Analyse De l'anomalie cdrs in inexistant" widgetVar="DetailsDialog"   width="1043px">
+        <p:outputPanel id="DetailAnomalie" >
+            <p:panelGrid  columns="2" rendered="#{recon_msc_tapout.detailDisplayed}" >
+              <p:panel header=" ">
+		<hf:chart width="300px" height="200" type="pie" selectedPoint="#{recon_msc_tapout.selectedPoint}"    title="Repartition par MSC"   subTitle="#{recon_msc_tapout.subtitle1}"  >
+		<p:ajax listener="#{recon_msc_tapout.clicked}" event="select" update="form1:DetailAnomalie"   />
+		<hf:chartSerie value="#{recon_msc_tapout.detailsMSC}" var="point" point="#{point[1]}" dataLabel="&lt;b>{point.name}&lt;/b>: {point.percentage:.1f} % "  tickLabel="#{point[0]}"></hf:chartSerie>
+		</hf:chart>
+		</p:panel>
+		  <p:panel  header=" " rendered="#{recon_msc_tapout.choixSelect}" id="pan1">
+		<hf:chart height="200" width="600px" type="line"   title="Rapport CDR Voix inexistant au niveau IN"  subTitle="Test"   >
+		<hf:chartSerie name="Durée MSC"   value="#{recon_msc_tapout.lst_detailsLine}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie yaxis="kpiaxis"  name="KPI Durée" value="#{recon_msc_tapout.lst_detailsLine}" var="point1" point="#{point1[2]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
+		<hf:chartAxis position="w" title="Duree MSC" min="0" ></hf:chartAxis>
+		<hf:chartAxis position="e" title="Duree KPI" id="kpiaxis" min="0" ></hf:chartAxis>
+		
+		</hf:chart>
+		  </p:panel>
+         
+            	<p:dataTable id="dt2"   value="#{recon_msc_tapout.resultCDRDetailsInexistant}" var="det" paginator="true" rows="2"  paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" selectionMode="single" selection="#{recon_msc_tapout.selectedTypeDestination}"  rowKey="#{det[0]}">
+		 <p:column sortBy="#{det[0]}" headerText=" Operateur">
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column sortBy="#{det[1]}" headerText="Nb Anomalie">
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+     <p:column sortBy="#{det[2]}" headerText="Duree Anomalie">
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+     <p:column sortBy="#{det[3]}" headerText="Nb d'appel MSC">
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+     <p:column sortBy="#{det[4]}" headerText="Duree MSC">
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+     <p:column sortBy="#{det[5]}" headerText=" Nb d'appels Tapout">
+        <h:outputText value="#{det[5]}" />
+    </p:column>
+     <p:column sortBy="#{det[6]}" headerText="Duree Tapout">
+        <h:outputText value="#{det[6]}" />
+    </p:column>
+    <p:column sortBy="#{det[7]}" headerText="Nb KPI">
+        <h:outputText value="#{det[7]}" />
+    </p:column>
+    <p:column sortBy="#{det[8]}" headerText="Duree KPI">
+        <h:outputText value="#{det[8]}" />
+    </p:column>
+      <p:column sortBy="#{det[9]}" headerText="Impact(UM)">
+        <h:outputText value="#{det[9]}" />
+    </p:column>
+    <f:facet name="footer">
+            <p:commandButton process="dt2"  actionListener="#{recon_msc_tapout.loadDestinations()}" update=":form1:DetailAnomalie" icon="ui-icon-search" value="View"  />
+    </f:facet>
+		</p:dataTable>
+		
+		       	<p:dataTable id="dt3" rendered="#{recon_msc_tapout.bytypedest}" value="#{recon_msc_tapout.listbyDest}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" >
+		   <p:column sortBy="#{det[0]}" headerText="Destination">
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column sortBy="#{det[1]}" headerText="Nb Anomalie">
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+     <p:column sortBy="#{det[2]}" headerText="Duree Anomalie">
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+     <p:column sortBy="#{det[3]}" headerText="Nb d'appel MSC">
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+     <p:column sortBy="#{det[4]}" headerText="Duree MSC">
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+     <p:column sortBy="#{det[5]}" headerText=" Nb d'appels Tapout">
+        <h:outputText value="#{det[5]}" />
+    </p:column>
+     <p:column sortBy="#{det[6]}" headerText="Duree Tapout">
+        <h:outputText value="#{det[6]}" />
+    </p:column>
+    <p:column sortBy="#{det[7]}" headerText="Nb KPI">
+        <h:outputText value="#{det[7]}" />
+    </p:column>
+    <p:column sortBy="#{det[8]}" headerText="Duree KPI">
+        <h:outputText value="#{det[8]}" />
+    </p:column>
+      <p:column sortBy="#{det[9]}" headerText="Impact(UM)">
+        <h:outputText value="#{det[9]}" />
+    </p:column>
+		</p:dataTable>
+		   </p:panelGrid>
+        </p:outputPanel>
+    </p:dialog>
+		</p:layoutUnit>
+		   <p:blockUI block="layoutUnit" trigger="dt1:btnn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</p:layout>
+		   <p:blockUI block="layoutUnit" trigger="btn">
+        Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+  
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>

@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">Alertes HUR</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		<h:panelGrid columns="3" id="pan23">
+		   <p:outputLabel value="Date " />
+	<p:calendar value="#{alerte_hur.date_alerte}" ></p:calendar>
+			<p:dataTable value="#{alerte_hur.liste_regles}" paginator="true" rows="6"  var="regle" id="tblregle" rowKey="#{regle.id}" selectionMode="single" selection="#{alerte_hur.selected_regle}">
+		  <p:ajax process=":form1:pan23" event="rowSelect"  update=":form1:tblalerte" listener="#{alerte_hur.selectRegle}" />  
+		<p:column headerText="Nom du Regle">
+		<h:outputText value="#{regle.nom}" />
+		</p:column>
+		</p:dataTable>
+		</h:panelGrid>
+		<p:separator/>
+			<p:dataTable value="#{alerte_hur.listeAlerte}" paginator="true" rows="6"  var="alerte" id="tblalerte" rowKey="#{alerte[1]}" selection="#{alerte_hur.selected_alerte}" selectionMode="single"  >
+		  
+		<p:column headerText="Regle">
+		<h:outputText value="#{alerte_hur.selected_regle.nom}" />
+		</p:column>
+		<p:column headerText="msisdn">
+		<h:outputText value="#{alerte[1]}" />
+		</p:column>
+		
+		<p:column headerText="Date Detection">
+		<h:outputText value="#{alerte[2]}" />
+		</p:column>
+		<p:column headerText="Nombre d'occurance">
+		<h:outputText value="#{alerte[3]}" />
+		</p:column>
+		
+		<f:facet name="footer">
+		
+		             <p:commandButton process="tblalerte" icon="ui-icon-plusthick" value="Details" actionListener="#{alerte_hur.loadIdentitéCdr()}" update=":form1:tabdetails" oncomplete="PF('dlg3').show()" />
+		
+		</f:facet>
+		</p:dataTable>
+		
+		<p:dialog header="Décision" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+		<p:tabView id="tabdetails">
+		<p:tab title="Identité" >
+		
+			<p:panelGrid columns="2" id="tblparam">
+			<p:dataTable  value="#{alerte_hur.liste_parametres}" var="paramitre" paginator="true" rows="5">
+			<f:facet name="header">
+			<p:outputLabel value="Parametres"></p:outputLabel>
+			</f:facet>
+			<p:column headerText="Parametre">
+			<h:outputText value="#{paramitre[0]}" />
+			</p:column>
+			<p:column headerText="Valeur">
+			<h:outputText value="#{paramitre[1]}" />
+			</p:column>
+			<p:column headerText="Date Debut">
+			<h:outputText value="#{paramitre[2]}" />
+			</p:column>
+		<p:column headerText="Date Fin">
+			<h:outputText value="#{paramitre[2]}" />
+			</p:column>
+			
+			
+			</p:dataTable>
+	<p:panel>
+	<f:facet name="header">
+	   <h:graphicImage value="/resources/img/user_icon.png" />
+	<h:outputLabel value="Identité" />
+	</f:facet>
+	<p:panelGrid columns="2">
+	<p:outputLabel value="Numéro : " />
+	<p:outputLabel value="#{alerte_hur.identities[1]}"/>
+	<p:outputLabel value="Nom :" />
+	<p:outputLabel value="#{alerte_hur.identities[2]}"/>
+	<p:outputLabel value="Pays :" />
+	<p:outputLabel value="#{alerte_hur.identities[4]}"/>
+	<p:outputLabel value="Class" />
+	<p:outputLabel value="#{alerte_hur.identities[3]}"/>
+	<p:outputLabel value="Date Activation :" />
+	<p:outputLabel value="#{alerte_hur.identities[12]}"/>
+	<p:outputLabel value="Date Désactivation :" />
+	<p:outputLabel value="#{alerte_hur.identities[13]}"/>
+	
+	
+	
+	</p:panelGrid>
+	</p:panel>
+ 
+			
+    </p:panelGrid>
+     <p:panelGrid columns="2">
+    <p:commandButton value="Black Liste" update=":form1:tblalerte" actionListener="#{alerte_hur.BlackList}" oncomplete="PF('dlg3').hide;"/>
+    <p:commandButton value="White Liste" update=":form1:tblalerte" oncomplete="PF('dlg3').hide;"/>
+    <p:commandButton value="Black Liste et désactivation" update=":form1:tblalerte" oncomplete="PF('dlg3').hide;"/>
+     <p:commandButton value="Supprimer" update=":form1:tblalerte" oncomplete="PF('dlg3').hide;" />
+    </p:panelGrid>
+    </p:tab >
+    <p:tab title="CDR" rendered="#{alerte_hur.afficheCDR}" >
+    <p:dataTable value="#{alerte_hur.cdrs}" var="cdr">
+    
+    </p:dataTable>
+    </p:tab>
+    <p:tab title="CDR IN Activation" rendered="#{alerte_hur.affichactivation}">
+    <p:dataTable value="#{alerte_hur.cdrs_in_activations}" var="cdr">
+    <f:facet name="header">
+    <h:outputLabel value=" List CDRs IN Activation" />
+    </f:facet>
+    </p:dataTable>
+    </p:tab>
+    <p:tab title="CDR IN Recharge" rendered="#{alerte_hur.affichrecharge}">
+    <p:dataTable value="#{alerte_hur.cdrs_in_recharge}" var="cdr">
+    <f:facet name="header">
+    <h:outputLabel value=" List CDRs IN Recharge" />
+    </f:facet>
+    </p:dataTable>
+    </p:tab>
+       <p:tab title="CDR IN Transfert" rendered="#{alerte_hur.affichtransfert}">
+       <p:dataTable value="#{alerte_hur.cdrs_in_transfert}" var="cdr">
+       <f:facet name="header">
+    <h:outputLabel value=" List CDRs IN Transfert" />
+    </f:facet>
+    
+    </p:dataTable>
+    </p:tab>
+    
+       </p:tabView>
+</p:dialog>
+	</h:form>
+	
+	</ui:define>
+	</ui:composition>
+	
+	

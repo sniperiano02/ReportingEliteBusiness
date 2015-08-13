@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">Gestion Regles Fraude</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		<p:panel header="Type">
+		 <p:selectOneRadio id="console" value="#{manage_decision.choix}">
+		 <p:ajax event="change" listener="#{manage_decision.affichBlack()}" update=":form1:tbl" />
+            <f:selectItem itemLabel="Black Liste" itemValue="B" />
+            <f:selectItem itemLabel="Black Liste et désactivation" itemValue="D" />
+            <f:selectItem itemLabel="White Liste" itemValue="W" />
+             <f:selectItem itemLabel="Suppression" itemValue="S" />
+        </p:selectOneRadio>
+        </p:panel>
+        <p:separator/>
+        
+        <p:dataTable value="#{manage_decision.liste_decisions}" var="decision" id="tbl" paginator="true" rows="7" >
+          <f:facet name="header">
+   <p:outputLabel value="Liste Decision"></p:outputLabel>
+        </f:facet>
+        <p:column headerText="MSISDN">
+        <h:outputLabel value="#{decision.msisdn}" />
+        </p:column>
+         <p:column headerText="Decision">
+        <h:outputLabel value="#{decision.decision}" />
+        </p:column>
+         <p:column headerText="Utilisateur">
+        <h:outputLabel value="#{decision.nomUtilisateur}" />
+        </p:column>
+         <p:column headerText="Date Decision">
+        <h:outputLabel value="#{decision.dateDecision}" />
+        </p:column>
+           <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="tbl" update="tbl" icon="ui-icon-trash" title="Supprimer"   >
+                <f:setPropertyActionListener value="#{decision}" target="#{manage_decision.decision}" />
+            </p:commandButton>
+        </p:column>
+        </p:dataTable>
+		</h:form>
+		</ui:define>
+		</ui:composition>

@@ -1,0 +1,95 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">Gestion Operateurs Roaming</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+			<p:dataTable var="account" id="singleDT" paginator="true" rows="10" value="#{manage_roaming_operator.lst_operators}"  rowKey="#{account.id}"   >
+				    <f:facet name="header">
+   <p:outputLabel value="Gestion Operateurs Roaming"></p:outputLabel>
+        </f:facet>
+				<p:column sortBy="#{account.operateur}" filterBy="#{account.operateur}" filterMatchMode="contains" headerText="Libellé Operateur">
+        <h:outputText value="#{account.operateur}" />
+    </p:column>
+				 <p:column  sortBy="#{account.pays.nom}" filterBy="#{account.pays.nom}" filterMatchMode="contains" headerText="Pays">
+        <h:outputText value="#{account.pays.nom}" />
+    </p:column>
+     <p:column filterBy="#{account.dateOuverture}" filterMatchMode="contains" headerText="Date Ouverture">
+        <h:outputText value="#{account.dateOuverture}" />
+    </p:column>
+     <p:column filterBy="#{account.nomUtilisateur}" filterMatchMode="contains" headerText="Utilisateur">
+        <h:outputText value="#{account.nomUtilisateur}" />
+    </p:column>
+        <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{account}" target="#{manage_roaming_operator.operator1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{manage_roaming_operator.deleteOperator()}"  >
+                <f:setPropertyActionListener value="#{account}" target="#{manage_roaming_operator.operator1}" />
+            </p:commandButton>
+        </p:column>
+     
+    <f:facet name="footer">
+   <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+          
+    
+        </f:facet>
+				
+				</p:dataTable>
+    
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+		 <p:outputLabel value="Operateur" />
+		 <p:inputText value="#{manage_roaming_operator.operator.operateur}" /> 
+		 
+    <p:outputLabel value="Pays" />
+   <p:selectOneMenu value="#{manage_roaming_operator.operator.pays}" converter="omnifaces.SelectItemsConverter"  >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{manage_roaming_operator.lst_pays}" var="mon" itemLabel="#{mon.nom}" itemValue="#{mon}"/>
+	</p:selectOneMenu>
+    <p:outputLabel value="Date Ouverture" />
+     <p:calendar value="#{manage_roaming_operator.operator.dateOuverture}"/>
+		
+   
+     
+     
+	  
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{manage_roaming_operator.addOperator()}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg3').hide()" />
+    </h:panelGrid>
+    
+       
+</p:dialog>
+<p:dialog header="Modification" rendered="#{not empty manage_roaming_operator.operator1}" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid  columnClasses="label,value" columns="2">
+      <p:outputLabel value="Operateur" />
+		 <p:inputText value="#{manage_roaming_operator.operator1.operateur}" /> 
+		 
+    <p:outputLabel value="Pays" />
+   <p:selectOneMenu value="#{manage_roaming_operator.operator1.pays}" converter="omnifaces.SelectItemsConverter"  >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{manage_roaming_operator.lst_pays}" var="mon" itemLabel="#{mon.nom}" itemValue="#{mon}"/>
+	</p:selectOneMenu>
+    <p:outputLabel value="Date Ouverture" />
+     <p:calendar value="#{manage_roaming_operator.operator1.dateOuverture}"/>
+		
+   
+     
+     
+	  
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{manage_roaming_operator.updateOperator()}"  oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler"  onclick="PF('dlg4').hide()"/>
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+			</h:form>
+			</ui:define>
+			</ui:composition>

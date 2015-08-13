@@ -1,0 +1,205 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1" >
+				
+			
+		
+			<p:dataTable  id="singleDT" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16"   rowKey="#{user.id}" var="user" value="#{tarif_gestion_out.allTarifs}" filteredValue="#{tarif_gestion_out.filtredTarif}" selectionMode="single" selection="#{tarif_gestion_out.tarif}" >
+    <f:facet name="header" >
+    <h:outputText value="Liste des Tarifs" />
+  
+    </f:facet>
+    <p:column filterBy="#{user.dateDebutValidite}" filterMatchMode="contains"  headerText="Date De validité">
+        <h:outputText value="#{user.dateDebutValidite}" />
+    </p:column>
+ 
+    <p:column filterBy="#{user.plan.planTarifaire}" filterMatchMode="contains" headerText="Plan Tarifaire">
+        <h:outputText value="#{user.plan.planTarifaire}" />
+    </p:column>
+     <p:column filterBy="#{user.zone_roa.nom}" filterMatchMode="contains" headerText="Zone Roa"   >
+        <h:outputText value="#{user.zone_roa.nom}" />
+    </p:column>
+     <p:column filterBy="#{user.pack_zone_roa.nom}" filterMatchMode="contains" headerText="Package Zone Roa">
+        <h:outputText value="#{user.pack_zone_roa.nom}" />
+    </p:column>
+        <p:column filterBy="#{user.zone.nom}" filterMatchMode="contains" headerText="Zone "   >
+        <h:outputText value="#{user.zone.nom}" />
+    </p:column>
+     <p:column filterBy="#{user.pack_zone.nom}" filterMatchMode="contains" headerText="Package Zone">
+        <h:outputText value="#{user.pack_zone.nom}" />
+    </p:column>
+     <p:column filterBy="#{user.intervalle.nom}" filterMatchMode="contains" headerText="Intervalle">
+        <h:outputText value="#{user.intervalle.nom}" />
+    </p:column>
+     <p:column filterBy="#{user.paliertype.description}" filterMatchMode="contains" headerText="Type Palier">
+        <h:outputText value="#{user.paliertype.description}" />
+    </p:column>
+    <p:column filterBy="#{user.packJour.nom}" filterMatchMode="contains" headerText="Package Jour">
+        <h:outputText value="#{user.packJour.nom}" />
+    </p:column>
+      <p:column filterBy="#{user.codeService}" filterMatchMode="contains" headerText="Service">
+        <h:outputText value="#{user.codeService}" />
+    </p:column>
+      <p:column filterBy="#{user.palierTaxation}" filterMatchMode="contains" headerText="Palier taxation">
+        <h:outputText value="#{user.palierTaxation}" />
+    </p:column>
+      <p:column filterBy="#{user.prixTarif}" filterMatchMode="contains" headerText="Tarif">
+        <h:outputText value="#{user.prixTarif}" />
+    </p:column>
+       
+   <f:facet name="footer">
+   <p:panelGrid columns="3">
+            <p:commandButton  process="singleDT" update=":form1:planDetail"  value="Modifier" oncomplete="PF('dlg4').show()"  />
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+                     <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-plusthick" value="Supprimer" actionListener="#{tarif_gestion_out.deleteTarifRoaOut}"  />
+        
+        </p:panelGrid>
+        </f:facet>
+</p:dataTable>
+
+			
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+    <p:outputLabel value="Plan Tarifaire" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif1.plan}"  converter="omnifaces.SelectItemsConverter" >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.plans}" var="cat" itemValue="#{cat}" itemLabel="#{cat.planTarifaire}"/>
+	</p:selectOneMenu>
+    <p:outputLabel value="Package Zone Roa" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif1.pack_zone_roa}"  converter="omnifaces.SelectItemsConverter" >
+     <p:ajax event="change" listener="#{tarif_gestion_out.changePackageRoa1()}" update="zr"></p:ajax>
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.package_zone_roa}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	 <p:outputLabel value="Zone Roa" />
+    <p:selectOneMenu id="zr" value="#{tarif_gestion_out.tarif1.zone_roa}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.zones_roa}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	<p:outputLabel value="Package Zone Roa" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif1.pack_zone}"  converter="omnifaces.SelectItemsConverter" >
+     <p:ajax event="change" listener="#{tarif_gestion_out.changePackage1()}" update="zr1"></p:ajax>
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.package_zones}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	 <p:outputLabel value="Zone " />
+    <p:selectOneMenu id="zr1" value="#{tarif_gestion_out.tarif1.zone}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.zones}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	<p:outputLabel value="Type Palier " />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif1.paliertype}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.paliers}" var="cat" itemValue="#{cat}" itemLabel="#{cat.description}"/>
+	</p:selectOneMenu>
+    
+    
+     <p:outputLabel value="Tranche Horaire" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif1.intervalle}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.intervalles}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+     <p:outputLabel value="Jour" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif1.packJour}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.jours}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+     <p:outputLabel value="Service" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif1.codeService}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItem itemLabel="VOIX Entrant" itemValue="MT"/>
+	<f:selectItem itemLabel="VOIX Sortant" itemValue="MO"/>
+	<f:selectItem itemLabel="Data" itemValue="GPRS"/>
+	<f:selectItem itemLabel="MMS" itemValue="MMSMO"/>
+	<f:selectItem itemLabel="SMS Entrant" itemValue="SMSMT"/>
+		<f:selectItem itemLabel="SMS Sortant" itemValue="SMSMO"/>
+	
+	
+	</p:selectOneMenu>
+	 <p:outputLabel value="Date Debut Validité" />
+     <p:calendar value="#{tarif_gestion_out.tarif1.dateDebutValidite}" >
+     </p:calendar>
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{tarif_gestion_out.addTarif}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty tarif_gestion_out.tarif}" columnClasses="label,value" columns="2">
+      <p:outputLabel value="Plan Tarifaire" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif.plan}"  converter="omnifaces.SelectItemsConverter" >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.plans}" var="cat" itemValue="#{cat}" itemLabel="#{cat.planTarifaire}"/>
+	</p:selectOneMenu>
+    <p:outputLabel value="Package Zone Roa" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif.pack_zone_roa}"  converter="omnifaces.SelectItemsConverter" >
+     <p:ajax event="change" listener="#{tarif_gestion_out.changePackageRoa()}" update="zr2"></p:ajax>
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.package_zone_roa}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	 <p:outputLabel value="Zone Roa" />
+    <p:selectOneMenu id="zr2" value="#{tarif_gestion_out.tarif.zone_roa}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.zones_roa}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	<p:outputLabel value="Package Zone Roa" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif.pack_zone}"  converter="omnifaces.SelectItemsConverter" >
+     <p:ajax event="change" listener="#{tarif_gestion_out.changePackage()}" update="zr3"></p:ajax>
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.package_zones}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	 <p:outputLabel value="Zone " />
+    <p:selectOneMenu id="zr3" value="#{tarif_gestion_out.tarif.zone}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.zones}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+	<p:outputLabel value="Type Palier " />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif.paliertype}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.paliers}" var="cat" itemValue="#{cat}" itemLabel="#{cat.description}"/>
+	</p:selectOneMenu>
+    
+    
+     <p:outputLabel value="Tranche Horaire" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif.intervalle}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.intervalles}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+     <p:outputLabel value="Jour" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif.packJour}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItems   value="#{tarif_gestion_out.jours}" var="cat" itemValue="#{cat}" itemLabel="#{cat.nom}"/>
+	</p:selectOneMenu>
+     <p:outputLabel value="Service" />
+     <p:selectOneMenu value="#{tarif_gestion_out.tarif1.codeService}"  converter="omnifaces.SelectItemsConverter" >
+      <f:selectItem itemLabel="Choisir..." itemValue="" />
+	<f:selectItem itemLabel="VOIX Entrant" itemValue="MT"/>
+	<f:selectItem itemLabel="VOIX Sortant" itemValue="MO"/>
+	<f:selectItem itemLabel="Data" itemValue="GPRS"/>
+	<f:selectItem itemLabel="MMS" itemValue="MMSMO"/>
+	<f:selectItem itemLabel="SMS Entrant" itemValue="SMSMT"/>
+		<f:selectItem itemLabel="SMS Sortant" itemValue="SMSMO"/>
+	
+	
+	</p:selectOneMenu>
+	 <p:outputLabel value="Date Debut Validité" />
+     <p:calendar value="#{tarif_gestion_out.tarif.dateDebutValidite}" >
+     </p:calendar>
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{tarif_gestion_out.updateTarifRoaOut()}"  oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+	</h:form>		
+			</ui:define>
+			</ui:composition>
+			

@@ -1,0 +1,212 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Export" rendered="#{verif_Biling_nat.chartDisplayed}">
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="tbl2" fileName="RapportBiling" datasetPadding="1" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="tbl2" fileName="RapportBiling" datasetPadding="1"  />
+            </h:commandLink>
+		</p:panel>
+		
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{verif_Biling_nat.choix_periode}" >
+		 <p:ajax listener="#{verif_Biling_nat.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="Operateur">
+			<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{verif_Biling_nat.choix_oper}"  converter="omnifaces.SelectItemsConverter" >
+		<p:ajax listener="#{verif_Biling_nat.handlechange}" event="change" update="@form" process="@this"/>
+		<f:selectItem itemLabel="" itemValue="" />
+		<f:selectItems value="#{verif_Biling_nat.listeoper}" var="type" itemLabel="#{type.operateur}" itemValue="#{type}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	<p:panel header="Type Stat"  >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{verif_Biling_nat.choix_stat}" >
+		 <p:ajax listener="#{verif_Biling_nat.handlechange}" event="change" update="@form" process="@this"/>
+	
+		<f:selectItem itemLabel="charge" itemValue="produit" />
+            <f:selectItem itemLabel="produit" itemValue="charge" />
+           
+
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+		
+	
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{verif_Biling_nat.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+		
+			<p:outputPanel id="ColLineChart1" rendered="#{verif_Biling_nat.chartDisplayed}">
+	<div class="ui-grid-row"   >
+	
+		<hf:chart height="220" type="line" subTitle="#{verif_Biling_nat.subTitle}" title="Rapport sur la vérification de Biling Interco National "  >
+		<hf:chartSerie name="Revenue Raftools" value="#{verif_Biling_nat.listeVerifBiling}" var="point" point="#{point[3]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie name="Revenue Intec" value="#{verif_Biling_nat.listeVerifBiling}" var="point" point="#{point[6]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		
+		
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('Detail').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+		
+		</div>
+		
+		<p:dataTable id="dt1" value="#{verif_Biling_nat.listeVerifBiling}" var="cdr" selection="#{verif_Biling_nat.selectedRecon}" selectionMode="single" rowKey="#{cdr[0]}" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" >
+		  <p:column headerText="Date Appel">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+     <p:column headerText="Nb Appel Raftools">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+     <p:column headerText="Durée(s) Raftools">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+    <p:column headerText="Revenue Raftools">
+        <h:outputText value="#{cdr[3]}" />
+    </p:column>
+    <p:column headerText="Nb Appel Intec">
+        <h:outputText value="#{cdr[4]}" />
+    </p:column>
+     <p:column headerText="Durée(s) Intec">
+        <h:outputText value="#{cdr[5]}" />
+    </p:column>
+    <p:column headerText="Revenue Intec">
+        <h:outputText value="#{cdr[6]}" />
+    </p:column>
+    <f:facet name="footer"  >
+            <p:commandButton process="dt1" id="btnn"  actionListener="#{verif_Biling_nat.getDetail}" update="@form" icon="ui-icon-search" value="View" oncomplete="PF('DetailsDialog').show()"  />
+        </f:facet>
+		</p:dataTable>
+		</p:outputPanel>
+		
+				<p:dialog header="Details Verif Rating Locale" widgetVar="DetailsDialog" rendered="#{verif_Biling_nat.detail_displayed}"    width="1043px">
+  
+            	<p:dataTable id="dt2"  value="#{verif_Biling_nat.listeDetailsVerifBiling}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16">
+		  <p:column headerText="Code operateur">
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column headerText="Nb Appel Raftools">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+     <p:column headerText="Durée(s) Raftools">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+    <p:column headerText="Revenue Raftools">
+        <h:outputText value="#{cdr[3]}" />
+    </p:column>
+    <p:column headerText="Nb Appel Intec">
+        <h:outputText value="#{cdr[4]}" />
+    </p:column>
+     <p:column headerText="Durée(s) Intec">
+        <h:outputText value="#{cdr[5]}" />
+    </p:column>
+    <p:column headerText="Revenue Intec">
+        <h:outputText value="#{cdr[6]}" />
+    </p:column>
+		</p:dataTable>
+			<p:dialog resizable="true" header="Rapport sur la vérification de Biling Interco National" widgetVar="Detail" modal="true"  appendTo="@(body)"   width="1043px">
+        <p:outputPanel id="Detail0" rendered="#{verif_Biling_nat.chartDisplayed}" >
+		 <p:dataTable  value="#{verif_Biling_nat.listeVerifBiling}" var="det" paginator="true" rows="5"   paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl2">
+           <f:facet name="header">  
+             <h:outputText value="Rapport sur la vérification de Biling Interco National#{verif_Biling_nat.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl2" fileName="VerifBiling" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter type="pdf" target="tbl2" fileName="VerifBiling"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Date"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Revenue Raftools"/>  
+         </f:facet> 
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+      <p:column >
+       <f:facet name="header">  
+             <h:outputText value="Revenue Intec"/>  
+         </f:facet> 
+        <h:outputText value="#{det[6]}" />
+    </p:column>
+ 
+ 
+		</p:dataTable>
+	
+  
+ 
+  
+        </p:outputPanel>
+        </p:dialog>
+		
+  
+    </p:dialog>
+		</p:layoutUnit>
+		 <p:blockUI block="layoutUnit" trigger="btn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+     <p:blockUI block="layoutUnit" trigger="dt1:btnn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		
+		</p:layout>
+		
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>

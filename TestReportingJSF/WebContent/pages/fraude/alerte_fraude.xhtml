@@ -1,0 +1,151 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">Ajouter Fraude</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+			<p:dataTable value="#{alerte_fraude.liste_regles}" paginator="true" rows="6"  var="regle" id="tblregle" rowKey="#{regle.id}" selectionMode="single" selection="#{alerte_fraude.selected_regle}">
+		  <p:ajax event="rowSelect"  update=":form1:tblalerte,:form1:gmap" listener="#{alerte_fraude.selectRegle}" />  
+		<p:column headerText="Nom du Regle">
+		<h:outputText value="#{regle.nom}" />
+		</p:column>
+		</p:dataTable>
+		<p:separator/>
+			<p:dataTable value="#{alerte_fraude.listeAlerte}" paginator="true" rows="6"  var="alerte" id="tblalerte" rowKey="#{alerte[1]}" selection="#{alerte_fraude.selected_alerte}" selectionMode="single"  >
+		  
+		<p:column headerText="Regle">
+		<h:outputText value="#{alerte_fraude.selected_regle.nom}" />
+		</p:column>
+		<p:column headerText="msisdn">
+		<h:outputText value="#{alerte[1]}" />
+		</p:column>
+		<p:column headerText="Date Début">
+		<h:outputText value="#{alerte[2]}" />
+		</p:column>
+		<p:column headerText="Date Fin">
+		<h:outputText value="#{alerte[3]}" />
+		</p:column>
+		<p:column headerText="Date Detection">
+		<h:outputText value="#{alerte[4]}" />
+		</p:column>
+		<p:column headerText="Nombre d'occurance">
+		<h:outputText value="#{alerte[5]}" />
+		</p:column>
+		
+		<f:facet name="footer">
+		
+		             <p:commandButton process="tblalerte" icon="ui-icon-plusthick" value="Details" actionListener="#{alerte_fraude.loadIdentitéCdr()}" update=":form1:tabdetails" oncomplete="PF('dlg3').show()" />
+		
+		</f:facet>
+		</p:dataTable>
+		
+		<p:dialog header="Decision" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+		<p:tabView id="tabdetails" prependId="false" dynamic="true" cache="false" onTabShow="$(window).trigger('resize')">
+		<p:tab title="Identité" >
+		
+			<p:panelGrid columns="2" id="tblparam">
+			<p:dataTable  value="#{alerte_fraude.liste_parametres}" paginator="true" rows="6" var="paramitre">
+			<f:facet name="header">
+			<p:outputLabel value="Parametres"></p:outputLabel>
+			</f:facet>
+			<p:column headerText="Parametre">
+			<h:outputText value="#{paramitre[0]}" />
+			</p:column>
+			<p:column headerText="Valeur">
+			<h:outputText value="#{paramitre[1]}" />
+			</p:column>
+			<p:column headerText="Date Debut">
+			<h:outputText value="#{paramitre[2]}" />
+			</p:column>
+		<p:column headerText="Date Fin">
+			<h:outputText value="#{paramitre[2]}" />
+			</p:column>
+			
+			
+			</p:dataTable>
+	<p:panel id="pan">
+	<f:facet name="header">
+	   <h:graphicImage value="/resources/img/user_icon.png" />
+	<h:outputLabel value="Identité" />
+	</f:facet>
+	<p:panelGrid columns="2">
+	<p:outputLabel value="Numéro : " />
+	<p:outputLabel value="#{alerte_fraude.identities[1]}"/>
+	<p:outputLabel value="Nom :" />
+	<p:outputLabel value="#{alerte_fraude.identities[2]}"/>
+	<p:outputLabel value="Pays :" />
+	<p:outputLabel value="#{alerte_fraude.identities[4]}"/>
+	<p:outputLabel value="Class" />
+	<p:outputLabel value="#{alerte_fraude.identities[3]}"/>
+	<p:outputLabel value="Date Activation :" />
+	<p:outputLabel value="#{alerte_fraude.identities[12]}"/>
+	<p:outputLabel value="Date Désactivation :" />
+	<p:outputLabel value="#{alerte_fraude.identities[13]}"/>
+	
+	</p:panelGrid>
+<p:commandButton id="btn" type="button" icon="ui-icon-pin-s" value="Show Map"  onclick="PF('dlg').show();" />
+
+  
+	</p:panel>
+
+			
+    </p:panelGrid>
+    
+	
+    <p:panelGrid columns="2">
+    <p:commandButton value="Black Liste" update=":form1:tblalerte" actionListener="#{alerte_fraude.BlackList}" oncomplete="PF('dlg3').hide;"/>
+    <p:commandButton value="White Liste" update=":form1:tblalerte" oncomplete="PF('dlg3').hide;"/>
+    <p:commandButton value="Black Liste et désactivation" update=":form1:tblalerte" oncomplete="PF('dlg3').hide;"/>
+     <p:commandButton value="Supprimer" update=":form1:tblalerte" oncomplete="PF('dlg3').hide;" />
+    </p:panelGrid>
+    </p:tab >
+    <p:tab title="CDR" rendered="#{alerte_fraude.afficheCDR}" >
+    <p:dataTable value="#{alerte_fraude.cdrs}" var="cdr">
+    
+    </p:dataTable>
+    </p:tab>
+    <p:tab title="CDR IN Activation" rendered="#{alerte_fraude.affichactivation}">
+    <p:dataTable value="#{alerte_fraude.cdrs_in_activations}" var="cdr">
+    <f:facet name="header">
+    <h:outputLabel value=" List CDRs IN Activation" />
+    </f:facet>
+    </p:dataTable>
+    </p:tab>
+    <p:tab title="CDR IN Recharge" rendered="#{alerte_fraude.affichrecharge}">
+    <p:dataTable value="#{alerte_fraude.cdrs_in_recharge}" var="cdr">
+    <f:facet name="header">
+    <h:outputLabel value=" List CDRs IN Recharge" />
+    </f:facet>
+    </p:dataTable>
+    </p:tab>
+       <p:tab title="CDR IN Transfert" rendered="#{alerte_fraude.affichtransfert}">
+       <p:dataTable value="#{alerte_fraude.cdrs_in_transfert}" var="cdr">
+       <f:facet name="header">
+    <h:outputLabel value=" List CDRs IN Transfert" />
+    </f:facet>
+    
+    </p:dataTable>
+    </p:tab>
+   
+    
+    
+    
+       </p:tabView>
+</p:dialog>
+<p:dialog id="gmapDialog" widgetVar="dlg" width="625" height="400" appendTo="@(body)" modal="true" dynamic="true" >
+    <p:gmap id="gmap" center="36.890257,30.707417" zoom="15" type="HYBRID" style="width:100%;height:400px" model="#{alerte_fraude.simpleModel}" />
+</p:dialog>
+	</h:form>
+	
+	</ui:define>
+	</ui:composition>
+	
+	

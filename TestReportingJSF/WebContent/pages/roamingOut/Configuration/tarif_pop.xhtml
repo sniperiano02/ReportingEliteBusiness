@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1" >
+			<h1 style="text-align:center;">Roaming OUT-Configuration-Tarif Post payé</h1>
+			
+		
+			<p:dataTable id="singleDT"  rowKey="#{plan1.id}" var="plan1" value="#{tarif_pop.list_plans}" selectionMode="single" selection="#{tarif_pop.plan}" >
+    <p:column headerText="Date debut validite">
+        <h:outputText value="#{plan1.dateValidite}" />
+    </p:column>
+ 
+    <p:column headerText="Marge">
+        <h:outputText value="#{plan1.marge}" />
+    </p:column>
+ 
+   <f:facet name="footer">
+   <p:panelGrid columns="2">
+            <p:commandButton  process="singleDT" update=":form1:planDetail"  value="Modifier" oncomplete="PF('dlg4').show()"  />
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+        </p:panelGrid>
+        </f:facet>
+</p:dataTable>
+
+			
+			<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+    <p:outputLabel value="Date debut validite" />
+    <p:inputText value="#{tarif_pop.tarifPop.dateValidite}" ></p:inputText> 
+    <p:outputLabel value="Marge" />
+    <p:inputText value="#{tarif_pop.tarifPop.marge}" ></p:inputText> 
+    
+  
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{tarif_pop.createTarifPop()}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" />
+    </h:panelGrid>
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+			<p:panelGrid rendered="#{not empty tarif_pop.plan}" columnClasses="label,value" columns="2">
+    <p:outputLabel value="Date debut de validite" />
+    <p:inputText value="#{tarif_pop.plan.dateValidite}" ></p:inputText> 
+    <p:outputLabel value="Marge" />
+    <p:inputText value="#{tarif_pop.plan.marge}" ></p:inputText> 
+   
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{tarif_pop.updateTarifPop()}" oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" />
+    </p:panelGrid>
+    </p:outputPanel>
+</p:dialog>
+	</h:form>		
+			</ui:define>
+			</ui:composition>

@@ -1,0 +1,217 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:hf="http://highfaces.org"
+                template="/template/template.xhtml"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+                <ui:define name="pageTitle">Rapport Tapout</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+	
+        <p:growl id="grwl" autoUpdate="true"></p:growl>
+  
+		<p:layout id="layo"  widgetVar="layvar" onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east"  header="Menu" id="esat" style="height:480px;overflow:hidden;" size="300" collapsible="true" >
+		<p:outputPanel id="expPan">
+		<p:panel header="Export" rendered="#{tarif_moyen_roaming.chartDisplayed}" >
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="tbl1,tbl2,tblDest,tblMSC" fileName="RapportMSC" datasetPadding="4" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="tbl1,tbl2,tblDest" fileName="RapportTapOut" datasetPadding="4"  />
+            </h:commandLink>
+		</p:panel>
+		</p:outputPanel>
+	
+		<p:panel  >
+		   <f:facet name="header" >
+		   
+             <h:outputText value="Periode"/>  
+            
+         </f:facet>  
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{tarif_moyen_roaming.choix_periode}" required="true" requiredMessage="Veuillez choisir une période" >
+		 <p:ajax listener="#{tarif_moyen_roaming.handlechange}" event="change" update="@form" process="@this"/>
+		<f:selectItem itemLabel=" " itemValue=" "  />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="Type" >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{tarif_moyen_roaming.choix_Voix}"  >
+		<p:ajax listener="#{tarif_moyen_roaming.handlechange1}" event="change" update="layoutUnit" process="@this"/>
+		<f:selectItem itemLabel="Voix" itemValue="MO" />
+		<f:selectItem itemLabel="SMS" itemValue="SMSMO" />
+		<f:selectItem itemLabel="SMS Sortant" itemValue="SMSMO" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+			<p:panel header="Operateur" >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{tarif_moyen_roaming.choix_operateur}" converter="omnifaces.SelectItemsConverter"  >
+		<p:ajax listener="#{tarif_moyen_roaming.handlechange1}" event="change" update="layoutUnit" process="@this"/>
+		<f:selectItem itemLabel="" itemValue="" />
+		<f:selectItems value="#{tarif_moyen_roaming.lst_operateurs}" var="op" itemLabel="#{op.operateur}" itemValue="#{op}"  />
+	
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+	
+	
+		
+	
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"   actionListener="#{tarif_moyen_roaming.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit"   position="center" resizable="true" >
+     <p:outputPanel id="ip1">
+   <div class="ui-grid-row"  >
+	
+		<p:panel header=" " rendered="#{tarif_moyen_roaming.chartDisplayed}"  >
+		
+		<hf:chart    type="line" subTitle="#{tarif_moyen_roaming.subTitle}"  title="Rapport du durée CDRs enregistré au niveau MSC"   >
+		<hf:chartSerie   name="Tarif Moyen Duree" value="#{tarif_moyen_roaming.staticListStatMsc}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+	
+		</hf:chart>
+		<f:facet name="options">
+            <p:menu>
+                <p:submenu label="Options">
+                    <p:menuitem value="Exporter" url="#" icon="ui-icon-newwin" onclick="PF('DetailsDialog').show()" />
+                   
+                </p:submenu>
+            </p:menu>
+        </f:facet>
+		</p:panel>
+	
+		
+		
+		</div>
+		
+			<div class="ui-grid-row"   >
+	
+	
+	 <p:dataTable  value="#{tarif_moyen_roaming.staticListStatMsc}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl2">
+          <f:facet name="header">  
+             <h:outputText value="Tarif Moyen Roaming IN #{tarif_moyen_roaming.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl1" fileName="RpTarifMoyen" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter  type="pdf" target="tbl1" fileName="RpTarifMoyen"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Date"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Tarif Moyen"/>  
+         </f:facet> 
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+    <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Nb Appel"/>  
+         </f:facet> 
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+       <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Duree"/>  
+         </f:facet> 
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+  
+       <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Revenue"/>  
+         </f:facet> 
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+ 
+ 
+		</p:dataTable>
+		</div>
+		
+			
+		<p:dialog resizable="true" header="Rapport Tarif Moyen "  modal="true"  appendTo="@(body)" widgetVar="DetailsDialog"   width="1043px">
+        <p:outputPanel id="DetailAnomalie" rendered="#{tarif_moyen_roaming.chartDisplayed}" >
+		 <p:dataTable  value="#{tarif_moyen_roaming.staticListStatMsc}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16" id="tbl1">
+          <f:facet name="header">  
+             <h:outputText value="Tarif Moyen #{tarif_moyen_roaming.subTitle}"/>  
+         </f:facet>  
+        <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="tbl1" fileName="RpNombre" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter  type="pdf" target="tbl1" fileName="RpNombre"/>
+            </h:commandLink>
+
+        </f:facet>
+		  <p:column >
+		    <f:facet name="header">  
+             <h:outputText value="Date"/>  
+         </f:facet>  
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+     <p:column >
+      <f:facet name="header">  
+             <h:outputText value="Tarif Moyen"/>  
+         </f:facet> 
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+  
+ 
+ 
+		</p:dataTable>
+	
+  
+ 
+  
+        </p:outputPanel>
+        </p:dialog>
+
+           
+        </p:outputPanel>
+		</p:layoutUnit>
+		 
+		</p:layout>
+		<p:blockUI block="layoutUnit" trigger="btn">
+        Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>
+		

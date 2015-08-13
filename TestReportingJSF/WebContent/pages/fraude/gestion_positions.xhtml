@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">Ajouter Fraude</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		
+		<p:dataTable id="singleDT" value="#{manage_position.liste_cell}" var="cell" >
+		  <f:facet name="header">
+   <p:outputLabel value="Gestion Account IN"></p:outputLabel>
+        </f:facet>
+		
+		<p:column headerText="CellId">
+		<h:outputText value="#{cell.idcell}" />
+		</p:column>
+		<p:column headerText="Nom BSC">
+		<h:outputText value="#{cell.idcell}" />
+		</p:column>
+		<p:column headerText="Nom MSC">
+		<h:outputText value="#{cell.nomMsc}" />
+		</p:column>
+		<p:column headerText="Latitude">
+		<h:outputText value="#{cell.latitude}" />
+		</p:column>
+		<p:column headerText="Azimuth">
+		<h:outputText value="#{cell.azimuth}" />
+		</p:column>
+			<p:column headerText="Angle">
+		<h:outputText value="#{cell.angle}" />
+		</p:column>
+			<p:column headerText="Altitude">
+		<h:outputText value="#{cell.altitude}" />
+		</p:column>
+		<p:column headerText="Nom Utilisateur">
+		<h:outputText value="#{cell.nomUtilisateur}" />
+		</p:column>
+		<p:column headerText="Date Création">
+		<h:outputText value="#{cell.dateModif}" />
+		</p:column>
+		<p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{cell}" target="#{manage_position.cell1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{manage_position.delete()}"  >
+                <f:setPropertyActionListener value="#{cell}" target="#{manage_position.cell1}" />
+            </p:commandButton>
+        </p:column>
+    <f:facet name="footer">
+
+
+             <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+             
+      
+        </f:facet>
+		
+		</p:dataTable>
+		<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" >
+			<h:panelGrid>
+		
+	  
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{manage_position.ajouter}"  oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg3').hide()" />
+    </h:panelGrid>
+    
+       
+</p:dialog>
+<p:dialog header="Modification" widgetVar="dlg4" showEffect="explode" hideEffect="bounce" >
+<p:outputPanel id="planDetail" style="text-align:center;">
+
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{manage_position.modifier}"  oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler"  onclick="PF('dlg4').hide()"/>
+   
+    </p:outputPanel>
+</p:dialog>
+		</h:form>
+		</ui:define>
+		</ui:composition>

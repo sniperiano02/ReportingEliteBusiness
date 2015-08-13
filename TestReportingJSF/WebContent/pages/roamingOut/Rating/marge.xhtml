@@ -1,0 +1,144 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		
+			<h:form id="form1" >
+			<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{marge_roam.choix_periode}" >
+		 <p:ajax listener="#{marge_roam.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+		<p:panel header="Type"  >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{marge_roam.choix_call}" >
+		 <p:ajax listener="#{marge_roam.handlechange}" event="change" update="@form" process="@this"/>
+			<f:selectItem itemLabel=""  />
+		<f:selectItem itemLabel="Voix" itemValue="MO" />
+            <f:selectItem itemLabel="Voix Entrant" itemValue="MT" />
+           
+
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{marge_roam.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+		<p:menuButton value="Options">
+        <p:menuitem value="Creer Votre propre Rapport"  icon="ui-icon-disk"/>
+        <p:menuitem value="Voir Un rapport Existant"  icon="ui-icon-arrowrefresh-1-w"/>
+        
+        
+    </p:menuButton>
+		<p:panelGrid id="ColLineChart" columns="1" rendered="#{marge_roam.chartDisplayed}">
+		<hf:chart height="220" type="line"    title="Rapport marge roaming" subTitle="#{marge_roam.subTitle}"    >
+		<hf:chartSerie name="Revenue(PoP)"  value="#{marge_roam.resultCDRInexistant}" var="point" point="#{point[7]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie name="Charge"  value="#{marge_roam.resultCDRInexistant}" var="point" point="#{point[8]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
+		</hf:chart>
+		<p:dataTable id="dt1" value="#{marge_roam.resultCDRInexistant}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" selection="#{marge_roam.selectedRecon}" selectionMode="single" rowKey="#{cdr[0]}">
+		  <p:column headerText="Date">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+    <p:column headerText="Revenue Prp Roaming ">
+        <h:outputText value="#{cdr[9]}" />
+    </p:column>
+      <p:column headerText="Revenue Pop Roaming ">
+        <h:outputText value="#{cdr[7]}" />
+    </p:column>
+      <p:column headerText="Charge Roaming">
+        <h:outputText value="#{cdr[8]}" />
+    </p:column>
+      
+
+ 
+    <f:facet name="footer"  >
+            <p:commandButton process="dt1" id="btnn" actionListener="#{marge_roam.getDetail}" update="@form" icon="ui-icon-search" value="View" oncomplete="PF('DetailsDialog').show()"  />
+        </f:facet>
+		
+		
+		</p:dataTable>
+		
+
+		</p:panelGrid>
+			<p:dialog header="Details Reconciliation Tapin" widgetVar="DetailsDialog"   width="1043px">
+        <p:outputPanel id="DetailAnomalie" rendered="#{marge_roam.detailDisplayed}" >
+           
+       
+		 
+          
+            	<p:dataTable  value="#{marge_roam.resultCDRDetailsInexistant}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16">
+		  <p:column headerText="Operateur">
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+      <p:column headerText="Nb Appel prp">
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+      <p:column headerText="Durée(s) prp">
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+    <p:column headerText="Revenue prp">
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+      <p:column headerText="Nb Appel Tapin">
+        <h:outputText value="#{det[5]}" />
+    </p:column>
+      <p:column headerText="Durée(s) Tapin">
+        <h:outputText value="#{det[6]}" />
+    </p:column>
+    <p:column headerText="Charge">
+        <h:outputText value="#{det[7]}" />
+    </p:column>
+       <p:column headerText="Nb Sysfact">
+        <h:outputText value="#{det[8]}" />
+    </p:column>
+    <p:column headerText="Durée(s) Sysfact">
+        <h:outputText value="#{det[9]}" />
+    </p:column>
+    <p:column headerText="Revenue SysFacturation">
+        <h:outputText value="#{det[10]}" />
+    </p:column>
+
+  
+		</p:dataTable>
+		
+        </p:outputPanel>
+    </p:dialog>
+		</p:layoutUnit>
+		   <p:blockUI block="layoutUnit" trigger="dt1:btnn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		</p:layout>
+		   <p:blockUI block="layoutUnit" trigger="btn">
+        Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+  
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>

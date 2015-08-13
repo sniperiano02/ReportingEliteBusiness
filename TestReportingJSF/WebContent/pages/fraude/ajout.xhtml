@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">welcome</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="fraudeform">
+			<p:inputText  value="#{productBean.filtre_regle_fraude.vdef}"  >
+	</p:inputText>
+	
+	
+	
+
+
+	
+	
+
+
+<p:dataTable   id="tbl1" value="#{productBean.listFiltresRegle}"  var="price" >
+	 
+	<p:column headerText="Filtre">
+	<h:outputText value="#{price.vdef}"  />
+	</p:column>
+	<p:column headerText="Filtre">
+	<h:outputText value="#{price.vegal}"  />
+	</p:column>
+	<p:column headerText="Filtre">
+	<h:outputText value="#{price.filtreFraude.filtre}"  />
+	</p:column>
+	
+	
+	</p:dataTable>
+	
+			
+				<p:commandButton value="Ajouter Filter" process="@form" action="#{productBean.addNewPrice()}" update="tbl1"    />
+			
+			
+			</h:form>
+			</ui:define>
+			</ui:composition>

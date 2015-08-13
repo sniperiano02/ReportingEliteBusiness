@@ -1,0 +1,136 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml"
+                
+                xmlns:hf="http://highfaces.org">
+                
+                 <ui:define name="pageTitle">welcome</ui:define>	
+			
+
+			<ui:define name="PageContent">
+		<h:form  id="form1" >
+		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
+		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Periode"  >
+		<p:panelGrid columns="1" id="PanelPeriode" >
+		<p:selectOneMenu value="#{verif_tarif_inter_nat.choix_periode}" >
+		 <p:ajax listener="#{verif_tarif_inter_nat.handlechange}" event="change" update="@form" process="@this"/>
+		 <f:selectItem itemLabel="" itemValue=" " />
+		<f:selectItem itemLabel="Par Jour" itemValue="Par Jour" />
+            <f:selectItem itemLabel="Par Mois" itemValue="Par Mois" />
+            <f:selectItem itemLabel="Par An" itemValue="Par An" />
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		<p:panel header="Operateur">
+			<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{verif_tarif_inter_nat.choix_oper}"  converter="omnifaces.SelectItemsConverter" >
+		<p:ajax listener="#{verif_tarif_inter_nat.handlechange}" event="change" update="@form" process="@this"/>
+		<f:selectItem itemLabel="" itemValue="" />
+		<f:selectItems value="#{verif_tarif_inter_nat.listeoper}" var="type" itemLabel="#{type.operateur}" itemValue="#{type}" />
+            
+		
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+	<p:panel header="Type Stat"  >
+		<p:panelGrid columns="1" >
+		<p:selectOneMenu value="#{verif_tarif_inter_nat.choix_stat}" >
+		 <p:ajax listener="#{verif_tarif_inter_nat.handlechange}" event="change" update="@form" process="@this"/>
+	
+		<f:selectItem itemLabel="charge" itemValue="produit" />
+            <f:selectItem itemLabel="produit" itemValue="charge" />
+           
+
+		</p:selectOneMenu>
+		</p:panelGrid>
+		</p:panel>
+		
+		
+	
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"  actionListener="#{verif_tarif_inter_nat.Valider}"></p:commandButton>
+		
+		</p:layoutUnit>
+		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
+		
+			<p:outputPanel id="ColLineChart1" rendered="#{verif_tarif_inter_nat.chartDisplayed}">
+	<div class="ui-grid-row"   >
+	
+		<hf:chart height="220" type="line" subTitle="#{verif_tarif_inter_nat.subTitle}" title="Rapport sur la vérification de tarif Interco International "  >
+		<hf:chartSerie name="Nb Appel" value="#{verif_tarif_inter_nat.listeVerifTranfert}" var="point" point="#{point[2]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie name="Impact" value="#{verif_tarif_inter_nat.listeVerifTranfert}" var="point" point="#{point[5]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		
+		
+		</hf:chart>
+		
+		</div>
+		
+		<p:dataTable id="dt1" value="#{verif_tarif_inter_nat.listeVerifTranfert}" var="cdr" selection="#{verif_tarif_inter_nat.selectedRecon}" selectionMode="single" rowKey="#{cdr[0]}" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16" >
+		  <p:column headerText="Date Appel">
+        <h:outputText value="#{cdr[0]}" />
+    </p:column>
+     <p:column headerText="Nombre de palier de taxation">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+     <p:column headerText="Impact sur le revenue">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+   
+    <f:facet name="footer"  >
+            <p:commandButton process="dt1" id="btnn"  actionListener="#{verif_tarif_inter_nat.getDetail}" update="@form" icon="ui-icon-search" value="View" oncomplete="PF('DetailsDialog').show()"  />
+        </f:facet>
+		</p:dataTable>
+		</p:outputPanel>
+		
+				<p:dialog header="Details Verif Rating Locale" widgetVar="DetailsDialog" rendered="#{verif_tarif_inter_nat.detail_displayed}"    width="1043px">
+  
+            	<p:dataTable id="dt2"  value="#{verif_tarif_inter_nat.listeDetailsVerifTransfert}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+        rowsPerPageTemplate="6,12,16">
+		  <p:column headerText="Code operateur">
+        <h:outputText value="#{det[0]}" />
+    </p:column>
+    <p:column headerText="Nom destination">
+        <h:outputText value="#{det[1]}" />
+    </p:column>
+     <p:column headerText="Durées(s)">
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+     <p:column headerText="Nb Appel">
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+     <p:column headerText=" Montant Raftools ">
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+     <p:column headerText="Montant Intec">
+        <h:outputText value="#{det[5]}" />
+    </p:column>
+    <p:column headerText="Impact">
+        <h:outputText value="#{det[6]}" />
+    </p:column>
+   
+		</p:dataTable>
+		
+  
+    </p:dialog>
+		</p:layoutUnit>
+		 <p:blockUI block="layoutUnit" trigger="btn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+     <p:blockUI block="layoutUnit" trigger="dt1:btnn">
+      Patientez<br />
+        <h:graphicImage value="/resources/img/ajaxloadingbar.gif" />
+    </p:blockUI>
+		
+		</p:layout>
+		
+		</h:form>
+		
+		</ui:define>
+		</ui:composition>

@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+           	
+			<ui:define name="pageTitle">Gestion Package Roaming</ui:define>	
+
+			<ui:define name="PageContent">
+			<h:form id="form1">
+			<p:dataTable var="account" id="singleDT" paginator="true" rows="10" value="#{manage_package_roaming.lst_package_roaming}"  rowKey="#{account.id}"   >
+				    <f:facet name="header">
+   <p:outputLabel value="Gestion Package Roaming"></p:outputLabel>
+        </f:facet>
+				<p:column filterBy="#{account.code}" filterMatchMode="contains" headerText="Code">
+        <h:outputText value="#{account.code}" />
+    </p:column>
+				 <p:column filterBy="#{account.nom}" filterMatchMode="contains" headerText="Nom">
+        <h:outputText value="#{account.nom}" />
+    </p:column>
+  
+     <p:column filterBy="#{account.nomUtlisateur}" filterMatchMode="contains" headerText="Utilisateur">
+        <h:outputText value="#{account.nomUtlisateur}" />
+    </p:column>
+    <p:column filterBy="#{account.dateModif}" filterMatchMode="contains" headerText="Utilisateur">
+        <h:outputText value="#{account.dateModif}" />
+    </p:column>
+        <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:planDetail"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{account}" target="#{manage_package_roaming.package_roaming1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{manage_package_roaming.deletePackageRoaming()}"  >
+                <f:setPropertyActionListener value="#{account}" target="#{manage_package_roaming.package_roaming1}" />
+            </p:commandButton>
+        </p:column>
+        
+     
+    <f:facet name="footer">
+   <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
+          
+    
+        </f:facet>
+				
+				</p:dataTable>
+    </h:form>
+    </ui:define>
+    </ui:composition>
