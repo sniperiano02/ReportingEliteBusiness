@@ -25,13 +25,13 @@ public class StatReconCtiMsc implements Serializable {
 
 	@ManyToOne 
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@JoinColumn(name="dest",referencedColumnName="id",insertable=false,updatable=false)
+	@JoinColumn(name="dest",referencedColumnName="id")
 	private InterDest destination;
 	
 	@Column(name="date_appel")
 	private String dateAppel;
 
-	private Long dest;
+	
 
 	@Column(name="duree_appel_cti")
 	private BigDecimal dureeAppelCti;
@@ -73,13 +73,7 @@ public class StatReconCtiMsc implements Serializable {
 		this.dateAppel = dateAppel;
 	}
 
-	public Long getDest() {
-		return this.dest;
-	}
-
-	public void setDest(Long dest) {
-		this.dest = dest;
-	}
+	
 
 	public BigDecimal getDureeAppelCti() {
 		return this.dureeAppelCti;

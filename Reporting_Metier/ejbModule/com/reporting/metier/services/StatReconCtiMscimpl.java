@@ -43,10 +43,10 @@ public class StatReconCtiMscimpl implements StatReconCtiMscRemote {
 	public List<Object[]> getAllStatReconCtiMsc(String x,String where) {
 		// TODO Auto-generated method stub
 		if(x.contains("to_char")){
-			return em.createQuery("Select "+x+" ,SUM(nbAppelCti) From StatReconCtiMsc s where  "+where+"  Group By to_date(dateAppel,'YYMMDD') Order By to_date(dateAppel,'YYMMDD') ASC ").getResultList();
+			return em.createQuery("Select "+x+" ,SUM(nbAppelCti),SUM(dureeAppelCti),SUM(nbAppelMsc),SUM(dureeAppelMsc),SUM(nbRoaOut),SUM(dureeRoaOut),SUM(dureeAppelMsc)+(SUM(dureeRoaOut)-SUM(dureeAppelCti)),SUM(dureeAppelMsc)+SUM(dureeRoaOut) From StatReconCtiMsc s where  "+where+"  Group By to_date(dateAppel,'YYMMDD') Order By to_date(dateAppel,'YYMMDD') ASC ").getResultList();
 			
 		}else{
-			return em.createQuery("Select "+x+" ,SUM(nbAppelCti)  From StatReconCtiMsc s where   "+where+"  Group By "+x+" Order BY "+x+" ASC").getResultList();
+			return em.createQuery("Select "+x+" ,SUM(nbAppelCti),SUM(dureeAppelCti),SUM(nbAppelMsc),SUM(dureeAppelMsc),SUM(nbRoaOut),SUM(dureeRoaOut),SUM(dureeAppelMsc)+(SUM(dureeRoaOut)-SUM(dureeAppelCti)),SUM(dureeAppelMsc)+SUM(dureeRoaOut)  From StatReconCtiMsc s where   "+where+"  Group By "+x+" Order BY "+x+" ASC").getResultList();
 			
 		}
 		}
@@ -85,7 +85,7 @@ public class StatReconCtiMscimpl implements StatReconCtiMscRemote {
 	@Override
 	public List<Object[]> getDetailsStatReconCtiMsc(String x,String y, String where) {
 		// TODO Auto-generated method stub
-		return em.createQuery("Select "+x+y+" From StatReconCtiMsc s where   "+where+"  Group By "+x+" Order By "+x).getResultList();
+		return em.createQuery("Select "+x+" "+y+" From StatReconCtiMsc s where   "+where+"  Group By "+x+" Order By "+x).getResultList();
 		
 	}
 
@@ -93,7 +93,7 @@ public class StatReconCtiMscimpl implements StatReconCtiMscRemote {
 	public List<Object[]> getDetailsDestinationStatReconCtiMsc(String x,
 			String where) {
 		// TODO Auto-generated method stub
-		return em.createQuery("Select "+x+", s.destination.nomDestination ,SUM(nbAppelCti),SUM(dureeAppelCti),SUM(nbAppelMsc),SUM(dureeAppelMsc),SUM(dureeTotalMsc),SUM(nbRoaOut),SUM(dureeRoaOut) From StatReconCtiMsc s where "+where+" Group BY  s.destination.nomDestination, "+x ).getResultList();
+		return em.createQuery("Select "+x+", s.destination.nomDestination ,SUM(dureeAppelCti),SUM(dureeAppelMsc),SUM(dureeRoaOut),SUM(nbAppelCti),SUM(nbAppelMsc),SUM(nbRoaOut),SUM(dureeAppelCti)-SUM(dureeAppelMsc) From StatReconCtiMsc s where "+where+" Group BY  s.destination.nomDestination, "+x ).getResultList();
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -22,8 +24,8 @@ public class ReglesFraude implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
-	private Long id;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id;
 
 	@Column(name="date_modif")
 	private Timestamp dateModif;
@@ -32,12 +34,30 @@ public class ReglesFraude implements Serializable {
 
 	private String etat;
 
-	
+	@OneToMany(fetch=FetchType.EAGER,mappedBy="regle",cascade=CascadeType.PERSIST,orphanRemoval=true)
+	private List<ParametresReglesFraude> liste_parameters;
 
+	@OneToMany(mappedBy="regle",cascade=CascadeType.PERSIST,orphanRemoval=true)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private List<FiltresReglesFraude> liste_filters;
 	
-
 	
+	public List<FiltresReglesFraude> getListe_filters() {
+		return liste_filters;
+	}
+	public void setListe_filters(List<FiltresReglesFraude> liste_filters) {
+		this.liste_filters = liste_filters;
+	}
+	public List<ParametresReglesFraude> getListe_parameters() {
+		return liste_parameters;
+	}
+	public void setListe_parameters(
+			List<ParametresReglesFraude> liste_parameters) {
+		this.liste_parameters = liste_parameters;
+	}
 	@ManyToOne
+	 @NotFound(
+	            action = NotFoundAction.IGNORE)
 	@JoinColumn(name="id_categorie",referencedColumnName="id")
 	private CategoriesFraude categorie;
 	
@@ -69,11 +89,11 @@ public class ReglesFraude implements Serializable {
 	public ReglesFraude() {
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

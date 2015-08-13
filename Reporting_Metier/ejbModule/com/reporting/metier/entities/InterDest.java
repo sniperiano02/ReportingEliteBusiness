@@ -23,14 +23,16 @@ public class InterDest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
-	@OneToMany(mappedBy="interdest",cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="interdest",cascade={CascadeType.MERGE,CascadeType.REFRESH, CascadeType.REMOVE},orphanRemoval=true)
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<DetCodeDest> list_details;
 
 	@ManyToOne 
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@JoinColumn(name="id_pays",referencedColumnName="id",insertable=false,updatable=false)
+	@JoinColumn(name="id_pays",referencedColumnName="id")
 	private Pay pays;
 	
 	
@@ -50,8 +52,6 @@ public class InterDest implements Serializable {
 	@Column(name="group_destination")
 	private String groupDestination;
 
-	@Column(name="id_pays")
-	private Integer idPays;
 
 	@Column(name="nom_destination")
 	private String nomDestination;
@@ -102,14 +102,7 @@ public class InterDest implements Serializable {
 		this.groupDestination = groupDestination;
 	}
 
-	public Integer getIdPays() {
-		return this.idPays;
-	}
-
-	public void setIdPays(Integer idPays) {
-		this.idPays = idPays;
-	}
-
+	
 	public String getNomDestination() {
 		return this.nomDestination;
 	}

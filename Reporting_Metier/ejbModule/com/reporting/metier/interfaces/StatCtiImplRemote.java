@@ -16,6 +16,8 @@ import javax.ejb.Remote;
 
 
 
+
+
 import com.reporting.metier.entities.AxeY;
 import com.reporting.metier.entities.Result;
 import com.reporting.metier.entities.StatMsc;
@@ -50,7 +52,8 @@ public List<Object[]> getTest1();
 public List<Object[]>   getAllStatCtiStatic(String x,String list_y,String action,String groupby,List<String> Where);
 
 
-
+public List<Object[]>   getAllQualite(String x,String list_y,String action,String groupby,List<String> Where);
+public List<Object[]> getAllStatQualite(String x,List<String> Where);
 
 public List<Object[]>   getAllStatCti(String x,List<String> list_y,String table,String action,String groupby,List<String> Where);
 public List<Object[]>   getAllStatCti1(String x,List<AxeY> list_y,String table,String action,String groupby,List<String> Where);

@@ -16,8 +16,8 @@ public class CategoriesFraude implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
-	private Long id;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id;
 
 	@Column(name="nom_categorie")
 	private String nomCategorie;
@@ -25,11 +25,11 @@ public class CategoriesFraude implements Serializable {
 	public CategoriesFraude() {
 	}
 
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

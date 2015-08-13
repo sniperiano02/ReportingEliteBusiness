@@ -10,7 +10,7 @@ import com.reporting.metier.entities.OperateurInterco;
 @Remote
 public interface OperateurIntercoRemote {
 	
-	public List<OperateurInterco> getAllOperateurs();
+	public List<OperateurInterco> getAllOperateurs(String where);
 	
 	public void addOperateur(OperateurInterco op);
 	public void UpdateOperateur(OperateurInterco op);

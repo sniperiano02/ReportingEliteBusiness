@@ -48,4 +48,10 @@ public class ZoneService implements ZoneRemote {
 		// TODO Auto-generated method stub
 		return em.createQuery("Select z From Zone z where packagezone.id="+pack.getId()).getResultList();
 	}
+
+	@Override
+	public List<Zone> getZonesByIdPackage(Integer id_package) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

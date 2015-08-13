@@ -32,6 +32,8 @@ public class StatErreurTarifIn implements Serializable {
 	
 	
 	@ManyToOne
+	 @NotFound(
+	            action = NotFoundAction.IGNORE)
 	@JoinColumn(name="code_operateur",referencedColumnName="id",insertable=false,updatable=false)
 	private OperateurInterco operateur ;
 	

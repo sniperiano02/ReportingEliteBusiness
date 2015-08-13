@@ -18,10 +18,11 @@ public class OperateurIntercoService implements OperateurIntercoRemote {
 	EntityManager em;
 
 	@Override
-	public List<OperateurInterco> getAllOperateurs() {
+	public List<OperateurInterco> getAllOperateurs(String where) {
 		// TODO Auto-generated method stub
-		return em.createQuery("Select o from OperateurInterco o").getResultList();
+		return em.createQuery("Select o from OperateurInterco o where type = '"+where+"'").getResultList();
 	}
+
 
 	@Override
 	public void addOperateur(OperateurInterco op) {

@@ -433,12 +433,45 @@ return em.createQuery("Select to_date(dateAppel,'YYMMDD'),SUM(nbAppel) from Stat
 
 
 	
+	@Override
+	public List<Object[]> getAllQualite(String x, String list_y, String action,
+			String groupby, List<String> Where) {
+		// TODO Auto-generated method stub
+		String where =  Where.get(0);
+		if(Where.size()>=2){
+			for(int i=1;i<Where.size();i++){
+				where = where+" AND "+ Where.get(i);
+			}
+		}
+		Query q = 	em.createNativeQuery("Select 'Taux reussi' as taux, round((coalesce(sum(nombre_reussi),0)/coalesce(sum(nombre_total),1))*100,3)as asr  FROM stat.stat_cti_inter   where  "+where+" UNION Select 'Taux non reussi' as taux ,round( 100-((coalesce(sum(nombre_reussi),0)/coalesce(sum(nombre_total),1))*100),3) as asr  From stat.stat_cti_inter  where  "+where);
+
+				
+		
+		List<Object[]> resultList = q.getResultList();
+			return resultList;
+	}
 
 
 
 
+	@Override
+	public List<Object[]> getAllStatQualite(String x,List<String> Where) {
+		
+		String where =  Where.get(0);
+		if(Where.size()>=2){
+			for(int i=1;i<Where.size();i++){
+				where = where+" AND "+ Where.get(i);
+			}
+		}
+		
 
+		Query q = em.createQuery("Select "+x+" ,SUM(nombreTotal),SUM(dureeTotal),SUM(nombreReussi),round((coalesce(sum(nombreReussi),0)/coalesce(sum(nombreTotal),1))*100,3) From StatCtiInter s where  "+where+"  Group By "+x+" Order By "+x+" ASC");
 
+				
+			List<Object[]> resultList = q.getResultList();
+			return resultList;
+		
+	}
 
 
 

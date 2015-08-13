@@ -65,4 +65,10 @@ public class PackageService implements PackageZoneRemote,PackageJourRemote {
 		em.flush();
 	}
 
+	@Override
+	public List<PackageZone> getAllPackageZoneRoa() {
+		// TODO Auto-generated method stub
+		return em.createQuery("Select pj From PackageZone pj where pj.codePackage='pack_ROA_OUT'").getResultList();
+	}
+
 }

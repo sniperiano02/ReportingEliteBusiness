@@ -45,7 +45,7 @@ public class VerifTarifInterService implements VerifTarifInterRemote{
 	@Override
 	public List<Object[]> getDetailsStatVerifTarifInter(String Where) {
 		// TODO Auto-generated method stub
-	Query q=  em.createQuery("Select typeStat,diff,montantIntecFrom StatVerifTarifInter Where  "+Where );
+	Query q=  em.createQuery("Select operateur,nomDestination,SUM(duree),SUM(nbAppel),SUM(montant),SUM(montantIntec),SUM(diff) From StatVerifTarifInter Where  "+Where+" group by operateur,nomDestination"  );
 	
 		return q.getResultList();
 	}

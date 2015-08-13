@@ -21,8 +21,12 @@ public class StatAccountIn implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(name="account_in")
-	private String accountIn;
+	@ManyToOne
+	@JoinColumn(name="account_in",referencedColumnName="account_id")
+	private AccountIn account;
+	
+	
+	
 
 	@Column(name="balance_final")
 	private BigDecimal balanceFinal;
@@ -43,13 +47,12 @@ public class StatAccountIn implements Serializable {
 	public StatAccountIn() {
 	}
 
-	public String getAccountIn() {
-		return this.accountIn;
-	}
-
-	public void setAccountIn(String accountIn) {
-		this.accountIn = accountIn;
-	}
+public AccountIn getAccount() {
+	return account;
+}
+public void setAccount(AccountIn account) {
+	this.account = account;
+}
 
 	public BigDecimal getBalanceFinal() {
 		return this.balanceFinal;

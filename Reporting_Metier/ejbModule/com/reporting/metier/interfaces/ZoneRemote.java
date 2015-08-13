@@ -20,5 +20,6 @@ public interface ZoneRemote {
 	
 	
 	public List<Zone> getZonesByPackage(PackageZone pack);
+	public List<Zone> getZonesByIdPackage(Integer id_package);
 	public void deleteZone(Zone z);
 }

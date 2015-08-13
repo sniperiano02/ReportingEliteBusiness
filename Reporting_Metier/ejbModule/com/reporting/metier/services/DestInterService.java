@@ -6,8 +6,8 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.reporting.metier.entities.DetCodeDest;
 import com.reporting.metier.entities.InterDest;
-
 import com.reporting.metier.interfaces.DestInterRemote;
 
 
@@ -41,6 +41,22 @@ public class DestInterService implements DestInterRemote {
 	@Override
 	public void UpdateInterDest(InterDest i) {
 		em.merge(i);
+		
+	}
+
+	@Override
+	public void deleteDetail(DetCodeDest det, InterDest dest) {
+		// TODO Auto-generated method stub
+		em.remove(em.contains(det) ? det : em.merge(det));
+		em.merge(dest);
+		
+	}
+
+	@Override
+	public void addDetail(DetCodeDest det, InterDest dest) {
+		// TODO Auto-generated method stub
+		det.setInterdest(dest);
+		em.persist(det);
 		
 	}
 }

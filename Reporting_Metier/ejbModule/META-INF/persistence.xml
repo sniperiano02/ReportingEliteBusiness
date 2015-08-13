@@ -8,8 +8,10 @@
 	<class>com.reporting.metier.entities.Alflag</class>
 	<class>com.reporting.metier.entities.AxeY</class>
 	<class>com.reporting.metier.entities.CategoriesFraude</class>
+	<class>com.reporting.metier.entities.Cell</class>
 	<class>com.reporting.metier.entities.ChartDynamic</class>
 	<class>com.reporting.metier.entities.Datagrid</class>
+	<class>com.reporting.metier.entities.DecisionFraude</class>
 	<class>com.reporting.metier.entities.Destination</class>
 	<class>com.reporting.metier.entities.DetCodeDest</class>
 	<class>com.reporting.metier.entities.DetailsDestination</class>
@@ -28,20 +30,33 @@
 	<class>com.reporting.metier.entities.InterDest</class>
 	<class>com.reporting.metier.entities.IntervalHeure</class>
 	<class>com.reporting.metier.entities.JoursSemaine</class>
+	<class>com.reporting.metier.entities.ListAppelant</class>
+	<class>com.reporting.metier.entities.ListAppele</class>
+	<class>com.reporting.metier.entities.ListCellid</class>
+	<class>com.reporting.metier.entities.ListDetailsAppelant</class>
+	<class>com.reporting.metier.entities.ListDetailsAppele</class>
+	<class>com.reporting.metier.entities.ListDetailsCellid</class>
+	<class>com.reporting.metier.entities.ListDetailsImei</class>
+	<class>com.reporting.metier.entities.ListImei</class>
+	<class>com.reporting.metier.entities.Location</class>
 	<class>com.reporting.metier.entities.Monnaie</class>
 	<class>com.reporting.metier.entities.Noeud</class>
 	<class>com.reporting.metier.entities.Offre</class>
 	<class>com.reporting.metier.entities.OperateurInterco</class>
 	<class>com.reporting.metier.entities.PackageJour</class>
+	<class>com.reporting.metier.entities.PackageRoaming</class>
 	<class>com.reporting.metier.entities.PackageZone</class>
 	<class>com.reporting.metier.entities.ParametresCategory</class>
 	<class>com.reporting.metier.entities.ParametresFraude</class>
 	<class>com.reporting.metier.entities.ParametresReglesFraude</class>
+	<class>com.reporting.metier.entities.ParcGptoAct</class>
 	<class>com.reporting.metier.entities.Pay</class>
 	<class>com.reporting.metier.entities.PlanTarifaire</class>
 	<class>com.reporting.metier.entities.Proccontrole</class>
 	<class>com.reporting.metier.entities.ReglesFraude</class>
 	<class>com.reporting.metier.entities.Report</class>
+	<class>com.reporting.metier.entities.RoamingOperator</class>
+	<class>com.reporting.metier.entities.RoaminginParameter</class>
 	<class>com.reporting.metier.entities.Serveur</class>
 	<class>com.reporting.metier.entities.Service</class>
 	<class>com.reporting.metier.entities.StatAccountIn</class>
@@ -49,34 +64,52 @@
 	<class>com.reporting.metier.entities.StatArpuPop</class>
 	<class>com.reporting.metier.entities.StatArpuPrp</class>
 	<class>com.reporting.metier.entities.StatBalanceNeg</class>
+	<class>com.reporting.metier.entities.StatBalanceRoaming</class>
+	<class>com.reporting.metier.entities.StatCentralInterconat</class>
 	<class>com.reporting.metier.entities.StatCtiInter</class>
 	<class>com.reporting.metier.entities.StatDestinationReconMscIn</class>
 	<class>com.reporting.metier.entities.StatDetailsReconMscIn</class>
+	<class>com.reporting.metier.entities.StatDetailsReconMscTapout</class>
 	<class>com.reporting.metier.entities.StatErreur</class>
 	<class>com.reporting.metier.entities.StatErreurTarifIn</class>
 	<class>com.reporting.metier.entities.StatIntecInter</class>
+	<class>com.reporting.metier.entities.StatIntecNatinterco</class>
 	<class>com.reporting.metier.entities.StatInterBalance</class>
 	<class>com.reporting.metier.entities.StatLcr</class>
 	<class>com.reporting.metier.entities.StatMouPop</class>
 	<class>com.reporting.metier.entities.StatMouPrp</class>
 	<class>com.reporting.metier.entities.StatMsc</class>
+	<class>com.reporting.metier.entities.StatNatintercoBalance</class>
+	<class>com.reporting.metier.entities.StatOperateurDestReconMscTapout</class>
 	<class>com.reporting.metier.entities.StatParc</class>
 	<class>com.reporting.metier.entities.StatParcActPop</class>
 	<class>com.reporting.metier.entities.StatParcActPrp</class>
+	<class>com.reporting.metier.entities.StatRecTapin</class>
 	<class>com.reporting.metier.entities.StatRecharge</class>
 	<class>com.reporting.metier.entities.StatReconCtiMsc</class>
+	<class>com.reporting.metier.entities.StatReconInter</class>
 	<class>com.reporting.metier.entities.StatReconMscIn</class>
+	<class>com.reporting.metier.entities.StatReconMscTapout</class>
+	<class>com.reporting.metier.entities.StatReconNatinterco</class>
 	<class>com.reporting.metier.entities.StatRevenueIn</class>
+	<class>com.reporting.metier.entities.StatRoaIn</class>
+	<class>com.reporting.metier.entities.StatSysfacturation</class>
+	<class>com.reporting.metier.entities.StatTapout</class>
 	<class>com.reporting.metier.entities.StatTaxePrp</class>
 	<class>com.reporting.metier.entities.StatTraficIn</class>
 	<class>com.reporting.metier.entities.StatTransfertIn</class>
 	<class>com.reporting.metier.entities.StatVerifOffreIn</class>
 	<class>com.reporting.metier.entities.StatVerifTarifInter</class>
+	<class>com.reporting.metier.entities.StatVerifTarifNatinterco</class>
+	<class>com.reporting.metier.entities.StatVerifTarifRoamingin</class>
 	<class>com.reporting.metier.entities.StatVerifTransfert</class>
 	<class>com.reporting.metier.entities.Stproc</class>
 	<class>com.reporting.metier.entities.Tarif</class>
 	<class>com.reporting.metier.entities.TarifsInter</class>
 	<class>com.reporting.metier.entities.TarifsInterTmp</class>
+	<class>com.reporting.metier.entities.TarifsRoaIn</class>
+	<class>com.reporting.metier.entities.TarifsRoaOut</class>
+	<class>com.reporting.metier.entities.TarifsRoaPop</class>
 	<class>com.reporting.metier.entities.TauxChange</class>
 	<class>com.reporting.metier.entities.Template</class>
 	<class>com.reporting.metier.entities.TemplateDateIndique</class>
@@ -89,6 +122,7 @@
 	<class>com.reporting.metier.entities.TypePalier</class>
 	<class>com.reporting.metier.entities.Zone</class>
 	<class>com.reporting.metier.entities.ZonesDestination</class>
+	<class>com.reporting.metier.entities.StatTapin</class>
 	
 	<properties>
 		<property name="hibernate.hbm2ddl.auto" value="update"/>

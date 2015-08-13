@@ -12,6 +12,7 @@ public interface PackageZoneRemote {
 
 	
 	public List<PackageZone> getAllPackageZone();
+	public List<PackageZone> getAllPackageZoneRoa();
 	public void addPackageZone(PackageZone pz);
 	public void DeletePackageZone(PackageZone pz);
 	public void updatePackageZone(PackageZone pz);

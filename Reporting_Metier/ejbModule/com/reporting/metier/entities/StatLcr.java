@@ -34,22 +34,22 @@ public class StatLcr implements Serializable {
 	private String destination;
 
 	@Column(name="max_tarifs_1")
-	private double maxTarifs1;
+	private Double maxTarifs1;
 
 	@Column(name="max_tarifs_2")
-	private double maxTarifs2;
+	private Double maxTarifs2;
 
 	@Column(name="max_tarifs_3")
-	private double maxTarifs3;
+	private Double maxTarifs3;
 
 	@Column(name="min_tarifs_1")
-	private double minTarifs1;
+	private Double minTarifs1;
 
 	@Column(name="min_tarifs_2")
-	private double minTarifs2;
+	private Double minTarifs2;
 
 	@Column(name="min_tarifs_3")
-	private double minTarifs3;
+	private Double minTarifs3;
 
 	
 	
@@ -130,51 +130,51 @@ public class StatLcr implements Serializable {
 		this.destination = destination;
 	}
 
-	public double getMaxTarifs1() {
+	public Double getMaxTarifs1() {
 		return this.maxTarifs1;
 	}
 
-	public void setMaxTarifs1(double maxTarifs1) {
+	public void setMaxTarifs1(Double maxTarifs1) {
 		this.maxTarifs1 = maxTarifs1;
 	}
 
-	public double getMaxTarifs2() {
+	public Double getMaxTarifs2() {
 		return this.maxTarifs2;
 	}
 
-	public void setMaxTarifs2(double maxTarifs2) {
+	public void setMaxTarifs2(Double maxTarifs2) {
 		this.maxTarifs2 = maxTarifs2;
 	}
 
-	public double getMaxTarifs3() {
+	public Double getMaxTarifs3() {
 		return this.maxTarifs3;
 	}
 
-	public void setMaxTarifs3(double maxTarifs3) {
+	public void setMaxTarifs3(Double maxTarifs3) {
 		this.maxTarifs3 = maxTarifs3;
 	}
 
-	public double getMinTarifs1() {
+	public Double getMinTarifs1() {
 		return this.minTarifs1;
 	}
 
-	public void setMinTarifs1(double minTarifs1) {
+	public void setMinTarifs1(Double minTarifs1) {
 		this.minTarifs1 = minTarifs1;
 	}
 
-	public double getMinTarifs2() {
+	public Double getMinTarifs2() {
 		return this.minTarifs2;
 	}
 
-	public void setMinTarifs2(double minTarifs2) {
+	public void setMinTarifs2(Double minTarifs2) {
 		this.minTarifs2 = minTarifs2;
 	}
 
-	public double getMinTarifs3() {
+	public Double getMinTarifs3() {
 		return this.minTarifs3;
 	}
 
-	public void setMinTarifs3(double minTarifs3) {
+	public void setMinTarifs3(Double minTarifs3) {
 		this.minTarifs3 = minTarifs3;
 	}
 

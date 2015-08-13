@@ -16,7 +16,7 @@ public class ParametresReglesFraude implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name="date_modif")
@@ -44,11 +44,11 @@ public class ParametresReglesFraude implements Serializable {
 	@Column(name="nom_utilisateur")
 	private String nomUtilisateur;
 
-	private Long vegal;
+	private Integer vegal;
 
-	private Long vmax;
+	private Integer vmax;
 
-	private Long vmin;
+	private Integer vmin;
 
 	public ParametresReglesFraude() {
 	}
@@ -85,27 +85,27 @@ public class ParametresReglesFraude implements Serializable {
 		this.nomUtilisateur = nomUtilisateur;
 	}
 
-	public Long getVegal() {
+	public Integer getVegal() {
 		return this.vegal;
 	}
 
-	public void setVegal(Long vegal) {
+	public void setVegal(Integer vegal) {
 		this.vegal = vegal;
 	}
 
-	public Long getVmax() {
+	public Integer getVmax() {
 		return this.vmax;
 	}
 
-	public void setVmax(Long vmax) {
+	public void setVmax(Integer vmax) {
 		this.vmax = vmax;
 	}
 
-	public Long getVmin() {
+	public Integer getVmin() {
 		return this.vmin;
 	}
 
-	public void setVmin(Long vmin) {
+	public void setVmin(Integer vmin) {
 		this.vmin = vmin;
 	}
 
