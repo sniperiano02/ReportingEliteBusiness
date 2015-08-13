@@ -105,7 +105,7 @@ public class LcrMbean implements Serializable{
 	@PostConstruct
 	public void init(){
 		
-		lst_operateurs=operateurService.getAllOperateurs();
+		lst_operateurs=operateurService.getAllOperateurs("I");
 		operateur= new OperateurInterco();
 		template= new Template();
 		

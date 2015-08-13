@@ -40,13 +40,13 @@
         <h:outputText value="#{proc.LStart}" />
     </p:column>
     <f:facet name="footer">
-   <p:panelGrid columns="3">
+   <h:panelGrid columns="4">
             <p:commandButton  process="singleDT" update="singleDT"   value="Pause" actionListener="#{proc_manage.arretProc()}"   />
              <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-plusthick" value="Modifier Cycle" onclick="PF('dlg').show();" />
           <p:commandButton  process="singleDT" update="singleDT"  value="Activer" actionListener="#{proc_manage.activerProc()}"  />
           <p:commandButton  process="singleDT"   value="Details" actionListener="#{proc_manage.getDetails}" oncomplete="PF('dlg1').show();"  />
              
-        </p:panelGrid>
+        </h:panelGrid>
         </f:facet>
 				
 				</p:dataTable>

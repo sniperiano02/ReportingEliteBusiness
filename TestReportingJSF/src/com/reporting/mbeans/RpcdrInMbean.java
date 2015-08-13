@@ -27,6 +27,8 @@ import javax.faces.event.BehaviorEvent;
 
 import org.apache.commons.collections.ListUtils;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.calendar.Calendar;
@@ -617,6 +619,7 @@ public void handlechange(AjaxBehaviorEvent event){
 	public void Valider(){
 		
 		where_liste = new ArrayList<String>();
+		List<Object[]> generateList = new ArrayList<>();
 		if(this.getChoix_periode().equals(" ")){
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,"Erreur",  "Veuillez choisir une Periode " ) );
 		}
@@ -630,12 +633,40 @@ public void handlechange(AjaxBehaviorEvent event){
 					
 					String deb = df.format(this.getDate_ParJourDeb());
 					String fin = df.format(this.getDate_ParJourFin());
+					 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+						String deb0 = df1.format(this.getDate_ParJourDeb());
+						String fin0 = df1.format(this.getDate_ParJourFin());
+					DateTime start = DateTime.parse(deb0);
+			        System.out.println("Start: " + start);
+			  
+			        DateTime end = DateTime.parse(fin0);
+			        System.out.println("End: " + end);
+
+			        List<DateTime> between = getDateRange(start, end);
+			        for (DateTime d : between) {
+			        	String s = d+"";
+			            
+			            System.out.println(" " + s.substring(8,10));
+			            Object[] ob = new Object[10];
+			            ob[0]=s.substring(0,10);
+			            ob[1]=0.0;
+			            ob[2]=0.0;
+			            ob[3]=0.0;
+			            ob[4]=0.0;
+			            ob[5]=0.0;
+			            ob[6]=0.0;
+			            ob[7]=0.0;
+			            ob[8]=0.0;
+			            ob[9]=0.0;
+			            
+			            generateList.add(ob);
+			        }
 					where_liste.add(" to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'yyyy-MM-dd') And to_date("+"'"+fin+"'"+",'yyyy-MM-dd')");
 					String where=" anomalie='cdrs in inexistant' AND to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'yyyy-MM-dd') And to_date("+"'"+fin+"'"+",'yyyy-MM-dd')";
-					resultCDRInexistant= statRecon.getAllStatReconMscIn("to_char(to_date(dateAppel,'YYMMDD'),'YYYY-MM-DD')",where);
+					resultCDRInexistant= removeDuplicate(generateList, statRecon.getAllStatReconMscIn("to_char(to_date(dateAppel,'YYMMDD'),'YYYY-MM-DD')",where));
 				
 					SubTitle ="Periode entre "+deb+" et "+fin;
-				
+					
 				
 			}else if(this.getChoix_periode().equals("Par An")){
 			
@@ -645,16 +676,31 @@ public void handlechange(AjaxBehaviorEvent event){
 				String where ="anomalie='cdrs in inexistant' AND Extract(year from to_date(dateAppel,'YYMMDD')) >= "+deb+" And Extract(year from to_date(dateAppel,'YYMMDD')) <= "+fin;
 				SubTitle ="Par An entre "+deb+" et "+fin;
 				resultCDRInexistant= statRecon.getAllStatReconMscIn("Extract (year from to_date(dateAppel,'YYMMDD'))",where);
-				for(int i=deb;i<=fin;i++){
-					Object[] obj = new Object[4];
-					obj[0]=i;
-					obj[1]=0;
-					obj[2]=0;
-					obj[3]=0;
-					
-							result1.add(obj);
-				}
+				
 			}else if(this.getChoix_periode().equals("Par Mois")){
+				 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+					String deb0 = df1.format(this.getDate_mois_debut());
+					String fin0 = df1.format(this.getDate_mois_fin());
+					LocalDate date1 = new LocalDate(deb0);
+					 LocalDate date2 = new LocalDate(fin0);
+					 date2 = date2.plus(Period.months(1));
+					 while(date1.isBefore(date2)){
+						 Object[] ob = new Object[5];
+				            ob[0]=date1.toString("MM/yyyy");
+				            ob[1]=0.0;
+				            ob[2]=0.0;
+				            ob[3]=0.0;
+				            ob[4]=0.0;
+				            ob[5]=0.0;
+				            ob[6]=0.0;
+				            ob[7]=0.0;
+				            ob[8]=0.0;
+				            ob[9]=0.0;
+				            generateList.add(ob);
+					     System.out.println(date1.toString("MM/yyyy"));
+					     date1 = date1.plus(Period.months(1));
+					    
+					 }
 				DateFormat df = new SimpleDateFormat("MM-YYYY");
 				System.out.println(date_Parheure);
 				String deb = df.format(this.getDate_mois_debut());
@@ -662,7 +708,7 @@ public void handlechange(AjaxBehaviorEvent event){
 				String where=" anomalie='cdrs in inexistant' AND  to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'MM-YYYY') And to_date("+"'"+fin+"'"+",'MM-YYYY')";
 
 				where_liste.add(" to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'MM-YYYY') And to_date("+"'"+fin+"'"+",'MM-YYYY')");
-		resultCDRInexistant= statRecon.getAllStatReconMscIn("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ",where);
+		resultCDRInexistant= removeDuplicate(generateList, statRecon.getAllStatReconMscIn("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ",where));
 		SubTitle ="Periode entre les mois"+deb+" et "+fin;
 		
 			}

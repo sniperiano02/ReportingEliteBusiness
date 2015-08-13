@@ -529,7 +529,7 @@ public void handlechange(AjaxBehaviorEvent event){
 		 if(this.getChoix_periode().equals("Par Heure")){
 			staticListINLocal = removeDuplicate(generateList,statINLoc.getAllStatActivation("substring(trancheHoraire,1,2) ","SUM(revenue),SUM(moyenneRevenue),SUM(nbAppel),SUM(nbMoyenne)" , "", "", where_liste));
 				 }else if(this.getChoix_periode().equals("Par An")){
-						staticListINLocal = removeDuplicate(generateList,statINLoc.getAllStatActivation("Extract (year from to_date(dateAppel,'YYMMDD')) ","SUM(revenue),SUM(moyenneRevenue),SUM(nbAppel),SUM(nbMoyenne)" , "", "", where_liste));
+						staticListINLocal = statINLoc.getAllStatActivation("Extract (year from to_date(dateAppel,'YYMMDD')) ","SUM(revenue),SUM(moyenneRevenue),SUM(nbAppel),SUM(nbMoyenne)" , "", "", where_liste);
 
 		 		 }else if(this.getChoix_periode().equals("Par Mois")){
 						staticListINLocal = removeDuplicate(generateList,statINLoc.getAllStatActivation("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY') ","SUM(revenue),SUM(moyenneRevenue),SUM(nbAppel),SUM(nbMoyenne)" , "", "", where_liste));

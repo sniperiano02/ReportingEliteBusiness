@@ -62,7 +62,7 @@
 			<p:outputPanel id="ColLineChart1" rendered="#{verif_transfert.chartDisplayed}">
 	<div class="ui-grid-row"   >
 	
-		<hf:chart  type="line" subTitle="#{verif_transfert.subTitle}" title="Rapport Verification Tarif prépayé Local "  >
+		<hf:chart height="220" type="line" subTitle="#{verif_transfert.subTitle}" title="Rapport Verification Tarif prépayé Local "  >
 		<hf:chartSerie name="Nombre d'appel" value="#{verif_transfert.listeVerifTranfert}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		<hf:chartSerie name="impact" value="#{verif_transfert.listeVerifTranfert}" var="point" point="#{point[2]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		
@@ -71,7 +71,7 @@
 		
 		</div>
 		
-		<p:dataTable id="dt1" value="#{verif_transfert.listeVerifTranfert}" var="cdr" selection="#{verif_transfert.selectedRecon}" selectionMode="single" rowKey="#{cdr[0]}" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+		<p:dataTable id="dt1" value="#{verif_transfert.listeVerifTranfert}" var="cdr" selection="#{verif_transfert.selectedRecon}" selectionMode="single" rowKey="#{cdr[0]}" paginator="true" rows="4"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
         rowsPerPageTemplate="6,12,16" >
        
 		  <p:column headerText="Date Appel">

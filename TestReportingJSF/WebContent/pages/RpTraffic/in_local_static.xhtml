@@ -14,7 +14,7 @@
 			<ui:define name="PageContent">
 		<h:form  id="form1" >
 		<p:layout  onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
-		<p:layoutUnit position="east" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:layoutUnit position="east" header="Menu" style="height:480px;overflow:hidden;" size="200" collapsible="true">
 		<p:panel header="Export" rendered="#{in_local.chartDisplayed}">
 		 <h:commandLink >
                 <p:graphicImage library="img" name="excel.png" width="24"  />
@@ -43,7 +43,8 @@
 		<p:panelGrid columns="1" >
 		<p:selectOneMenu value="#{in_local.choix_Voix}" >
 		<p:ajax listener="#{in_local.handlechange1}" event="change" update="@form" process="@this"/>
-		<f:selectItems value="#{in_local.listeVoix}" var="voix" itemLabel="#{voix}" itemValue="#{voix}" />
+		<f:selectItem itemLabel="Voix" itemValue="MO" />
+		<f:selectItem itemLabel="SMS" itemValue="SMSMO" />
             
 		
 		</p:selectOneMenu>
@@ -82,7 +83,7 @@
 		<div class="ui-grid-col-6"   >
 		<p:panel header=""  rendered="#{in_local.chartDisplayed}">
 		
-		<hf:chart  type="line" subTitle="#{in_local.subTitle}"  title="Rapport Traffic IN Local(Duree)"   >
+		<hf:chart height="220"  type="line" subTitle="#{in_local.subTitle}"  title="Rapport Traffic IN Local(Duree)"   >
 		<hf:chartSerie   name="Duree Moy" value="#{in_local.staticListINLocal}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		<hf:chartSerie  name="Duree" value="#{in_local.staticListINLocal}" var="point1" point="#{point1[2]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
 		
@@ -100,7 +101,7 @@
 		</div>
 			<div class="ui-grid-col-6"   >
 		<p:panel header=""  rendered="#{in_local.chartDisplayed}">
-		<hf:chart  type="pie" title="Repartition par Plan Tarifaire"  subTitle="#{in_local.subTitle}" >
+		<hf:chart height="220"  type="pie" title="Repartition par Plan Tarifaire"  subTitle="#{in_local.subTitle}" >
 		<hf:chartSerie value="#{in_local.pie2}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		
 		
@@ -120,7 +121,7 @@
 			<div class="ui-grid-row"  >
 		<div class="ui-grid-col-6"   >
 		<p:panel header=""  rendered="#{in_local.chartDisplayed}">
-		<hf:chart  type="line" subTitle="#{in_local.subTitle}" title="Rapport Traffic IN Local(Revenue)"   >
+		<hf:chart height="220"  type="line" subTitle="#{in_local.subTitle}" title="Rapport Traffic IN Local(Revenue)"   >
 		<hf:chartSerie name="Revenue Moy" value="#{in_local.staticListINLocal}" var="point" point="#{point[4]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		<hf:chartSerie  name="Revenue" value="#{in_local.staticListINLocal}" var="point1" point="#{point1[3]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
 		
@@ -138,7 +139,7 @@
 		</div>
 	<div class="ui-grid-col-6"   >
 	<p:panel header=""  rendered="#{in_local.chartDisplayed}">
-			<hf:chart   type="pie" title="Repartition par Destination"  subTitle="#{in_local.subTitle}" >
+			<hf:chart  height="220"  type="pie" title="Repartition par Destination"  subTitle="#{in_local.subTitle}" >
 		<hf:chartSerie value="#{in_local.pie1}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		
 		

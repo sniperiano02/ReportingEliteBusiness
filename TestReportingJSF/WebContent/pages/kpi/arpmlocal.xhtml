@@ -15,6 +15,18 @@
 		<h:form  id="form1" >
 		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
 		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Export" rendered="#{arpmLocal.chartDisplayed}" >
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="tbl2" fileName="RapportMSC" datasetPadding="4" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="tbl2" fileName="RapportMSC" datasetPadding="4"  />
+            </h:commandLink>
+		</p:panel>
+		
 		<p:panel header="Periode"  >
 		<p:panelGrid columns="1" id="PanelPeriode" >
 		<p:selectOneMenu value="#{arpmLocal.choix_periode}" >
@@ -32,7 +44,8 @@
 		<p:panelGrid columns="1" >
 		<p:selectOneMenu value="#{arpmLocal.choix_Voix}" >
 		<p:ajax listener="#{arpmLocal.handlechange1}" event="change" update="@form" process="@this"/>
-		<f:selectItems value="#{arpmLocal.listeVoix}" var="voix" itemLabel="#{voix}" itemValue="#{voix}" />
+		<f:selectItem itemLabel="Voix" itemValue="MO" />
+		<f:selectItem itemLabel="SMS" itemValue="SMSMO" />
             
 		
 		</p:selectOneMenu>
@@ -67,16 +80,11 @@
 		
 		</p:layoutUnit>
 		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
-		<p:menuButton value="Options">
-        <p:menuitem value="Creer Votre propre Rapport"  icon="ui-icon-disk"/>
-        <p:menuitem value="Voir Un rapport Existant"  icon="ui-icon-arrowrefresh-1-w"/>
-        
-        
-    </p:menuButton>
+	
 	<p:outputPanel id="ColLineChart1" rendered="#{arpmLocal.chartDisplayed}">
 			<div class="ui-grid-row"   >
 	<div class="ui-grid-col-6"    >
-	<p:panel>
+	<p:panel header=" ">
 		<hf:chart  type="line" subTitle="#{arpmLocal.subTitle}" title="Rapport ARPM Local"   >
 		<hf:chartSerie name="Tarif Moyen" value="#{arpmLocal.resultArpmLocal}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 	
@@ -85,7 +93,7 @@
 		</p:panel>
 		</div>
 		<div class="ui-grid-col-6"    >
-		<p:panel>
+		<p:panel header=" ">
 		<hf:chart   type="pie" title="Taux De Générosité"  subTitle="#{arpmLocal.subTitle}" >
 		<hf:chartSerie value="#{arpmLocal.resultTaxe}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		

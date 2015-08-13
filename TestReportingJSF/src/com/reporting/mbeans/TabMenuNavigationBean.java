@@ -6,6 +6,7 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
@@ -17,6 +18,10 @@ public class TabMenuNavigationBean implements Serializable {
 
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long activeIndex;
 	
 	
@@ -29,6 +34,7 @@ public class TabMenuNavigationBean implements Serializable {
 		this.activeIndex = activeIndex;
 	}
 	
+	
 	@PostConstruct
 	public void init(){
 		activeIndex=(long) 0;
@@ -37,6 +43,32 @@ public class TabMenuNavigationBean implements Serializable {
  private boolean pan_reporting = false;
  private boolean pan_postpaye= false;
  private boolean pan_interco=false;
+private boolean pan_fraude = false;
+private boolean pan_roa_in = false;
+private boolean pan_intercoNat = false;
+private boolean pan_roam_out =false;
+
+public boolean isPan_roam_out() {
+	return pan_roam_out;
+}
+public void setPan_roam_out(boolean pan_roam_out) {
+	this.pan_roam_out = pan_roam_out;
+}
+
+public boolean isPan_intercoNat() {
+	return pan_intercoNat;
+}
+public void setPan_intercoNat(boolean pan_intercoNat) {
+	this.pan_intercoNat = pan_intercoNat;
+}
+
+
+public boolean isPan_roa_in() {
+	return pan_roa_in;
+}
+public void setPan_roa_in(boolean pan_roa_in) {
+	this.pan_roa_in = pan_roa_in;
+}
  
  public boolean isPan_postpaye() {
 	return pan_postpaye;
@@ -80,6 +112,10 @@ public class TabMenuNavigationBean implements Serializable {
 			pan_postpaye=false;
 			pan_admin=true;
 			pan_interco=false;
+			pan_fraude=false;
+			pan_roa_in= false;
+			pan_intercoNat= false;
+			pan_roam_out = false;
 			
 		}
 if(x==1){
@@ -88,6 +124,10 @@ if(x==1){
 			pan_reporting=false;
 			pan_postpaye=false;
 			pan_interco=false;
+			pan_fraude=false;
+			pan_roa_in= false;
+			pan_intercoNat= false;
+			pan_roam_out = false;
 		}
 		if(x==2){
 			pan_prepayé=false;
@@ -95,6 +135,9 @@ if(x==1){
 			pan_postpaye=false;
 			pan_reporting=true;
 			pan_interco=false;
+			pan_roa_in=false;
+			pan_intercoNat= false;
+			pan_roam_out = false;
 		}
 		if(x==3){
 			pan_prepayé=false;
@@ -102,6 +145,10 @@ if(x==1){
 			pan_reporting=false;
 			pan_postpaye=true;
 			pan_interco=false;
+			pan_fraude=false;
+			pan_roa_in=false;
+			pan_intercoNat= false;
+			pan_roam_out = false;
 		}
 		if(x==4){
 			pan_prepayé=false;
@@ -109,6 +156,53 @@ if(x==1){
 			pan_reporting=false;
 			pan_postpaye=false;
 			pan_interco=true;
+			pan_fraude=false;
+			pan_roa_in=false;
+			pan_intercoNat= false;
+			pan_roam_out = false;
+		}
+		if(x==5){
+			pan_prepayé=false;
+			pan_admin=false;
+			pan_reporting=false;
+			pan_postpaye=false;
+			pan_interco=false;
+			pan_fraude=false;
+			pan_roa_in=false;
+			pan_intercoNat= true;
+			pan_roam_out = false;
+		}
+		if(x==6){
+			pan_prepayé=false;
+			pan_admin=false;
+			pan_reporting=false;
+			pan_postpaye=false;
+			pan_interco=false;
+			pan_fraude=false;
+			pan_roa_in=true;
+			pan_intercoNat= false;
+			pan_roam_out = false;
+		}
+		if(x==7){
+			pan_prepayé=false;
+			pan_admin=false;
+			pan_reporting=false;
+			pan_postpaye=false;
+			pan_interco=false;
+			pan_fraude=false;
+			pan_roa_in=false;
+			pan_intercoNat= false;
+			pan_roam_out = true;
+		}
+		if(x==9){
+			pan_prepayé=false;
+			pan_admin=false;
+			pan_reporting=false;
+			pan_postpaye=false;
+			pan_interco=false;
+			pan_fraude=true;
+			pan_roa_in=false;
+			pan_intercoNat= false;
 		}
 		
 		
@@ -119,5 +213,12 @@ if(x==1){
 		
 	}
 	
+	
+	public boolean isPan_fraude() {
+		return pan_fraude;
+	}
+	public void setPan_fraude(boolean pan_fraude) {
+		this.pan_fraude = pan_fraude;
+	}
 	
 }

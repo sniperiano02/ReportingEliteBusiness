@@ -18,13 +18,13 @@ import javax.faces.bean.ViewScoped;
 
 
 
+
 import com.reporting.metier.entities.Monnaie;
 import com.reporting.metier.entities.Noeud;
 import com.reporting.metier.entities.OperateurInterco;
 import com.reporting.metier.entities.Pay;
 import com.reporting.metier.entities.Trunck;
 import com.reporting.metier.entities.TypeDestination;
-
 import com.reporting.metier.interfaces.NoeudRemote;
 import com.reporting.metier.interfaces.OperateurIntercoRemote;
 import com.reporting.metier.interfaces.PaysRemote;
@@ -58,7 +58,7 @@ public class TrunckMbean {
 	@PostConstruct
 	public void init(){
 		lst_trunck=trunck_service.getAllTruncks();
-		lst_oper=oper_service.getAllOperateurs();
+		lst_oper=oper_service.getAllOperateurs("I");
 		lst_noeud=noeud_service.getNoeudNoms();
 		trunck= new Trunck();
 		trunck1= new Trunck();
@@ -71,6 +71,7 @@ public class TrunckMbean {
 	
 	
 	public void ajouterTrunck(){
+		try{
 //		for(int i=0;i<liste_details.size();i++){
 //			liste_details.get(i).setPays(pays);
 //		}
@@ -79,6 +80,10 @@ public class TrunckMbean {
 		//liste_details = new ArrayList<>();
 		lst_trunck=trunck_service.getAllTruncks();
 		trunck= new Trunck();
+	}catch(Exception ex ){
+		lst_trunck=trunck_service.getAllTruncks();
+		trunck= new Trunck();
+	}
 	}
 	public void SupprimerTrunck(){
 		trunck_service.DeleteTrunck(trunck1);

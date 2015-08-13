@@ -14,6 +14,8 @@ import javax.faces.bean.ViewScoped;
 
 
 
+import javax.persistence.PersistenceException;
+
 import com.reporting.metier.entities.Monnaie;
 import com.reporting.metier.entities.OperateurInterco;
 import com.reporting.metier.entities.Pay;
@@ -83,7 +85,7 @@ public class OperateurInterMbean {
 	public void init(){
 		liste_monnai= monnai_service.getAllMonnaies();
 		liste_pays= pays_service.getAllPays();
-		lst_oper=oper_service.getAllOperateurs();
+		lst_oper=oper_service.getAllOperateurs("I");
 		operateur= new OperateurInterco();
 		operateur1= new OperateurInterco();
 //		liste_details = new ArrayList<>();
@@ -94,24 +96,31 @@ public class OperateurInterMbean {
 	}
 	
 	
-	public void ajouterOperateur(){
+	public void ajouterOperateur()  {
+		try{
 //		for(int i=0;i<liste_details.size();i++){
 //			liste_details.get(i).setPays(pays);
 //		}
 	//	pays.setList_details(liste_details);
+			operateur.setType("I");
 		oper_service.addOperateur(operateur);
 		//liste_details = new ArrayList<>();
-		lst_oper=oper_service.getAllOperateurs();
+		lst_oper=oper_service.getAllOperateurs("I");
 		operateur= new OperateurInterco();
+		}catch(Exception ex ){
+			lst_oper=oper_service.getAllOperateurs("I");
+			operateur= new OperateurInterco();
+		}
+		
 	}
 	public void SupprimerOperateur(){
 		oper_service.DeleteOperateur(operateur1);
-		lst_oper=oper_service.getAllOperateurs();
+		lst_oper=oper_service.getAllOperateurs("I");
 	}
 	public void ModifierOperateur(){
 
 		oper_service.UpdateOperateur(operateur1);
-		lst_oper=oper_service.getAllOperateurs();
+		lst_oper=oper_service.getAllOperateurs("I");
 	}
 	
 	

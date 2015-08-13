@@ -70,7 +70,7 @@ public class LCROffreManageMbean {
 	public void init(){
 		liste_fichierLcrProcess= new ArrayList<>();
 		liste_fichierLcrProcess = lcr_service.getAllLcrProcess();
-		operateurs=operateur_service.getAllOperateurs();
+		operateurs=operateur_service.getAllOperateurs("I");
 		LcrOffreFilterOptions= new ArrayList<SelectItem>(
 				operateurs.size() + 1);
 		LcrOffreFilterOptions.add(new SelectItem("", "Choisir.."));

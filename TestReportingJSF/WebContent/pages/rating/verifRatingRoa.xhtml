@@ -71,7 +71,7 @@
 			<p:outputPanel id="ColLineChart1" rendered="#{verif_rating.chartDisplayed}">
 	<div class="ui-grid-row"   >
 	
-		<hf:chart  type="line" subTitle="#{verif_rating.subTitle}" title="Rapport Verification Tarif prépayé Roaming "  >
+		<hf:chart height="220"  type="line" subTitle="#{verif_rating.subTitle}" title="Rapport Verification Tarif prépayé Roaming "  >
 		<hf:chartSerie name="Nombre d'appel" value="#{verif_rating.listeTarifroaming}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		<hf:chartSerie name="impact" value="#{verif_rating.listeTarifroaming}" var="point" point="#{point[2]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		

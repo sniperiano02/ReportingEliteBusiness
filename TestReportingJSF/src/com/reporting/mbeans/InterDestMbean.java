@@ -9,6 +9,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.reporting.metier.entities.DetCodeDest;
+import com.reporting.metier.entities.DetailsDestination;
 import com.reporting.metier.entities.DetailsPay;
 import com.reporting.metier.entities.InterDest;
 import com.reporting.metier.entities.Pay;
@@ -72,12 +73,9 @@ public class InterDestMbean {
 	
 	
 	public void ajouterInterDest(){
-		for(int i=0;i<liste_details.size();i++){
-			liste_details.get(i).setInterdest(interdest);
-		}
-		interdest.setList_details(liste_details);
+		
 		interdest_service.addInterDest(interdest);
-		liste_details = new ArrayList<>();
+	
 		lst_interdest=interdest_service.getAllInterDests();
 		interdest= new InterDest();
 	}
@@ -88,40 +86,33 @@ public class InterDestMbean {
 	public void ModifierInterDest(){
 		
 		
-interdest1.setList_details(interdest1.getList_details());
+
 		interdest_service.UpdateInterDest(interdest1);
 		lst_interdest=interdest_service.getAllInterDests();
 	}
 	
-	public void deleteDetails(){
-		liste_details.remove(detailsdest);
-		details1= new DetCodeDest();
-	}
 
-	public void deleteDetails1(){
-	interdest1.getList_details().remove(details1);
-	liste_details1= interdest1.getList_details();
-	System.out.println(interdest1.getList_details().size());
-	interdest1.setList_details(interdest1.getList_details());
-	lst_interdest=interdest_service.getAllInterDests();
-		details1= new DetCodeDest();
-		
-	}
 	
-	
-	public void AjouterDetails(){
-		liste_details.add(detailsdest);
-	System.out.println(detailsdest.getCodeDest());
-		detailsdest= new DetCodeDest();
-	}
-	public void AjouterDetails1(){
-		details.setInterdest(interdest);
-		
+	public void addDetail(){
+
+		details.setInterdest(interdest1);
 		interdest1.getList_details().add(details);
+		interdest1.setPays(interdest1.getPays());
+		interdest1.setGroupDestination(interdest1.getGroupDestination());
+	interdest_service.addDetail(details, interdest1);
+	details = new DetCodeDest();
 		
-		details= new DetCodeDest();
-//	System.out.println(interdest1.getList_details().get(1).getCodePays());
+		
+		
 	}
+	public void deleteDetail(){
+	
+		interdest1.getList_details().remove(details1);
+		interdest_service.deleteDetail(details1, interdest1);
+		
+		
+	}
+	
 	public List<InterDest> getLst_interdest() {
 		return lst_interdest;
 	}

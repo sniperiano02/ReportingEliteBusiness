@@ -27,6 +27,9 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.BehaviorEvent;
 import javax.persistence.MapKey;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.calendar.Calendar;
@@ -152,26 +155,50 @@ public List<Object[]> getPie2() {
 public void setPie2(List<Object[]> pie2) {
 	this.pie2 = pie2;
 }
+
+private List<String> heures = new ArrayList<>();
+
+public List<String> getHeures() {
+	return heures;
+}
+public void setHeures(List<String> heures) {
+	this.heures = heures;
+}
 	
 	@PostConstruct
 public void init(){
 	
 		
-		listeoper=operateur_remote.getAllOperateurs();
+		listeoper=operateur_remote.getAllOperateurs("I");
 		choix_oper= new OperateurInterco(); 
 		liste_desAns=stat_remote.getAllYears();
-	    listeMois.add(1);
-	    listeMois.add(2);
-	    listeMois.add(3);
-	    listeMois.add(4);
-	    listeMois.add(5);
-	    listeMois.add(6);
-	    listeMois.add(7);
-	    listeMois.add(8);
-	    listeMois.add(9);
-	    listeMois.add(10);
-	    listeMois.add(11);
-	    listeMois.add(12);
+		heures = new ArrayList<>();
+		heures.add("00");
+		heures.add("01");
+		heures.add("02");
+		heures.add("03");
+		heures.add("04");
+		heures.add("05");
+		heures.add("06");
+		heures.add("07");
+		heures.add("08");
+		heures.add("09");
+		heures.add("10");
+		heures.add("11");
+		heures.add("12");
+		heures.add("13");
+		heures.add("14");
+		heures.add("15");
+		heures.add("16");
+		heures.add("17");
+		heures.add("18");
+		heures.add("19");
+		heures.add("20");
+		heures.add("21");
+		heures.add("22");
+		heures.add("23");
+	    
+	    
 	    
 	    
 	 
@@ -353,12 +380,35 @@ chartDisplayed = false;
 		pie2=new ArrayList<>();
 		where_liste = new ArrayList<String>();
 		staticListStatIntec = new ArrayList<>();
+		List<Object[]> generateList = new ArrayList<>();
 		if(this.getChoix_periode().equals(" ")){
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,"Erreur",  "Veuillez choisir une Periode " ) );
 		}
 		else{
 			if(this.getChoix_periode().equals("Par Jour")){
-				
+				 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+					String deb0 = df1.format(this.getDate_ParJourDeb());
+					String fin0 = df1.format(this.getDate_ParJourFin());
+				DateTime start = DateTime.parse(deb0);
+		        System.out.println("Start: " + start);
+		  
+		        DateTime end = DateTime.parse(fin0);
+		        System.out.println("End: " + end);
+
+		        List<DateTime> between = getDateRange(start, end);
+		        for (DateTime d : between) {
+		        	String s = d+"";
+		            
+		            System.out.println(" " + s.substring(8,10));
+		            Object[] ob = new Object[5];
+		            ob[0]=s.substring(0,10);
+		            ob[1]=0.0;
+		            ob[2]=0.0;
+		            ob[3]=0.0;
+		            ob[4]=0.0;
+		            
+		            generateList.add(ob);
+		        }
 					DateFormat df = new SimpleDateFormat("yyyy-MM-dd ");
 					String deb = df.format(this.getDate_ParJourDeb());
 					String fin = df.format(this.getDate_ParJourFin());
@@ -367,6 +417,17 @@ chartDisplayed = false;
 				
 				
 			}else if(this.getChoix_periode().equals("Par Heure")){
+				for(int i=0;i<heures.size();i++){
+					 Object[] ob = new Object[5];
+			            ob[0]=heures.get(i);
+			            System.out.println(heures.get(i));
+			            ob[1]=0.0;
+			            ob[2]=0.0;
+			            ob[3]=0.0;
+			            ob[4]=0.0;
+			            
+			            generateList.add(ob);
+				}
 				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 				System.out.println(date_Parheure);
 				String deb = df.format(this.getDate_Parheure());
@@ -381,6 +442,26 @@ chartDisplayed = false;
 				where_liste.add(" Extract(year from to_date(dateAppel,'YYMMDD')) >= "+deb+" And Extract(year from to_date(dateAppel,'YYMMDD')) <= "+fin+"");
 				SubTitle ="Entre  "+deb+" et "+fin;
 			}else if(this.getChoix_periode().equals("Par Mois")){
+				 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+					String deb0 = df1.format(this.getDate_mois_debut());
+					String fin0 = df1.format(this.getDate_mois_fin());
+					LocalDate date1 = new LocalDate(deb0);
+					 LocalDate date2 = new LocalDate(fin0);
+					 date2 = date2.plus(Period.months(1));
+					 while(date1.isBefore(date2)){
+						 Object[] ob = new Object[5];
+				            ob[0]=date1.toString("MM/yyyy");
+				            ob[1]=0.0;
+				            ob[2]=0.0;
+				            ob[3]=0.0;
+				            ob[4]=0.0;
+				            
+				            generateList.add(ob);
+					     System.out.println(date1.toString("MM/yyyy"));
+					     date1 = date1.plus(Period.months(1));
+					    
+					 }
+		        
 				DateFormat df = new SimpleDateFormat("MM-YYYY");
 				System.out.println(date_Parheure);
 				String deb = df.format(this.getDate_mois_debut());
@@ -416,17 +497,17 @@ chartDisplayed = false;
 		}
 		if(this.getChoix_periode().equals("Par Heure")){
 			 
-			 staticListStatIntec = stat_remote.getAllStatIntecStatic("substring(trancheHoraire,1,2)", "SUM(dureeMoyenne),SUM(dureeTotal),SUM(revenueMoyenne),SUM(montantTotal)", "", "", where_liste);
+			 staticListStatIntec = removeDuplicate(generateList,stat_remote.getAllStatIntecStatic("substring(trancheHoraire,1,2)", "SUM(dureeMoyenne),SUM(dureeTotal),SUM(revenueMoyenne),SUM(montantTotal)", "", "", where_liste));
 		
 	 		 }else if(this.getChoix_periode().equals("Par An")){
 	 			 staticListStatIntec = stat_remote.getAllStatIntecStatic("Extract (year from to_date(dateAppel,'YYMMDD'))", "SUM(dureeMoyenne),SUM(dureeTotal),SUM(revenueMoyenne),SUM(montantTotal)", "", "", where_liste);
 	 			
 	 			
 		 		 }else if(this.getChoix_periode().equals("Par Mois")){
-		 			 staticListStatIntec = stat_remote.getAllStatIntecStatic("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", "SUM(dureeMoyenne),SUM(dureeTotal),SUM(revenueMoyenne),SUM(montantTotal)", "", "", where_liste);
+		 			 staticListStatIntec = removeDuplicate(generateList,stat_remote.getAllStatIntecStatic("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", "SUM(dureeMoyenne),SUM(dureeTotal),SUM(revenueMoyenne),SUM(montantTotal)", "", "", where_liste));
 
 		 		 }else if (this.getChoix_periode().equals("Par Jour")){
-		 			 staticListStatIntec = stat_remote.getAllStatIntecStatic("to_char(to_date(dateAppel,'YYMMDD'),'DD')", "SUM(dureeMoyenne),SUM(dureeTotal),SUM(revenueMoyenne),SUM(montantTotal)", "", "", where_liste);
+		 			 staticListStatIntec = removeDuplicate(generateList,stat_remote.getAllStatIntecStatic("to_char(to_date(dateAppel,'YYMMDD'),'YYYY-MM-DD')", "SUM(dureeMoyenne),SUM(dureeTotal),SUM(revenueMoyenne),SUM(montantTotal)", "", "", where_liste));
 
 		 			//data =statRemote.getMscByFilters(" to_date(dateAppel,'YYMMDD')",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By  to_date(dateAppel,'YYMMDD') ORDER BY to_date(dateAppel,'YYMMDD') DESC", where_liste); 
 		 		 }
@@ -638,5 +719,75 @@ public void handlechange2(AjaxBehaviorEvent event){
 	public void setChoix_type(String choix_type) {
 		this.choix_type = choix_type;
 	}
+	
+	 
+	 public static List<DateTime> getDateRange(DateTime start, DateTime end) {
+
+	        List<DateTime> ret = new ArrayList<DateTime>();
+	        DateTime tmp = start;
+	        while(tmp.isBefore(end) || tmp.equals(end)) {
+	            ret.add(tmp);
+	            tmp = tmp.plusDays(1);
+	        }
+	        return ret;
+	    }
+	 public List<Object[]> removeDuplicate(List <Object[]> list,List<Object[]> list1) {
+		 List<Object[]> liste = new ArrayList<>();
+		 int i =0;
+		 int j=0;
+		 if(list1==null){
+			 liste=list;
+		 }else if(list1.size()==list.size()){
+			 
+		   while(j<list.size()){
+			   
+				   if(list.get(j)[0].toString().equals(list1.get(i)[0].toString())){
+					   liste.add(list1.get(i));
+				   }else{
+					   liste.add(list.get(j));
+				   }
+				   i++;
+					  j++;
+			   
+		   }
+		 }else if(list.size()>list1.size()){
+			 System.out.println(list1.size());
+			if(list.size()>0){
+				for(int nb=0;nb<list.size();nb++){
+					
+					 boolean trouve = false;
+					 int nb1 =0;
+					   while((trouve==false) && (nb1<list1.size()) ){
+						   System.out.println(trouve);
+						  
+					   if(list.get(nb)[0].toString().equals(list1.get(nb1)[0].toString())){
+						 
+						   trouve = true;
+						 
+					   }else{
+						   nb1++;
+					   }
+						   
+						  
+					   }
+					   if(trouve==false){
+						   liste.add(list.get(nb));
+					   }else{
+						   liste.add(list1.get(nb1));
+						   System.out.println(list1.get(nb1)[2]);
+					   }
+					   
+					  
+				   
+			   }
+			}else{
+				   liste = list;
+			   }
+			
+		 }
+		 
+		   return liste;
+		  }
+	 
 
 }

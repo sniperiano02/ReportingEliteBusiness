@@ -38,8 +38,8 @@
  
 		<p:panel rendered="#{inter_balance.chartDisplayed}"  >
 		
-		<hf:chart   type="line" subTitle="#{inter_balance.subTitle}"  title="Produit "   >
-		<hf:chartSerie   name="ARPU" value="#{inter_balance.listeInterBalance}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chart height="220"  type="line" subTitle="#{inter_balance.subTitle}"  title="Produit "   >
+		<hf:chartSerie   name="Produit" value="#{inter_balance.listeInterBalance}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		
 		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
 		

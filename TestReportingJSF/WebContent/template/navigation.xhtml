@@ -3,21 +3,20 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-               xmlns:b="http://bootsfaces.net/ui"
-                xmlns:tr="http://myfaces.apache.org/trinidad"
+             
                 >
                           
 
 
 		<h:form id="form2">
 		  
-		
+	
 
 	 <p:panelMenu    rendered="#{tabMenuNavigationBean.pan_postpaye}"  >
 	
         
-        <p:submenu label="Reporting Traffic">
-            <p:menuitem value="MSC" outcome="/pages/postapaye/RpTraffic/mscStaticpost.jsf"    />
+        <p:submenu label="Reporting Traffic"> 
+            <p:menuitem value="MSC"    />
         
         </p:submenu>
         <p:separator />
@@ -36,6 +35,91 @@
                
        
     </p:panelMenu>
+    
+	 <p:panelMenu    rendered="#{tabMenuNavigationBean.pan_fraude}"  >
+	
+        
+        <p:submenu label="Configuration">
+            <p:menuitem value="Gestion Positions" outcome="/pages/fraude/gestion_positions.jsf"    />
+            <p:menuitem value="Hotlist" outcome="/pages/fraude/hotlist.jsf"    />
+            <p:menuitem value="Ajouter Regle" outcome="/pages/fraude/Ajout_regle.jsf"    />
+                    <p:menuitem value="Gestion des regles" outcome="/pages/fraude/manage_regles.jsf"    />
+        
+        </p:submenu>
+        <p:separator />
+ 
+        <p:submenu label="Alerte Fraude">
+            <p:menuitem value="Alerte Fraude " outcome="/pages/fraude/alerte_fraude.jsf"    />
+                       <p:menuitem value="Alerte HUR " outcome="/pages/fraude/alerteHUR.jsf"    />
+                                  <p:menuitem value="Alarmes " outcome="/pages/fraude/alertemsisdn.jsf"    />
+           
+        </p:submenu>
+                <p:submenu label="Gestion Decisions" >
+           
+                    <p:menuitem value="Gestion Decisions" outcome="/pages/fraude/manage_decision.jsf"  />
+                    <p:menuitem value="Extraire CDR" outcome="/pages/postapaye/kpi/mouPop.jsf"  />
+                   
+          
+        </p:submenu>
+               
+       
+    </p:panelMenu>
+    
+       <p:panelMenu    rendered="#{tabMenuNavigationBean.pan_roa_in}" >
+	
+        <p:submenu  label="Configuration">
+            <p:menuitem  value="Roaming Operateur"  outcome="/pages/roamingin/configuration/manage_operator.jsf" />
+            <p:menuitem  value="Package Roaming" outcome="/pages/roamingin/configuration/package_roaming.jsf" />
+            <p:menuitem  value="Tarif" outcome="/pages/roamingin/configuration/package_roaming.jsf" >
+          
+            </p:menuitem>
+        </p:submenu>
+        <p:submenu  label="Reporting Traffic">
+            <p:menuitem value="MSC" outcome="/pages/roamingin/reporting_traffic/msc.jsf"    />
+            <p:menuitem  value="Tapout" outcome="/pages/roamingin/reporting_traffic/tapout.jsf"     />
+         
+        </p:submenu>
+        <p:separator />
+        <p:submenu  label="Traffic Assurance" >
+           
+                    <p:menuitem value="rec MSC vs Tapout" outcome="/pages/roamingin/traffic_assurance/recon_msc_tapout.jsf"    />
+                  
+            
+           
+        </p:submenu>
+           <p:submenu label="Rating" >
+           
+                    <p:menuitem value="Tarif Moyen" outcome="/pages/roamingin/rating/tarif_moyen.jsf"    />
+                    <p:menuitem value="Verif Tarif Moyen" outcome="/pages/roamingin/rating/verifTarifRoamingIn.jsf"  />
+                    
+            
+           
+        </p:submenu>
+        
+       
+     
+                <p:submenu label="KPI" >
+           
+                
+                    <p:menuitem value="Revenue/Roameur" outcome="/pages/roamingin/KPI/revenue_nbroa.jsf"  />
+                     <p:menuitem value="Nb Roameurs Visiteurs" outcome="/pages/roamingin/KPI/nb_roa.jsf"  />
+                     <p:menuitem value="MOU" outcome="/pages/roamingin/KPI/mou.jsf"  />
+                   
+          
+        </p:submenu>
+                      <p:submenu label="Dashboard" >
+           
+                
+                        <p:menuitem value="Produit"  outcome="/pages/roamingin/dashboard/produit.jsf" />
+                        <p:menuitem value="Balance" outcome="/pages/roamingin/dashboard/balance.jsf"  />
+                   
+          
+        </p:submenu>
+       
+    </p:panelMenu>
+    
+    
+    
      <p:panelMenu    rendered="#{tabMenuNavigationBean.pan_prepayé}" >
 	
         <p:submenu id="conf" label="Configuration">
@@ -83,6 +167,7 @@
            
                     <p:menuitem value="Balance Negative" outcome="/pages/ControleBalance/balancenegatif.jsf"    />
                    <p:menuitem value="Balance Principale" outcome="/pages/ControleBalance/balanceprincipe.jsf"    />
+                    <p:menuitem value="Balance Secondaire" outcome="/pages/ControleBalance/balance_secondaire.jsf" />
                   
                     
             
@@ -99,9 +184,9 @@
         </p:submenu>
                       <p:submenu label="Dashboard" >
            
-                    <p:menuitem value="Chiffre d'affaire"   />
+                    
                     <p:menuitem value="Stat Recharge" outcome="/pages/dashboard/recharge.jsf"  />
-                      <p:menuitem value="Stat Ajustement"  />
+                    
                         <p:menuitem value="Stat Activation"  outcome="/pages/dashboard/activation.jsf" />
                         <p:menuitem value="Stat Transfert" outcome="/pages/dashboard/transfert.jsf"  />
                    
@@ -123,7 +208,27 @@
             </p:menuitem>
         </p:submenu>
     </p:panelMenu>
-     <p:panelMenu  rendered="#{tabMenuNavigationBean.pan_interco}">
+    <p:panelMenu  rendered="#{tabMenuNavigationBean.pan_interco}">
+     <p:submenu label="Configuration" >
+                 <p:menuitem value="Operateur" outcome="/pages/interco/Configuration/operateur.jsf" />
+                 <p:menuitem value="Trunck " outcome="/pages/interco/Configuration/trunck.jsf" />
+                 <p:menuitem value="Destination Inter" outcome="/pages/interco/Configuration/dest_inter.jsf" />
+                   <p:menuitem value="Convention"  />
+     
+     </p:submenu>
+     <p:submenu label="Reporting Trafic" >
+                 <p:menuitem value="CTI" outcome="/pages/interco/RT/cti.jsf" />
+                 <p:menuitem value="Intec " outcome="/pages/interco/RT/intec.jsf" />
+                
+     
+     </p:submenu>
+     <p:submenu label="Assurance Trafic" >
+                 <p:menuitem value="Rec CTI vs MSC" outcome="/pages/interco/TraficAssurance/rec_cti_msc.jsf" />
+                 <p:menuitem value="Rec CTI vs SysFact" outcome="/pages/interco/TraficAssurance/rec_cti_sysfact.jsf" />
+                 <p:menuitem value="Qualité" outcome="/pages/interco/TraficAssurance/qualite.jsf" />
+                 
+                    
+     </p:submenu>
      <p:submenu label="KPI" >
                  <p:menuitem value="MOU Entrant" outcome="/pages/interco/kpi/mou_entrant.jsf" />
                  <p:menuitem value="MOU Sortant " outcome="/pages/interco/kpi/mou_sortant.jsf" />
@@ -131,15 +236,116 @@
                    <p:menuitem value="Coût Moyen Par Minute" outcome="/pages/interco/kpi/cmpm.jsf" />
      
      </p:submenu>
-   
-       	  <p:submenu label="Least Cost Routing">
-   	  <p:menuitem value="Gestion des Template" outcome="/pages/interco/lcr/manage_template.jsf" />
+     <p:submenu label="Least Cost Routing">
+   	
                  <p:menuitem value="Ajouter Template" outcome="/pages/interco/lcr/templateDef.jsf" />
                  <p:menuitem value="Gestion des Offres" outcome="/pages/interco/lcr/manage_offre.jsf" />
-                   <p:menuitem value="Routage Optiomale" outcome="/pages/interco/lcr/routage_optimale.jsf" />
+                  <p:menuitem value="Routage Optiomale" outcome="/pages/interco/lcr/routage_optimale.jsf" />
       <p:menuitem value="Definir Nouveau Routage" outcome="/pages/interco/lcr/upload.jsf" />
  </p:submenu>
+     <p:submenu label="Dashboard" >
+                 <p:menuitem value="Produit" outcome="/pages/interco/Dashboard/produit.jsf" />
+                 <p:menuitem value="Charge " outcome="/pages/interco/Dashboard/charge.jsf" />
+                 <p:menuitem value="Balance" outcome="/pages/interco/Dashboard/Balance.jsf" />
+                  
+     
+     </p:submenu>
+     <p:submenu label="Rating/Biling" >
+                 <p:menuitem value="Rating" outcome="/pages/interco/RatingBiling/Rating.jsf"  />
+                 <p:menuitem value="Biling" outcome="/pages/interco/RatingBiling/Biling.jsf"   />
+                 
+                  
+     
+     </p:submenu>
     </p:panelMenu>
+    <p:panelMenu  rendered="#{tabMenuNavigationBean.pan_intercoNat}">
+     <p:submenu label="Configuration" >
+                 <p:menuitem value="Operateur" outcome="/pages/intercoNat/Configuration/operateurNat.jsf" />
+                
+                   <p:menuitem value="Convention"  />
+     
+     </p:submenu>
+     <p:submenu label="Reporting Trafic" >
+                 <p:menuitem value="Centrale" outcome="/pages/intercoNat/RT/central.jsf" />
+                 <p:menuitem value="Intec " outcome="/pages/intercoNat/RT/intecNat.jsf" />
+                
+     
+     </p:submenu>
+     <p:submenu label="Assurance Trafic" >
+                 <p:menuitem value="Rec CTI et MSC vs SysFact" outcome="/pages/intercoNat/TraficAssurance/rec_cti_msc_sysfact.jsf" />
+                
+                 
+                    
+     </p:submenu>
+    
+    
+     <p:submenu label="Dashboard" >
+                 <p:menuitem value="Produit" outcome="/pages/intercoNat/Dashboard/produitNat.jsf" />
+                 <p:menuitem value="Charge " outcome="/pages/intercoNat/Dashboard/chargeNat.jsf" />
+                 <p:menuitem value="Balance" outcome="/pages/intercoNat/Dashboard/BalanceNat.jsf" />
+                  
+     
+     </p:submenu>
+     <p:submenu label="Rating/Biling" >
+                 <p:menuitem value="Rating" outcome="/pages/intercoNat/RatingBiling/RatingNat.jsf"  />
+                 <p:menuitem value="Biling" outcome="/pages/intercoNat/RatingBiling/BilingNat.jsf"   />
+                 
+                  
+     
+     </p:submenu>
+    </p:panelMenu>
+     
+     <p:panelMenu  rendered="#{tabMenuNavigationBean.pan_roam_out}">
+     <p:submenu label="Configuration" >
+                 <p:menuitem value="Operateur" outcome="/pages/roamingOut/Configuration/operateurRoa.jsf" />
+                 <p:menuitem value="Tarif Prepaye" outcome="/pages/roamingOut/Configuration/tarif.jsf" />
+                 <p:menuitem value="Tarif Postpaye" outcome="/pages/roamingOut/Configuration/tarif_pop.jsf" />
+                 <p:menuitem value="Offre Prepaye" outcome="/pages/roamingOut/Configuration/tarif_pop.jsf" />
+                
+                  
+     
+     </p:submenu>
+     <p:submenu label="Reporting Trafic" >
+                 <p:menuitem value="Roaming Postpaye" outcome="/pages/roamingOut/RT/in_roaming_pop.jsf" />
+                 <p:menuitem value="Roaming Prepaye " outcome="/pages/roamingOut/RT/in_roaming_out.jsf" />
+                 <p:menuitem value="Stat Tapin " outcome="/pages/roamingOut/RT/TapIN.jsf" />
+                
+     
+     </p:submenu>
+     <p:submenu label="Assurance Trafic" >
+          <p:menuitem value="Rec Tapin" outcome="/pages/roamingOut/TraficAssurance/rec_tapin.jsf" />
+                
+                 
+                    
+     </p:submenu>
+    <p:submenu label="Rating" >
+                 <p:menuitem value="Marge" outcome="/pages/roamingOut/Rating/marge.jsf"   />
+                  <p:menuitem value="Tarif roaming Prp" outcome="/pages/kpi/arpmroaming.jsf"  />
+                   <p:menuitem value="Vérif Rating Prp"   outcome="/pages/rating/verifRatingRoa.jsf"  />
+                 
+                  
+     
+     </p:submenu>
+    
+      <p:submenu label="KPI" >
+                 <p:menuitem value="Charge Moyen" outcome="/pages/roamingOut/KPI/trif_moy_roamout.jsf"    />
+                  <p:menuitem value="Nb Roameurs"  outcome="/pages/roamingOut/KPI/nb_roa_out.jsf"  />
+                   <p:menuitem value="MOU"  outcome="/pages/roamingOut/KPI/mou_out.jsf"  />
+                 
+                  
+     
+     </p:submenu>
+    
+     <p:submenu label="Dashboard" >
+               
+                 <p:menuitem value="Charge " outcome="/pages/roamingOut/Dashboard/charge.jsf" />
+                 <p:menuitem value="Balance" outcome="/pages/roamingin/dashboard/balance.jsf" />
+                  
+     
+     </p:submenu>
+     
+    </p:panelMenu>
+    
     	 <p:panelMenu   rendered="#{tabMenuNavigationBean.pan_admin}">
    	  <p:submenu label="Gestion Utilisateurs">
   
@@ -187,6 +393,7 @@
             
         </p:submenu>
     </p:panelMenu>
+  
 </h:form>
 
 

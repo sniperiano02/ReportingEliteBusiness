@@ -38,7 +38,7 @@
 			<p:outputPanel id="ColLineChart1" rendered="#{balance_neg.chartDisplayed}">
 	<div class="ui-grid-row"   >
 	
-		<hf:chart  type="line" subTitle="#{balance_neg.subTitle}" title="Rapport du contrôle Balance Negative "  >
+		<hf:chart height="220"  type="line" subTitle="#{balance_neg.subTitle}" title="Rapport du contrôle Balance Negative "  >
 		<hf:chartSerie name="Balance Negatif" value="#{balance_neg.stat_balance_neg}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		
 		

@@ -406,7 +406,7 @@ public class StatRechargeMbean {
 
 			 		 }else if (this.getChoix_periode().equals("Par Jour")){
 			 			
-			 			 staticListStatRecharge = removeDuplicate(generateList, stat_recharge_service.getAllStatRecharge("to_char(to_date(dateAppel,'YYMMDD'),'DD')", "SUM(rechargeTotal),SUM(bonusRecharge),SUM(nbRecharge)",  where_liste));
+			 			 staticListStatRecharge = removeDuplicate(generateList, stat_recharge_service.getAllStatRecharge("to_char(to_date(dateAppel,'YYMMDD'),'YYYY-MM-DD')", "SUM(rechargeTotal),SUM(bonusRecharge),SUM(nbRecharge)",  where_liste));
 			 			//data =statRemote.getMscByFilters(" to_date(dateAppel,'YYMMDD')",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By  to_date(dateAppel,'YYMMDD') ORDER BY to_date(dateAppel,'YYMMDD') DESC", where_liste); 
 			 		
 			 		 }

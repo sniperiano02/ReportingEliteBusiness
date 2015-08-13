@@ -5,7 +5,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template/template.xhtml"
                 
-                xmlns:hf="http://highfaces.org">
+                xmlns:hf="http://highfaces.org"
+                xmlns:pe="http://primefaces.org/ui/extensions">
                 
                  <ui:define name="pageTitle">welcome</ui:define>	
 			
@@ -14,6 +15,17 @@
 		<h:form  id="form1" >
 		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
 		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+			<p:panel header="Export" rendered="#{parc_active.chartDisplayed}">
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="dt2" fileName="RapportVerifRatingLocal" datasetPadding="4" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="dt2" fileName="RapportVerifRatingLocal" datasetPadding="4"  />
+            </h:commandLink>
+		</p:panel>
 		<p:panel header="Periode"  >
 		<p:panelGrid columns="1" id="PanelPeriode" >
 		<p:selectOneMenu value="#{parc_active.choix_periode}" >
@@ -46,7 +58,7 @@
 		</hf:chart>
 		</p:panel>
 		
-          <p:dataTable rendered="#{parc_active.chartDisplayed}"  value="#{parc_active.listParcActive}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+          <p:dataTable id="dt2" rendered="#{parc_active.chartDisplayed}"  value="#{parc_active.listParcActive}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
         rowsPerPageTemplate="6,12,16" >
 		  <p:column headerText="Date">
         <h:outputText value="#{cdr[0]}" />

@@ -15,6 +15,17 @@
 		<h:form  id="form1" >
 		<p:layout onToggle="$(window).trigger('resize');"  onResize="$(window).trigger('resize');">
 		<p:layoutUnit position="east" collapsible="true" header="Menu" style="height:480px;overflow:hidden;" size="200">
+		<p:panel header="Export" rendered="#{arpmRoaming.chartDisplayed}" >
+		 <h:commandLink >
+                <p:graphicImage library="img" name="excel.png" width="24"  />
+                <pe:exporter type="xlsx" target="tbl2" fileName="RapportMSC" datasetPadding="4" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"  />
+                <pe:exporter  type="pdf" target="tbl2" fileName="RapportMSC" datasetPadding="4"  />
+            </h:commandLink>
+		</p:panel>
 		<p:panel header="Periode"  >
 		<p:panelGrid columns="1" id="PanelPeriode" >
 		<p:selectOneMenu value="#{arpmRoaming.choix_periode}" >
@@ -32,7 +43,8 @@
 		<p:panelGrid columns="1" >
 		<p:selectOneMenu value="#{arpmRoaming.choix_Voix}" >
 		<p:ajax listener="#{arpmRoaming.handlechange1}" event="change" update="@form" process="@this"/>
-		<f:selectItems value="#{arpmRoaming.listeVoix}" var="voix" itemLabel="#{voix}" itemValue="#{voix}" />
+	<f:selectItem itemLabel="Voix" itemValue="MO" />
+		<f:selectItem itemLabel="SMS" itemValue="SMSMO" />
             
 		
 		</p:selectOneMenu>
@@ -58,16 +70,11 @@
 		
 		</p:layoutUnit>
 		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit" position="center">
-		<p:menuButton value="Options">
-        <p:menuitem value="Creer Votre propre Rapport"  icon="ui-icon-disk"/>
-        <p:menuitem value="Voir Un rapport Existant"  icon="ui-icon-arrowrefresh-1-w"/>
-        
-        
-    </p:menuButton>
+		
 		
 			<p:outputPanel id="ColLineChart1" rendered="#{arpmRoaming.chartDisplayed}">
 	<div class="ui-grid-row"   >
-	
+
 		<hf:chart  type="line" subTitle="#{arpmRoaming.subTitle}" title="Rapport ARPM Roaming"  >
 		<hf:chartSerie name="Tarif Moyen" value="#{arpmRoaming.resultarpmRoaming}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		

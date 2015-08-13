@@ -25,8 +25,10 @@ import org.primefaces.component.calendar.Calendar;
 import org.primefaces.component.panelgrid.PanelGrid;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 
+import com.reporting.metier.entities.OperateurInterco;
+import com.reporting.metier.interfaces.OperateurIntercoRemote;
 import com.reporting.metier.interfaces.VerifTarifInterRemote;
-import com.reporting.metier.interfaces.VerifTransfertRemote;
+
 
 
 @ManagedBean(name="verif_tarif_inter")
@@ -35,21 +37,24 @@ public class VerifTarifInterMbean {
 	
 	@EJB
 	VerifTarifInterRemote verif_tarif_inter_service;
-
+	
+	@EJB
+	private OperateurIntercoRemote operateur_remote;
 	
 	
-//	private List<Object[]> listeDetailsVerifTransfert;
-//	public List<Object[]> getListeDetailsVerifTransfert() {
-//		return listeDetailsVerifTransfert;
-//	}
-//	public void setListeDetailsVerifTransfert(
-//			List<Object[]> listeDetailsVerifTransfert) {
-//		this.listeDetailsVerifTransfert = listeDetailsVerifTransfert;
-//	}
+	private List<Object[]> listeDetailsVerifTransfert;
+	public List<Object[]> getListeDetailsVerifTransfert() {
+		return listeDetailsVerifTransfert;
+	}
+	public void setListeDetailsVerifTransfert(
+			List<Object[]> listeDetailsVerifTransfert) {
+		this.listeDetailsVerifTransfert = listeDetailsVerifTransfert;
+	}
  
 	private String choix_stat;
 	
-	
+	private OperateurInterco choix_oper;
+	private List<OperateurInterco> listeoper = new ArrayList<>();
 	
 	private Object[] selectedRecon;
 	
@@ -128,12 +133,7 @@ public class VerifTarifInterMbean {
 	
 		
 	
-	public String getChoix_typeCall() {
-		return choix_typeCall;
-	}
-	public void setChoix_typeCall(String choix_typeCall) {
-		this.choix_typeCall = choix_typeCall;
-	}
+	
 	public Date getDate_Parheure() {
 		return date_Parheure;
 	}
@@ -182,7 +182,7 @@ public class VerifTarifInterMbean {
 	public void setDate_year(Integer date_year) {
 		this.date_year = date_year;
 	}
-		private String choix_typeCall;
+		
 		 private Date date_Parheure;
 		 private Date date_ParJourDeb;
 		 private Date date_ParJourFin;
@@ -194,6 +194,8 @@ public class VerifTarifInterMbean {
 		 
 		 @PostConstruct
 		 public void init(){
+			 listeoper=operateur_remote.getAllOperateurs("I");
+			 choix_oper= new OperateurInterco(); 
 			 liste_desAns = verif_tarif_inter_service.getAllYears();
 			 listeVerifTranfert = new ArrayList<>();
 			 
@@ -254,14 +256,14 @@ public class VerifTarifInterMbean {
 			 					cld_jour_debut.setRequired(true);
 			 				
 			 					
-			 				ValueExpression valjour = createValueExpression("#{verif_transfert.date_ParJourDeb}", Date.class);
+			 				ValueExpression valjour = createValueExpression("#{verif_tarif_inter.date_ParJourDeb}", Date.class);
 			 				cld_jour_debut.setValueExpression("value", valjour);
 			 					
 			 					Calendar cld_jour_fin = new Calendar();
 			 				
 			 					cld_jour_fin.setId("cld_jour_fin");
 			 					
-			 				ValueExpression valjourfin = createValueExpression("#{verif_transfert.date_ParJourFin}", Date.class);
+			 				ValueExpression valjourfin = createValueExpression("#{verif_tarif_inter.date_ParJourFin}", Date.class);
 			 				cld_jour_fin.setValueExpression("value", valjourfin);
 			 				
 			 				
@@ -279,7 +281,7 @@ public class VerifTarifInterMbean {
 			 			}else if (this.getChoix_periode().equals("Par An")){
 			 				SelectOneMenu lstDateYears = new SelectOneMenu();
 			 				lstDateYears.setId("lstDateYears");
-			 				 ValueExpression valueExp = createValueExpression("#{verif_transfert.date_year_deb}", Integer.class);
+			 				 ValueExpression valueExp = createValueExpression("#{verif_tarif_inter.date_year_deb}", Integer.class);
 			 		         UISelectItems list_items0 = new UISelectItems();
 			 				 lstDateYears.setValueExpression("value", valueExp);
 			 		         list_items0.setValue(liste_desAns);
@@ -287,7 +289,7 @@ public class VerifTarifInterMbean {
 			 				
 			 				SelectOneMenu lstDateYearsFin = new SelectOneMenu();
 			 				lstDateYearsFin.setId("lstDateYearsFin");
-			 				 ValueExpression valueExp1 = createValueExpression("#{verif_transfert.date_year_fin}", Integer.class);
+			 				 ValueExpression valueExp1 = createValueExpression("#{verif_tarif_inter.date_year_fin}", Integer.class);
 			 		         UISelectItems list_items = new UISelectItems();
 			 				 lstDateYearsFin.setValueExpression("value", valueExp1);
 			 		         list_items.setValue(liste_desAns);
@@ -306,7 +308,7 @@ public class VerifTarifInterMbean {
 			 				cld_mois_debut.setRequired(true);
 			 			
 			 				
-			 			ValueExpression valjour = createValueExpression("#{verif_transfert.date_mois_debut}", Date.class);
+			 			ValueExpression valjour = createValueExpression("#{verif_tarif_inter.date_mois_debut}", Date.class);
 			 			cld_mois_debut.setValueExpression("value", valjour);
 			 			cld_mois_debut.setPattern("MM/yyyy");
 			 			cld_mois_debut.setMask("true");
@@ -316,7 +318,7 @@ public class VerifTarifInterMbean {
 			 				cld_mois_fin.setId("cld_mois_fin");
 			 				cld_mois_fin.setPattern("MM/yyyy");
 			 				cld_mois_fin.setMask("true");
-			 			ValueExpression valjourfin = createValueExpression("#{verif_transfert.date_mois_fin}", Date.class);
+			 			ValueExpression valjourfin = createValueExpression("#{verif_tarif_inter.date_mois_fin}", Date.class);
 			 			cld_mois_fin.setValueExpression("value", valjourfin);
 			 			
 			 			
@@ -380,10 +382,15 @@ public class VerifTarifInterMbean {
 			 				SubTitle ="Entre le mois "+deb+" et le mois "+fin;
 			 			}
 			 			
-			 			if(!this.getChoix_stat().equals("null")){
-			 				where_liste.add(this.getChoix_stat());
-			 			}
 			 			
+			 				
+			 				if(this.getChoix_stat()!="" && this.getChoix_stat()!=null){
+			 					where_liste.add(" typeStat like "+"'"+this.getChoix_stat()+"'");
+			 			}
+			 				if(this.getChoix_stat()!="" &&  this.getChoix_oper()!=null ){
+			 					where_liste.add(" operateur.codeOperateurs="+"'"+this.getChoix_oper().getCodeOperateurs()+"'");
+			 					SubTitle=SubTitle+" avec "+this.getChoix_oper().getOperateur()+" comme Operateur";
+			 				}
 			 			
 			 			
 			 			
@@ -392,14 +399,14 @@ public class VerifTarifInterMbean {
 			 	
 			 				
 			 	 if(this.getChoix_periode().equals("Par An")){
-			 	 			 listeVerifTranfert = verif_tarif_inter_service.getStatVerifTarifInter("Extract (year from to_date(dateAppel,'YYMMDD'))", "SUM(impact),SUM(nbAppel)",  "", where_liste);
+			 	 			 listeVerifTranfert = verif_tarif_inter_service.getStatVerifTarifInter("Extract (year from to_date(dateAppel,'YYMMDD'))", "SUM(duree),SUM(nbAppel),SUM(montant),SUM(montantIntec),SUM(diff)",  "", where_liste);
 			 	 			
 			 	 			
 			 		 		 }else if(this.getChoix_periode().equals("Par Mois")){
-			 		 			 listeVerifTranfert = verif_tarif_inter_service.getStatVerifTarifInter("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", "SUM(impact),SUM(nbAppel)",  "", where_liste);
+			 		 			 listeVerifTranfert = verif_tarif_inter_service.getStatVerifTarifInter("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", "SUM(duree),SUM(nbAppel),SUM(montant),SUM(montantIntec),SUM(diff)",  "", where_liste);
 
 			 		 		 }else if (this.getChoix_periode().equals("Par Jour")){
-			 		 			 listeVerifTranfert = verif_tarif_inter_service.getStatVerifTarifInter("to_char(to_date(dateAppel,'YYMMDD'),'DD/MM/YYYY')", "SUM(impact),SUM(nbAppel)", "", where_liste);
+			 		 			 listeVerifTranfert = verif_tarif_inter_service.getStatVerifTarifInter("to_char(to_date(dateAppel,'YYMMDD'),'DD/MM/YYYY')", "SUM(duree),SUM(nbAppel),SUM(montant),SUM(montantIntec),SUM(diff)", "", where_liste);
 
 			 		 			//data =statRemote.getMscByFilters(" to_date(dateAppel,'YYMMDD')",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By  to_date(dateAppel,'YYMMDD') ORDER BY to_date(dateAppel,'YYMMDD') DESC", where_liste); 
 			 		 		 }
@@ -449,10 +456,10 @@ public class VerifTarifInterMbean {
 			
 			}
 				
-			 		if(!this.getChoix_stat().equals("null")){
-		 				where=where+" AND "+this.getChoix_stat();
+			 		if(this.getChoix_stat()!="" && this.getChoix_stat()!=null){
+	 					where_liste.add(" typeStat like "+"'"+this.getChoix_stat()+"'");
 		 			}
-				//	listeDetailsVerifTransfert=verif_transfert_service.getDetailsStatVerifTransfert(where);
+					listeDetailsVerifTransfert=verif_tarif_inter_service.getDetailsStatVerifTarifInter(where);
 					//System.out.println(lineChartDetails.getSeries().get(0).getName()+":"+lineChartDetails.getSeries().get(0).getMap().entrySet().size());
 					
 					System.out.println(detail_displayed);
@@ -483,6 +490,18 @@ public class VerifTarifInterMbean {
 		}
 		public void setChoix_stat(String choix_stat) {
 			this.choix_stat = choix_stat;
+		}
+		public OperateurInterco getChoix_oper() {
+			return choix_oper;
+		}
+		public void setChoix_oper(OperateurInterco choix_oper) {
+			this.choix_oper = choix_oper;
+		}
+		public List<OperateurInterco> getListeoper() {
+			return listeoper;
+		}
+		public void setListeoper(List<OperateurInterco> listeoper) {
+			this.listeoper = listeoper;
 		}
 
 

@@ -45,7 +45,7 @@
     	<f:facet name="footer">
    			<p:panelGrid columns="3">
    			
-            	<p:commandButton  process="singleDT" value="Modifier"  oncomplete="PF('dlg5').show()"  />
+            	<p:commandButton  process="singleDT" value="Modifier" update=":form1:out1"  oncomplete="PF('dlg5').show()"  />
              	<p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter"  oncomplete="PF('dlg3').show()" />
           		<p:commandButton  process="singleDT" update="singleDT"  value="Supprimer" actionListener="#{trunck.SupprimerTrunck()}"  />
              
@@ -55,7 +55,7 @@
 				</p:dataTable>
 				
   		<p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce"  width="500px">
-			<h:panelGrid>
+			<p:panelGrid columns="2">
 				<p:outputLabel value="ID Trunck" />
      				<p:inputText value="#{trunck.trunck.idTrunck}"  >
      				</p:inputText>
@@ -84,37 +84,39 @@
 	</p:selectOneMenu>
      
 	
-    <p:commandButton process="@this" value="Valider" update=":form1:singleDT" actionListener="#{trunck.ajouterTrunck}"   oncomplete="PF('dlg3').hide()"/>
+    <p:commandButton  value="Valider" update="singleDT" actionListener="#{trunck.ajouterTrunck}"   oncomplete="PF('dlg3').hide()"/>
     <p:commandButton value="Annuler" onclick="PF('dlg3').hide()" />
-    </h:panelGrid>
+    </p:panelGrid>
     
        
 </p:dialog>
 
-<p:dialog header="Details" widgetVar="dlg5"  showEffect="explode" hideEffect="bounce" >
+<p:dialog header="Details" widgetVar="dlg5"  showEffect="explode" hideEffect="bounce" dynamic="true" >
+
 <p:outputPanel id="out1">
+<p:panelGrid columns="2">
 	<p:outputLabel value="ID Trunck" />
-     				<p:inputText value="#{trunck.trunck.idTrunck}"  >
+     				<p:inputText value="#{trunck.trunck1.idTrunck}"  >
      				</p:inputText>
      				<p:outputLabel value="Nom" />
-     				<p:inputText value="#{trunck.trunck.nom}"  >
+     				<p:inputText value="#{trunck.trunck1.nom}"  >
      				</p:inputText>    				
      				
      				<p:outputLabel value="Noeud" />
-					   <p:selectOneMenu value="#{trunck.trunck.noeud}" converter="omnifaces.SelectItemsConverter"    >
+					   <p:selectOneMenu value="#{trunck.trunck1.noeud}" converter="omnifaces.SelectItemsConverter"    >
 					   <f:selectItem itemLabel="Choisir..." itemValue="" />
-						  <f:selectItems value="#{trunck.lst_noeud}" var="type" itemLabel="#{type.nom}" itemValue="#{type}" />
+						  <f:selectItems value="#{trunck.lst_noeud}" var="type" itemLabel="#{type.nom}" itemValue="#{type.codeNoeud}" />
 						  	</p:selectOneMenu>
 					<p:outputLabel value="Date debut" />
-     				<p:inputText value="#{trunck.trunck.dateDebut}"  >
+     				<p:inputText value="#{trunck.trunck1.dateDebut}"  >
      				</p:inputText> 	
      				<p:outputLabel value="Date fin" />
-     				<p:inputText value="#{trunck.trunck.dateFin}"  >
+     				<p:inputText value="#{trunck.trunck1.dateFin}"  >
      				</p:inputText>    				
 	      
 
 		<p:outputLabel value="Operateur" />
-   <p:selectOneMenu value="#{trunck.trunck.operateur}" converter="omnifaces.SelectItemsConverter"    >
+   <p:selectOneMenu value="#{trunck.trunck1.operateur}" converter="omnifaces.SelectItemsConverter"    >
    <f:selectItem itemLabel="Choisir..." itemValue="" />
 	  <f:selectItems value="#{trunck.lst_oper}" var="type" itemLabel="#{type.operateur}" itemValue="#{type.id}" />
 	   
@@ -125,7 +127,7 @@
    
     <p:commandButton value="Valider" update="singleDT" actionListener="#{trunck.ModifierTrunck}"  oncomplete="PF('dlg5').hide()"/>
     <p:commandButton value="Annuler"  onclick="PF('dlg5').hide()"/>
-    
+    </p:panelGrid>
 </p:outputPanel>
 </p:dialog>
 	

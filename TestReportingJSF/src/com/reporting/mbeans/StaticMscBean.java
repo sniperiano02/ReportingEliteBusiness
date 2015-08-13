@@ -491,7 +491,7 @@ chartDisplayed = false;
 		
 			where_liste.add(" typeSubscriber='prp'  ");
 	
-				
+			
 		pie1=stat_remote.getMscByFilters1("destination.typeDest", "duree)","StatMsc", "SUM(", "Group By destination.typeDest ", where_liste);
 		pie2=stat_remote.getMscByFilters1("msc", "duree)","StatMsc", "SUM(", "Group By msc ", where_liste);
 		 if(this.getChoix_periode().equals("Par Heure")){

@@ -22,6 +22,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.BehaviorEvent;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.calendar.Calendar;
@@ -248,8 +251,40 @@ public class TaxeTransfertMbean {
 			 plans= plan_service.getAllPlanTarifaires();
 			 listeTaxeTransfert = new ArrayList<>();
 			 listeDetailsTaxeTransfert= new ArrayList<>();
+			 heures = new ArrayList<>();
+				heures.add("00");
+				heures.add("01");
+				heures.add("02");
+				heures.add("03");
+				heures.add("04");
+				heures.add("05");
+				heures.add("06");
+				heures.add("07");
+				heures.add("08");
+				heures.add("09");
+				heures.add("10");
+				heures.add("11");
+				heures.add("12");
+				heures.add("13");
+				heures.add("14");
+				heures.add("15");
+				heures.add("16");
+				heures.add("17");
+				heures.add("18");
+				heures.add("19");
+				heures.add("20");
+				heures.add("21");
+				heures.add("22");
+				heures.add("23");
 		 }
+		 private List<String> heures = new ArrayList<>();
 		 
+		public List<String> getHeures() {
+			return heures;
+		}
+		public void setHeures(List<String> heures) {
+			this.heures = heures;
+		}
 		 
 		 public void handlechange(AjaxBehaviorEvent event){
 				
@@ -426,12 +461,35 @@ public class TaxeTransfertMbean {
 			 		
 			 		where_liste = new ArrayList<String>();
 			 		listeTaxeTransfert = new ArrayList<>();
+			 		List<Object[]> generateList = new ArrayList<>();
 			 		if(this.getChoix_periode().equals(" ")){
 			 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,"Erreur",  "Veuillez choisir une Periode " ) );
 			 		}
 			 		else{
 			 			if(this.getChoix_periode().equals("Par Jour")){
-			 				
+			 				DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+							String deb0 = df1.format(this.getDate_ParJourDeb());
+							String fin0 = df1.format(this.getDate_ParJourFin());
+						DateTime start = DateTime.parse(deb0);
+				        System.out.println("Start: " + start);
+				  
+				        DateTime end = DateTime.parse(fin0);
+				        System.out.println("End: " + end);
+
+				        List<DateTime> between = getDateRange(start, end);
+				        for (DateTime d : between) {
+				        	String s = d+"";
+				            
+				            System.out.println(" " + s.substring(8,10));
+				            Object[] ob = new Object[3];
+				            ob[0]=s.substring(8,10);
+				            ob[1]=0.0;
+				            ob[2]=0.0;
+				       
+				           
+				            
+				            generateList.add(ob);
+				        }
 			 					DateFormat df = new SimpleDateFormat("yyyy-MM-dd ");
 			 					String deb = df.format(this.getDate_ParJourDeb());
 			 					String fin = df.format(this.getDate_ParJourFin());
@@ -440,6 +498,16 @@ public class TaxeTransfertMbean {
 			 				
 			 				
 			 			}else if(this.getChoix_periode().equals("Par Heure")){
+			 				for(int i=0;i<heures.size();i++){
+								 Object[] ob = new Object[4];
+						            ob[0]=heures.get(i);
+						            System.out.println(heures.get(i));
+						            ob[1]=0.0;
+						            ob[2]=0.0;
+						       
+						            
+						            generateList.add(ob);
+							}
 			 				DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			 				System.out.println(date_Parheure);
 			 				String deb = df.format(this.getDate_Parheure());
@@ -454,6 +522,26 @@ public class TaxeTransfertMbean {
 			 				where_liste.add(" Extract(year from to_date(dateAppel,'YYMMDD')) >= "+deb+" And Extract(year from to_date(dateAppel,'YYMMDD')) <= "+fin+"");
 			 				SubTitle ="Entre  "+deb+" et "+fin;
 			 			}else if(this.getChoix_periode().equals("Par Mois")){
+			 				DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+							String deb0 = df1.format(this.getDate_mois_debut());
+							String fin0 = df1.format(this.getDate_mois_fin());
+							LocalDate date1 = new LocalDate(deb0);
+							 LocalDate date2 = new LocalDate(fin0);
+							 date2 = date2.plus(Period.months(1));
+							 while(date1.isBefore(date2)){
+								 Object[] ob = new Object[4];
+						            ob[0]=date1.toString("MM/yyyy");
+						            ob[1]=0.0;
+						            ob[2]=0.0;
+						          
+						           
+						            
+						            generateList.add(ob);
+							     System.out.println(date1.toString("MM/yyyy"));
+							     date1 = date1.plus(Period.months(1));
+							    
+							 }
+				        
 			 				DateFormat df = new SimpleDateFormat("MM-YYYY");
 			 				System.out.println(date_Parheure);
 			 				String deb = df.format(this.getDate_mois_debut());
@@ -478,14 +566,14 @@ public class TaxeTransfertMbean {
 			 	 			
 			 	 			
 			 		 		 }else if(this.getChoix_periode().equals("Par Mois")){
-			 		 			 listeTaxeTransfert = stat_taxe_service.getStatTaxePrp("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", "SUM(nbTransfert),SUM(taxeTransfert)",  "", where_liste);
+			 		 			 listeTaxeTransfert = removeDuplicate(generateList,stat_taxe_service.getStatTaxePrp("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')", "SUM(nbTransfert),SUM(taxeTransfert)",  "", where_liste));
 
 			 		 		 }else if (this.getChoix_periode().equals("Par Jour")){
-			 		 			 listeTaxeTransfert = stat_taxe_service.getStatTaxePrp("to_char(to_date(dateAppel,'YYMMDD'),'DD/MM/YYYY')", "SUM(nbTransfert),SUM(taxeTransfert)", "", where_liste);
+			 		 			 listeTaxeTransfert = removeDuplicate(generateList,stat_taxe_service.getStatTaxePrp("to_char(to_date(dateAppel,'YYMMDD'),'YYYY-MM-DD')", "SUM(nbTransfert),SUM(taxeTransfert)", "", where_liste));
 
 			 		 			//data =statRemote.getMscByFilters(" to_date(dateAppel,'YYMMDD')",chd.getList_axe_y().get(nb_y)+")", chd.getOperation()+"(","Group By  to_date(dateAppel,'YYMMDD') ORDER BY to_date(dateAppel,'YYMMDD') DESC", where_liste); 
 			 		 		 }else if(this.getChoix_periode().equals("Par Heure")){
-			 		 			 listeTaxeTransfert = stat_taxe_service.getStatTaxePrp("substring(trancheHoraire,1,2)", "SUM(nbTransfert),SUM(taxeTransfert)",  "", where_liste);
+			 		 			 listeTaxeTransfert = removeDuplicate(generateList,stat_taxe_service.getStatTaxePrp("substring(trancheHoraire,1,2)", "SUM(nbTransfert),SUM(taxeTransfert)",  "", where_liste));
 
 			 		 		 }
 			 		
@@ -502,7 +590,75 @@ public class TaxeTransfertMbean {
 			 			
 			 			}		
 			 	}
-			 	
+				 
+				 public static List<DateTime> getDateRange(DateTime start, DateTime end) {
+
+				        List<DateTime> ret = new ArrayList<DateTime>();
+				        DateTime tmp = start;
+				        while(tmp.isBefore(end) || tmp.equals(end)) {
+				            ret.add(tmp);
+				            tmp = tmp.plusDays(1);
+				        }
+				        return ret;
+				    }
+				 public List<Object[]> removeDuplicate(List <Object[]> list,List<Object[]> list1) {
+					 List<Object[]> liste = new ArrayList<>();
+					 int i =0;
+					 int j=0;
+					 if(list1==null){
+						 liste=list;
+					 }else if(list1.size()==list.size()){
+						 
+					   while(j<list.size()){
+						   
+							   if(list.get(j)[0].toString().equals(list1.get(i)[0].toString())){
+								   liste.add(list1.get(i));
+							   }else{
+								   liste.add(list.get(j));
+							   }
+							   i++;
+								  j++;
+						   
+					   }
+					 }else if(list.size()>list1.size()){
+						 System.out.println(list1.size());
+						if(list.size()>0){
+							for(int nb=0;nb<list.size();nb++){
+								
+								 boolean trouve = false;
+								 int nb1 =0;
+								   while((trouve==false) && (nb1<list1.size()) ){
+									   System.out.println(trouve);
+									  
+								   if(list.get(nb)[0].toString().equals(list1.get(nb1)[0].toString())){
+									 
+									   trouve = true;
+									 
+								   }else{
+									   nb1++;
+								   }
+									   
+									  
+								   }
+								   if(trouve==false){
+									   liste.add(list.get(nb));
+								   }else{
+									   liste.add(list1.get(nb1));
+									   System.out.println(list1.get(nb1)[2]);
+								   }
+								   
+								  
+							   
+						   }
+						}else{
+							   liste = list;
+						   }
+						
+					 }
+					 
+					   return liste;
+					  }
+
 			
 			 	public void getDetail(){
 			 		detail_displayed=true;

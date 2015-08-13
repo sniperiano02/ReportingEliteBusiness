@@ -39,7 +39,7 @@
 			<p:outputPanel id="ColLineChart1" rendered="#{balance_principe.chartDisplayed}">
 	<div class="ui-grid-row"   >
 	
-		<hf:chart  type="line" subTitle="#{balance_principe.subTitle}" title="Rapport du contrôle Balance Negative "  >
+		<hf:chart height="220"  type="line" subTitle="#{balance_principe.subTitle}" title="Rapport du contrôle Balance Negative "  >
 		<hf:chartSerie name="Conso Revenue" value="#{balance_principe.listeBalancePrincipe}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 				<hf:chartSerie name="Balance Revenue" value="#{balance_principe.listeBalancePrincipe}" var="point" point="#{point[2]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		

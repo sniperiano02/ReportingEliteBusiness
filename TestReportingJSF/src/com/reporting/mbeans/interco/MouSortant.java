@@ -172,7 +172,7 @@ public class MouSortant {
 	}
 	@PostConstruct
 	public void init(){
-		lstOperateurs= operateur_service.getAllOperateurs();
+		lstOperateurs= operateur_service.getAllOperateurs("I");
 		
 		liste_desAns=interco_service.getAllYears();
 	}

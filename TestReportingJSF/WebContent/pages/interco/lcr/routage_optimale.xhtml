@@ -11,32 +11,44 @@
 			<ui:define name="PageContent">
 		
 			<h:form id="form1">
-			<p:dataTable id="singleDT" value="#{routage.listeroutage}" var="offre" selectionMode="single" rowKey="#{offre.id}" selection="#{lcr_offre_manage.fichierlcrprocess}" >
-			<f:facet name="header">
+			<p:dataTable paginator="true" rows="5"   id="singleDT" value="#{routage.listeroutage}" var="offre" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+        rowsPerPageTemplate="6,12,16"  >
+         <f:facet name="{Exporters}">
+            <h:commandLink>
+                <p:graphicImage library="img" name="excel.png" width="24"/>
+                <pe:exporter type="xlsx" target="singleDT" fileName="RoutageOptimale" />
+            </h:commandLink>
+ 
+            <h:commandLink>
+                <p:graphicImage library="img" name="pdf.png" width="24"/>
+                <pe:exporter  type="pdf" target="singleDT" fileName="RoutageOptimale"/>
+            </h:commandLink>
+
+        </f:facet>	<f:facet name="header">
 			 <h:outputText value="Routage Optimale" />
 			</f:facet>
-			<p:column headerText="Pays">
+			<p:column sortBy="#{offre.pays.nom}" filterBy="#{offre.pays.nom}" filterMatchMode="contains" headerText="Pays" width="80">
 			<h:outputText value="#{offre.pays.nom}" />
 			</p:column>
-			<p:column headerText="Destination">
+			<p:column sortBy="#{offre.destination}" filterBy="#{offre.destination}" filterMatchMode="contains"  headerText="Destination" width="80">
 			<h:outputText value="#{offre.destination}" />
 			</p:column>
-			<p:column headerText="Operateur 1" filterMatchMode="exact" filterBy="#{offre.operateur1.operateur}" filterOptions="#{lcr_offre_manage.lcrOffreFilterOptions}">
+			<p:column sortBy="#{offre.operateur1.operateur}" headerText="Operateur 1" filterMatchMode="exact" width="80" filterBy="#{offre.operateur1.operateur}" >
 			<h:outputText value="#{offre.operateur1.operateur}" />
 			</p:column>
-			<p:column filterBy="#{offre.codeDest2}" filterMatchMode="contains"  headerText="Code Destination">
+			<p:column  filterBy="#{offre.codeDest2}" filterMatchMode="contains"  headerText="Code Destination">
 			<h:outputText value="#{offre.codeDest1}" />
 			</p:column>
 			<p:column filterBy="#{offre.codeDest2}" filterMatchMode="contains"  headerText="Qualité 1">
 			<h:outputText value="#{offre.qualite1}" />
 			</p:column>
-			<p:column filterBy="#{offre.minTarifs1}" filterMatchMode="contains"  headerText="Min Tarif 1">
+			<p:column sortBy="#{offre.minTarifs1}" filterBy="#{offre.minTarifs1}" filterMatchMode="contains" width="80"  headerText="Min Tarif 1">
 			<h:outputText value="#{offre.minTarifs1}" />
 			</p:column>
-			<p:column filterBy="#{offre.maxTarifs1}" filterMatchMode="contains"  headerText="Max Tarif 1">
+			<p:column sortBy="#{offre.maxTarifs1}" filterBy="#{offre.maxTarifs1}" filterMatchMode="contains" width="80"  headerText="Max Tarif 1">
 			<h:outputText value="#{offre.maxTarifs1}" />
 			</p:column>
-				<p:column headerText="Operateur 2" filterMatchMode="exact" filterBy="#{offre.operateur2.operateur}" filterOptions="#{lcr_offre_manage.lcrOffreFilterOptions}">
+				<p:column  headerText="Operateur 2" filterMatchMode="exact" filterBy="#{offre.operateur2.operateur}" >
 			<h:outputText value="#{offre.operateur2.operateur}" />
 			</p:column>
 			<p:column  filterBy="#{offre.codeDest2}" filterMatchMode="contains" headerText="Code Destination 2">
@@ -51,7 +63,7 @@
 			<p:column filterBy="#{offre.maxTarifs2}" filterMatchMode="contains" headerText="Max Tarif 2">
 			<h:outputText value="#{offre.maxTarifs2}" />
 			</p:column>
-				<p:column headerText="Operateur 3" filterMatchMode="exact" filterBy="#{offre.operateur3.operateur}" filterOptions="#{lcr_offre_manage.lcrOffreFilterOptions}">
+				<p:column headerText="Operateur 3" filterMatchMode="exact" filterBy="#{offre.operateur3.operateur}" >
 			<h:outputText value="#{offre.operateur3.operateur}" />
 			</p:column>
 			<p:column  filterBy="#{offre.codeDest3}" filterMatchMode="contains" headerText="Code Destination 3">

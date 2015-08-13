@@ -118,20 +118,19 @@
   <p:menuitem  ajax="true" value="Reporting" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update=":form fp"  icon="ui-icon-document"  />
   <p:menuitem value="Mobile PostPayé" action="#{tabMenuNavigationBean.changeActiveIndex(3)}" update=":form fp" rendered="#{login_bean.postpaye}"  />
   <p:menuitem value="Interco International" action="#{tabMenuNavigationBean.changeActiveIndex(4)}" update=":form fp" rendered="#{login_bean.interco_inter}" />
-  <p:menuitem value="Interco National" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.interco_national}"/>
-  <p:menuitem value="Roaming IN" action="#{tabMenuNavigationBean.changeActiveIndex(0)}" rendered="#{login_bean.roa_in}"  />
-  <p:menuitem value="Roaming OUT" action="#{tabMenuNavigationBean.changeActiveIndex(1)}" update="@form" rendered="#{login_bean.roa_out}"  />
-    <p:menuitem value="Smart Closing" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.smart}"/>
-    <p:menuitem value="Fraude" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.fraude}"/>
+  <p:menuitem value="Interco National" action="#{tabMenuNavigationBean.changeActiveIndex(5)}" update=":form fp"  icon="ui-icon-document" rendered="#{login_bean.interco_national}"/>
+  <p:menuitem value="Roaming IN" action="#{tabMenuNavigationBean.changeActiveIndex(6)}" rendered="#{login_bean.roa_in}" update=":form fp"  />
+  <p:menuitem value="Roaming OUT" action="#{tabMenuNavigationBean.changeActiveIndex(7)}" update=":form fp" rendered="#{login_bean.roa_out}"  />
+    <p:menuitem value="Smart Closing" action="#{tabMenuNavigationBean.changeActiveIndex(8)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.smart}"/>
+    <p:menuitem value="Fraude" action="#{tabMenuNavigationBean.changeActiveIndex(9)}" update=":form fp"  icon="ui-icon-document" rendered="#{login_bean.fraude}"/>
   
-    <p:menuitem value="KPIs" action="#{tabMenuNavigationBean.changeActiveIndex(2)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.KPI}"/>
+    <p:menuitem value="KPIs" action="#{tabMenuNavigationBean.changeActiveIndex(10)}" update="@form"  icon="ui-icon-document" rendered="#{login_bean.KPI}"/>
+      <p:menuitem value="Logout" />
   
   
 </p:tabMenu>
 
-  <div style="text-align: right;">
-        <p:commandButton  value="Logout" icon="ui-icon-extlink" actionListener="#{login_bean.logout()}" />
-        </div>
+ 
         </div>
 </h:form>
 

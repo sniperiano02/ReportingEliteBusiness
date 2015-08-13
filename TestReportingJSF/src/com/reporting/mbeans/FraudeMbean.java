@@ -1,15 +1,27 @@
 package com.reporting.mbeans;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
-import com.itextpdf.text.pdf.PRAcroForm;
+
+
+
+
+
 import com.reporting.metier.entities.CategoriesFraude;
 import com.reporting.metier.entities.FiltresFraude;
 import com.reporting.metier.entities.FiltresReglesFraude;
@@ -26,9 +38,15 @@ import com.reporting.metier.interfaces.TypeDestinationRemote;
 
 @ManagedBean(name="fraude")
 @ViewScoped
-public class FraudeMbean {
+public class FraudeMbean implements Serializable {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	@EJB
 	private FraudeManagerRemote fraude_service;
 	
@@ -39,6 +57,7 @@ public class FraudeMbean {
 	@EJB
 	private PlanTarifaireRemote plan_service;
 	
+
 	
 	private List<String> filters ;
 	
@@ -49,6 +68,14 @@ public class FraudeMbean {
 		this.filters = filters;
 	}
 	
+	private Integer id_flux;
+	
+	public Integer getId_flux() {
+		return id_flux;
+	}
+	public void setId_flux(Integer id_flux) {
+		this.id_flux = id_flux;
+	}
 	private List<PlanTarifaire> plans = new ArrayList<>();
 	
 	private List<TypeDestination> typeDests = new ArrayList<>();
@@ -60,6 +87,15 @@ public class FraudeMbean {
 
 	
 	private String choix_Vfiltre;
+	
+	private ParametresReglesFraude paramter_regle;
+	
+	public ParametresReglesFraude getParamter_regle() {
+		return paramter_regle;
+	}
+	public void setParamter_regle(ParametresReglesFraude paramter_regle) {
+		this.paramter_regle = paramter_regle;
+	}
 	
 	
 	public List<PlanTarifaire> getPlans() {
@@ -77,7 +113,7 @@ public class FraudeMbean {
 	
 	
 	
-	private Long paramtreValeur;
+	private Integer paramtreValeur;
 	
 	private String choix_param_valeur;
 	
@@ -120,13 +156,13 @@ public class FraudeMbean {
 	}
 	
 	
-	private List<ParametresReglesFraude> liste_parametre_regle;
+	private List<ParametresReglesFraude> liste_parametre_regle = new ArrayList<ParametresReglesFraude>();
 	
 	private ParametresReglesFraude parametre_regle_fraude;
 	
 	private List<FiltresReglesFraude> liste_filters_regle = new ArrayList<>();
 	
-	private List<FiltresReglesFraude> listeFiltresRegle = new ArrayList<>();
+	private  List<FiltresReglesFraude> listeFiltresRegle = new ArrayList<FiltresReglesFraude>();
 	
 	
 	public List<FiltresReglesFraude> getListeFiltresRegle() {
@@ -135,14 +171,19 @@ public class FraudeMbean {
 	public void setListeFiltresRegle(List<FiltresReglesFraude> listeFiltresRegle) {
 		this.listeFiltresRegle = listeFiltresRegle;
 	}
+	public void setListe_parametre_regle(
+			List<ParametresReglesFraude> liste_parametre_regle) {
+		this.liste_parametre_regle = liste_parametre_regle;
+	}
+	
 	
 	private FiltresReglesFraude filtre_regle_fraude;
 	
 	
-	public Long getParamtreValeur() {
+	public Integer getParamtreValeur() {
 		return paramtreValeur;
 	}
-	public void setParamtreValeur(Long paramtreValeur) {
+	public void setParamtreValeur(Integer paramtreValeur) {
 		this.paramtreValeur = paramtreValeur;
 	}
 	public FiltresReglesFraude getFiltre_regle_fraude() {
@@ -162,10 +203,7 @@ public class FraudeMbean {
 	public List<ParametresReglesFraude> getListe_parametre_regle() {
 		return liste_parametre_regle;
 	}
-	public void setListe_parametre_regle(
-			List<ParametresReglesFraude> liste_parametre_regle) {
-		this.liste_parametre_regle = liste_parametre_regle;
-	}
+	
 	public ParametresReglesFraude getParametre_regle_fraude() {
 		return parametre_regle_fraude;
 	}
@@ -202,13 +240,24 @@ public class FraudeMbean {
 	
 private ParametresFraude parametre;
 
+
+private FiltresReglesFraude filtre_regle;
+
+public FiltresReglesFraude getFiltre_regle() {
+	return filtre_regle;
+}
+public void setFiltre_regle(FiltresReglesFraude filtre_regle) {
+	this.filtre_regle = filtre_regle;
+}
+
 	@PostConstruct
-	public void init(){
+public void init(){
 	categories=fraude_service.getAllCategories();
 	filters = new ArrayList<>();
 	fluxs=fraude_service.getAllFlux();
 	parametres= new ArrayList<>();
-	filtres= new ArrayList<>();
+	choix_param_valeur="egale";
+	choix_filter_valeur = "egale";
 	regle= new ReglesFraude();
 	flux= new FluxCdr();
 	filtre= new FiltresFraude();
@@ -217,8 +266,9 @@ private ParametresFraude parametre;
 	parametre_regle_fraude = new ParametresReglesFraude();
 	filtre_regle_fraude = new FiltresReglesFraude();
 	liste_filters_regle= new ArrayList<>();
-	listeFiltresRegle = new ArrayList<FiltresReglesFraude>();
-	liste_parametre_regle= new ArrayList<ParametresReglesFraude>();
+	paramter_regle = new ParametresReglesFraude();
+	filtre_regle = new FiltresReglesFraude();
+
 	}
 	
 public ParametresFraude getParametre() {
@@ -249,39 +299,94 @@ public boolean isText() {
 public void setText(boolean text) {
 	this.text = text;
 }
+private Integer id_filter;
 
+public Integer getId_filter() {
+	return id_filter;
+}
+public void setId_filter(Integer id_filter) {
+	this.id_filter = id_filter;
+}
+private boolean typeAppel;
+
+public boolean isTypeAppel() {
+	return typeAppel;
+}
+public void setTypeAppel(boolean typeAppel) {
+	this.typeAppel = typeAppel;
+}
+private boolean typelocroa;
+
+public boolean isTypelocroa() {
+	return typelocroa;
+}
+public void setTypelocroa(boolean typelocroa) {
+	this.typelocroa = typelocroa;
+}
+
+private boolean iscellid =false;
+
+public boolean isIscellid() {
+	return iscellid;
+}
+public void setIscellid(boolean iscellid) {
+	this.iscellid = iscellid;
+}
 public void selectChange(){
-	System.out.println("test");
+
 	System.out.println(this.getFiltre().getFiltre());
-	if(this.getFiltre().getFiltre().equals("type destination")){
+	if(this.getFiltre_regle_fraude().getFiltreFraude().getFiltre().equals("type destination")){
 		typeDests= type_dest_service.getAllTypeDest();
 		ListTypeDest = true;
 		
 		ListPlanTarifaire= false;
 		text=false;
+		typeAppel=false;
+		typelocroa=false;
 		
-	}else if(this.getFiltre().getFiltre().equals("plan tarifaire")){
+	}else if(this.getFiltre_regle_fraude().getFiltreFraude().getFiltre().equals("plan tarifaire")){
 		plans = plan_service.getAllPlanTarifaires();
 	ListTypeDest = false;
 		
 		ListPlanTarifaire= true;
 		text=false;
-	}else{
+		typeAppel=false;
+		typelocroa=false;
+	}else if(this.getFiltre_regle_fraude().getFiltreFraude().getFiltre().equals("Type Appel")){
+ListTypeDest = false;
+		
+		ListPlanTarifaire= false;
+		text=false;
+		typeAppel=true;
+		typelocroa=false;
+	
+}else if(this.getFiltre_regle_fraude().getFiltreFraude().getFiltre().equals("Type msisdn")){
+	ListTypeDest = false;
+	
+	ListPlanTarifaire= false;
+	text=false;
+	typeAppel=false;
+	typelocroa=true;
+}else{
 	ListTypeDest = false;
 		
 		ListPlanTarifaire= false;
 		text=true;
+		typeAppel=false;
+		typelocroa=false;
 	}
 	
 }
 public void setParametre(ParametresFraude parametre) {
 	this.parametre = parametre;
 }
-	public void selectChangeFiltres(){
-		String where = "p.flux.id="+flux.getId();
+	
+public void selectChangeFiltres(){
+		
+		String where = "p.flux.id="+this.getRegle().getFlux().getId();
 		parametres=fraude_service.getParametresFraude(where);
 		
-		 where = "f.flux.id="+flux.getId();
+		 where = "f.flux.id="+this.getRegle().getFlux().getId();
 		filtres=fraude_service.getFilterFiltresFraude(where);
 		
 		
@@ -321,88 +426,141 @@ public void setParametre(ParametresFraude parametre) {
 	}
 	
 	public void addParametre(){
-		System.out.println("1");
-		regle.setFlux(flux);
-		parametre_regle_fraude = new ParametresReglesFraude();
-		System.out.println(parametre.getNomParametre());
-		System.out.println(regle.getNom());
-		System.out.println(regle.getNom());
-		parametre_regle_fraude.setParametreFraude(parametre);
+		
+	
+	
+switch (this.getChoix_param_valeur()) {
+case "egale":
+	parametre_regle_fraude.setVegal(paramtreValeur);
+	parametre_regle_fraude.setVmax(-1);
+	parametre_regle_fraude.setVmin(-1);
+	
+	
+	break;
+case "superieur":
+	parametre_regle_fraude.setVegal(-1);
+	parametre_regle_fraude.setVmax(-1);
+	parametre_regle_fraude.setVmin(paramtreValeur);
+	
+	
+	break;
+case "inferieur":
+	parametre_regle_fraude.setVegal(-1);
+	parametre_regle_fraude.setVmax(paramtreValeur);
+	parametre_regle_fraude.setVmin(-1);
+	
+	
+	break;
+
+default:
+	break;
+}
+parametre_regle_fraude.setNomUtilisateur(Util.getUserName());
 
 		parametre_regle_fraude.setRegle(regle);
 	
-		liste_parametre_regle.add(parametre_regle_fraude);
+		this.liste_parametre_regle.add(parametre_regle_fraude);
+		parametre_regle_fraude = new ParametresReglesFraude();
+		
+	}
+	
+	public void addFiltreRegleFraude(){
+		FiltresFraude f= new FiltresFraude();
+		f.setFiltre("test");
+		filtre_regle_fraude.setFiltreFraude(f);
+		listeFiltresRegle.add(filtre_regle_fraude);
+		filtre_regle_fraude= new FiltresReglesFraude();
 	}
 	public void addFiltre(){
-		System.out.println("1");
-		String val = "";
-		filtre_regle_fraude = new FiltresReglesFraude();
 		
-		System.out.println(filtre.getFiltre());
-		System.out.println(regle.getNom());
-		System.out.println(regle.getNom());
-		filtre_regle_fraude.setFiltreFraude(filtre);
-		filtre_regle_fraude.setRegle(regle);
-		switch (choix_filter_valeur) {
+	
+	
+	
+		switch (this.getChoix_filter_valeur()) {
 		case "egale":
-			filtre_regle_fraude.setVegal(choix_Vfiltre);
+			filtre_regle_fraude.setVegal(this.getChoix_Vfiltre());
 			filtre_regle_fraude.setVdef("-1");
 			filtre_regle_fraude.setInegal("-1");
 			filtre_regle_fraude.setVlike("-1");
 			filtre_regle_fraude.setVnotlike("-1");
-			val="=";
+			
 			break;
 		case "like":
 			filtre_regle_fraude.setVegal("-1");
 			filtre_regle_fraude.setVdef("-1");
 			filtre_regle_fraude.setInegal("-1");
-			filtre_regle_fraude.setVlike(choix_Vfiltre);
+			filtre_regle_fraude.setVlike(this.getChoix_Vfiltre());
 			filtre_regle_fraude.setVnotlike("-1");
-			val=choix_filter_valeur;
+			
 			break;
 		case "not like":
 			filtre_regle_fraude.setVegal("-1");
 			filtre_regle_fraude.setVdef("-1");
 			filtre_regle_fraude.setInegal("-1");
 			filtre_regle_fraude.setVlike("-1");
-			filtre_regle_fraude.setVnotlike(choix_Vfiltre);
-			val=choix_filter_valeur;
+			filtre_regle_fraude.setVnotlike(this.getChoix_Vfiltre());
+			
 			break;
 		case "different":
 			filtre_regle_fraude.setVegal("-1");
-			filtre_regle_fraude.setVdef(choix_Vfiltre);
+			filtre_regle_fraude.setVdef(this.getChoix_Vfiltre());
 			filtre_regle_fraude.setInegal("-1");
 			filtre_regle_fraude.setVlike("-1");
 			filtre_regle_fraude.setVnotlike("-1");
-			val="<>";
+		
 			break;
 		case "in":
 			filtre_regle_fraude.setVegal("-1");
 			filtre_regle_fraude.setVdef("-1");
-			filtre_regle_fraude.setInegal(choix_Vfiltre);
+			filtre_regle_fraude.setInegal(this.getChoix_Vfiltre());
 			filtre_regle_fraude.setVlike("-1");
 			filtre_regle_fraude.setVnotlike("-1");
-			val="inegal";
+			
+			
 			break;
 
 		default:
 			break;
 		}
-
-
+		filtre_regle_fraude.setNomUtlisateur(Util.getUserName());
+filtre_regle_fraude.setRegle(regle);
 	
 		listeFiltresRegle.add(filtre_regle_fraude);
-		System.out.println(liste_filters_regle.size());
+		System.out.println(listeFiltresRegle.size());
+		filtre_regle_fraude= new FiltresReglesFraude();
+	
 	}
 	
+	public void deletefiltre(){
+		listeFiltresRegle.remove(filtre_regle);
+		
+		
+	}
+	
+	public void deleteParametre(){
+		liste_parametre_regle.remove(paramter_regle);
+	}
 	
 	public void valider(){
-		
+		try {
 		for(int i=0;i<listeFiltresRegle.size();i++){
 			System.out.println(listeFiltresRegle.get(i).getFiltreFraude().getFiltre()+"="+listeFiltresRegle.get(i).getVegal()+""+listeFiltresRegle.get(i));
 		}
 		for(int i=0;i<liste_parametre_regle.size();i++){
 			System.out.println(liste_parametre_regle.get(i).getParametreFraude().getNomParametre());
+		
+		}
+		
+		regle.setListe_filters(listeFiltresRegle);
+		regle.setListe_parameters(liste_parametre_regle);
+		regle.setEtat("D");
+		fraude_service.addRegle(regle);
+		
+	
+			FacesContext.getCurrentInstance().getExternalContext().redirect("/TestReportingJSF/pages/fraude/manage_regles.jsf");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

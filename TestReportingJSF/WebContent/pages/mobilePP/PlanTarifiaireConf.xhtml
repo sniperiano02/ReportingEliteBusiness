@@ -13,6 +13,10 @@
 			
 		
 			<p:dataTable id="singleDT"  rowKey="#{plan1.codePlanTarifaire}" var="plan1" value="#{plan_tarif.list_plans}" selectionMode="single" selection="#{plan_tarif.plan}" >
+			 <f:facet name="header" >
+    <h:outputText value="Liste des Plans Tarifaire" />
+  
+    </f:facet>
     <p:column headerText="Code Plan Tarifaire">
         <h:outputText value="#{plan1.codePlanTarifaire}" />
     </p:column>
@@ -22,12 +26,12 @@
     </p:column>
  
    <f:facet name="footer">
-   <p:panelGrid columns="3">
+   <h:panelGrid columns="3">
             <p:commandButton  process="singleDT" update=":form1:planDetail"  value="Modifier" oncomplete="PF('dlg4').show()"  />
              <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter" oncomplete="PF('dlg3').show()" />
                                   <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-plusthick" value="Supprimer" actionListener="#{plan_tarif.deletePlan}"  />
              
-        </p:panelGrid>
+        </h:panelGrid>
         </f:facet>
 </p:dataTable>
 

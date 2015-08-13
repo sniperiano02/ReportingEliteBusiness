@@ -7,36 +7,47 @@
       xmlns:pe="http://primefaces.org/ui/extensions"> 
 
 <h:head>
-<h:outputStylesheet name="styles.css" library="css"></h:outputStylesheet>
+	<meta charset="utf-8"/>
+		<h:outputStylesheet name="login_style.css" library="css"></h:outputStylesheet>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+	
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text.css'/>
+		
 </h:head> 
 <body> 
-<h:form id="login">
 
-    <h1 id="ff-proof" class="ribbon">RafTools &nbsp;&nbsp;</h1>
-
-   
-    <fieldset id="inputs">
-
-        <p:inputText   onblur="if(this.value=='')this.value='Pseudo ID';" onfocus="if(this.value=='Pseudo ID')this.value='';" value="#{login_bean.user.ULogin}" />
-
+<div class="main">
+		<h:form>
+    		<h1><span>Raftools</span> <lable> Login </lable> </h1>
+  			<div class="inset">
+	  			<p>
+	    		 <label for="email">Login</label>
+   	 			   <p:inputText  id="email" value="#{login_bean.user.ULogin}" />
+				</p>
+  				<p>
+				    <label for="password">PASSWORD</label>
+				  
         <p:password id="password"  onblur="if(this.value=='')this.value='Mot de passe';" onfocus="if(this.value=='Mot de passe')this.value='';" value="#{login_bean.user.UPwd}"/>
 
-    </fieldset>
-
-    <fieldset id="actions">
-
-           <p:commandButton id="submit" value="Login" update="@form" ajax="true"  actionListener="#{login_bean.authenticate}"/>
-
-       <p class="option"><a href="#">Mot de pass oubli&eacute;</a>&nbsp;&nbsp;</p>
-
-    </fieldset>
-
-
-
-
+  				</p>
+				  
+ 			 </div>
+ 	 
+			  <p class="p-container">
+			   
+			       <p:commandButton type="submit" value="Login" update="@form" ajax="true"  actionListener="#{login_bean.authenticate}"/>
+			  </p>
+			  
 <p:growl id="msg" showDetail="true" life="3000" />
+		</h:form>
+	</div>  
+			
+   				
+			
 
-           </h:form>
+
+         
             
                                  
 </body> 

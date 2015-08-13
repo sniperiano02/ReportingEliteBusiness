@@ -52,7 +52,8 @@
 		<p:panelGrid columns="1" >
 		<p:selectOneMenu value="#{staticMscBean.choix_Voix}"  >
 		<p:ajax listener="#{staticMscBean.handlechange1}" event="change" update="@form" process="@this"/>
-		<f:selectItems value="#{staticMscBean.listeVoix}" var="voix" itemLabel="#{voix}" itemValue="#{voix}" />
+		<f:selectItem itemLabel="Voix" itemValue="MO" />
+		<f:selectItem itemLabel="SMS" itemValue="SMSMO" />
             
 		
 		</p:selectOneMenu>
@@ -72,7 +73,7 @@
 		<p:panel header="MSC">
 		<p:panelGrid columns="1" >
 		<p:selectOneMenu value="#{staticMscBean.choix_msc}" >
-		<p:ajax listener="#{staticMscBean.handlechange1}" event="change" update="@form" process="@this"/>
+		<p:ajax listener="#{staticMscBean.handlechange1}" event="change" update="layoutUnit" process="@this"/>
 		<f:selectItems value="#{staticMscBean.listeMSC}" var="msc" itemLabel="#{msc}" itemValue="#{msc}" />
             
 		
@@ -89,7 +90,7 @@
 		<div class="ui-grid-col-6"   >
 		<p:panel header=" " rendered="#{staticMscBean.chartDisplayed}"  >
 		
-		<hf:chart   type="line" subTitle="#{staticMscBean.subTitle}"  title="Rapport du durée CDRs enregistré au niveau MSC"   >
+		<hf:chart  height="220"   type="line" subTitle="#{staticMscBean.subTitle}"  title="Rapport du durée CDRs enregistré au niveau MSC"   >
 		<hf:chartSerie   name="Moyenne Duree" value="#{staticMscBean.staticListStatMsc}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		<hf:chartSerie  name="Duree" value="#{staticMscBean.staticListStatMsc}" var="point1" point="#{point1[2]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
 		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
@@ -108,8 +109,8 @@
 		
 		<div class="ui-grid-col-6"     >
 		<p:panel header=" " rendered="#{staticMscBean.chartDisplayed}">
-		<hf:chart   type="pie" title="R. du Traffic par Destination"  subTitle="#{staticMscBean.subTitle}" >
-		<hf:chartSerie value="#{staticMscBean.pie1}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chart  height="220"   type="pie" title="R. du Traffic par Destination"  subTitle="#{staticMscBean.subTitle}" >
+		<hf:chartSerie value="#{staticMscBean.pie1}" var="point" point="#{point[1]}" dataLabel="&lt;b>{point.name}&lt;/b>: {point.percentage:.1f} % "  tickLabel="#{point[0]}"></hf:chartSerie>
 		
 		
 		</hf:chart>
@@ -130,7 +131,7 @@
 	<div class="ui-grid-col-6"    >
 	<p:panel header=" " rendered="#{staticMscBean.chartDisplayed}">
 	
-		<hf:chart   type="line" subTitle="#{staticMscBean.subTitle}" title="Rapport du nombre CDRs enregistré au niveau MSC"   >
+		<hf:chart  height="220"  type="line" subTitle="#{staticMscBean.subTitle}" title="Rapport du nombre CDRs enregistré au niveau MSC"   >
 		<hf:chartSerie   name="Moy Appel" value="#{staticMscBean.staticListStatMsc}" var="point" point="#{point[3]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		<hf:chartSerie  name="Nb Appel" value="#{staticMscBean.staticListStatMsc}" var="point1" point="#{point1[4]}"  tickLabel="#{point1[0]}"></hf:chartSerie><hf:chartAxis position="w" min="0" ></hf:chartAxis>
 		
@@ -147,9 +148,9 @@
 		</div>
 		<div class="ui-grid-col-6"     >
 		<p:panel header=" " rendered="#{staticMscBean.chartDisplayed}" >
-			<hf:chart   type="pie"  title="R. du Traffic par MSC" subTitle="#{staticMscBean.subTitle}"  >
+			<hf:chart height="220"  type="pie"  title="R. du Traffic par MSC" subTitle="#{staticMscBean.subTitle}"  >
 			
-		<hf:chartSerie value="#{staticMscBean.pie2}" var="point"  point="#{point[1]}"  dataLabel="{point.percentage:.1f} % "   tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie value="#{staticMscBean.pie2}" var="point"  point="#{point[1]}"  dataLabel="&lt;b>{point.name}&lt;/b>: {point.percentage:.1f} %  "   tickLabel="#{point[0]}"></hf:chartSerie>
 		
 		
 		</hf:chart>

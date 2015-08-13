@@ -14,7 +14,7 @@
 				    <f:facet name="header">
    <p:outputLabel value="Gestion Des Destinations"></p:outputLabel>
         </f:facet>
-				<p:column headerText="Nom Destination">
+				<p:column sortBy="#{dest.nomDestination}" headerText="Nom Destination">
         <h:outputText value="#{dest.nomDestination}" />
     </p:column>
     <p:column headerText="Pays">
@@ -35,17 +35,55 @@
      <p:column headerText="Utilisateur">
         <h:outputText value="#{dest.nomUtilisateur}" />
     </p:column>
-    
+     <p:column style="width:32px;text-align: center">
+             <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" title="Modifier" update=":form1:modifier"  oncomplete="PF('dlg4').show();" >
+                <f:setPropertyActionListener value="#{dest}" target="#{inter_dest.interdest1}" />
+            </p:commandButton>
+        </p:column>
+         <p:column style="width:32px;text-align: center">
+                        <p:commandButton process="singleDT" update="singleDT" icon="ui-icon-trash" title="Supprimer" actionListener="#{inter_dest.SupprimerInterDest()}"  >
+                <f:setPropertyActionListener value="#{dest}" target="#{inter_dest.interdest1}" />
+            </p:commandButton>
+        </p:column>
     <f:facet name="footer">
-   <p:panelGrid columns="3">
-            <p:commandButton  process="singleDT" update="@form"  value="Modifier"  oncomplete="PF('dlg5').show()"  />
+   <h:panelGrid columns="2">
              <p:commandButton process="singleDT" icon="ui-icon-plusthick" value="Ajouter"  oncomplete="PF('dlg3').show()" />
-          <p:commandButton  process="singleDT" update="singleDT"  value="Supprimer" actionListener="#{inter_dest.SupprimerInterDest()}"  />
+                          <p:commandButton process="singleDT" icon="ui-icon-arrowrefresh-1-w" value="Details" update=":form1:out1"  oncomplete="PF('dlg5').show();"/>
              
-        </p:panelGrid>
+        </h:panelGrid>
         </f:facet>
 				
 				</p:dataTable>
+				
+				<p:dialog header="Modifier" widgetVar="dlg4" showEffect="explode" hideEffect="bounce"  width="500px" dynamic="true">
+				<p:outputPanel id="modifier">
+			<h:panelGrid>
+			 <p:outputLabel value="Nom Destination" />
+     <p:inputText value="#{inter_dest.interdest1.nomDestination}"  >
+     
+     </p:inputText>
+     <p:outputLabel value="Pays" />
+   <p:selectOneMenu value="#{inter_dest.interdest1.pays}" converter="omnifaces.SelectItemsConverter"    >
+   <f:selectItem itemLabel="Choisir..." itemValue="" />
+	  <f:selectItems value="#{inter_dest.lst_pays}" var="type" itemLabel="#{type.nom}" itemValue="#{type}" />
+	  </p:selectOneMenu>
+	 
+	  <p:outputLabel value="Groupe Destination" />
+	  
+	  	<p:selectOneMenu value="#{inter_dest.interdest1.groupDestination}" >
+		<f:selectItem itemLabel="Fixe" itemValue="f" />
+            <f:selectItem itemLabel="Mobile" itemValue="m" />
+           
+		
+		</p:selectOneMenu>
+	  
+	
+    <p:commandButton value="Valider" update="singleDT" actionListener="#{inter_dest.ModifierInterDest}"   oncomplete="PF('dlg4').hide()"/>
+    <p:commandButton value="Annuler" onclick="PF('dlg4').hide()" />
+    </h:panelGrid>
+    </p:outputPanel>
+       
+</p:dialog>
   <p:dialog header="Ajout" widgetVar="dlg3" showEffect="explode" hideEffect="bounce"  width="500px">
 			<h:panelGrid>
 			 <p:outputLabel value="Nom Destination" />
@@ -67,29 +105,6 @@
 		
 		</p:selectOneMenu>
 	  
-     <p:panel header="Details">
-    <p:outputLabel value="Code Destination" />
-     <p:inputText value="#{inter_dest.detailsdest.codeDest}"  >
-     
-     </p:inputText>
-     <p:commandButton update="form1:detail1" value="Ajouter" actionListener="#{inter_dest.AjouterDetails()}"></p:commandButton>
-   
-<p:dataTable rows="5" value="#{inter_dest.liste_details}" id="detail1" var="det" style="width:400px;" selectionMode="single" selection="#{inter_dest.details1}" rowKey="#{det.codeDest}" >
-<p:column headerText="Code Pays">
-<h:outputText value="#{det.codeDest}" />
-</p:column>
-<p:column>
-<h:outputText value="#{det.dateModif}" />
-</p:column>
-   <f:facet name="footer">
-   
-          <p:commandButton  process="detail1" update="detail1"  value="Supprimer" actionListener="#{inter_dest.deleteDetails()}"  />
-     
-        </f:facet>
-</p:dataTable>
-    
-
-   </p:panel>
 	
     <p:commandButton value="Valider" update="singleDT" actionListener="#{inter_dest.ajouterInterDest()}"   oncomplete="PF('dlg3').hide()"/>
     <p:commandButton value="Annuler" onclick="PF('dlg3').hide()" />
@@ -104,7 +119,7 @@
      <p:inputText value="#{inter_dest.details.codeDest}"  >
      
      </p:inputText>
-     <p:commandButton value="Ajouter" update="form1:out1" actionListener="#{inter_dest.AjouterDetails1()}"></p:commandButton>
+     <p:commandButton value="Ajouter" update="DetTable" actionListener="#{inter_dest.addDetail}"></p:commandButton>
      
     <p:dataTable rows="5" id="DetTable" style="width:400px;" value="#{inter_dest.interdest1.list_details}" paginator="true" rowKey="#{det.codeDest}" var="det" selectionMode="single" selection="#{inter_dest.details1}">
     <p:column headerText="Code Destination">
@@ -119,13 +134,13 @@
    <p:panelGrid columns="3">
   
          
-          <p:commandButton  process="DetTable" update="DetTable"  value="Supprimer" actionListener="#{i.deleteDetails1()}"  />
+          <p:commandButton  process="DetTable" update="DetTable"  value="Supprimer" actionListener="#{inter_dest.deleteDetail}"  />
              
         </p:panelGrid>
         </f:facet>
     </p:dataTable>
     
-    <p:commandButton value="Valider" update="singleDT" actionListener="#{pays.ModifierPays()}"  oncomplete="PF('dlg5').hide()"/>
+    <p:commandButton value="Valider" update="singleDT"  oncomplete="PF('dlg5').hide()"/>
     <p:commandButton value="Annuler"  onclick="PF('dlg5').hide()"/>
     
 </p:outputPanel>

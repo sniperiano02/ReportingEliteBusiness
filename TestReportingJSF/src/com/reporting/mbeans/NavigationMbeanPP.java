@@ -28,7 +28,7 @@ import org.primefaces.context.RequestContext;
 
 
 @ManagedBean
-@ViewScoped
+@SessionScoped
 public class NavigationMbeanPP implements Serializable {
 	
 	
@@ -37,7 +37,7 @@ public class NavigationMbeanPP implements Serializable {
 	 */
 	private static final long serialVersionUID = -4177542362514316559L;
 	
-	private String pageName ;
+	private String pageName ="/pages/postapaye/RpTraffic/mscStaticpost.xhtml";
 	
 	
 	public String getPageName() {
@@ -49,9 +49,9 @@ public class NavigationMbeanPP implements Serializable {
 	}
 	
 	
-	public void changePage(){
+	public void changePage(String page){
 		System.out.println("page changed");
-		this.pageName="/pages/mobilePP/PlanTarifiaireConf";
+		this.pageName=page;
 		
 	}
 
@@ -59,7 +59,7 @@ public class NavigationMbeanPP implements Serializable {
 	@PostConstruct
 	public void init(){
 		
-		pageName="/pages/RpTraffic/rapport";
+		pageName="/pages/postapaye/RpTraffic/mscStaticpost.xhtml";
 	}
 	public NavigationMbeanPP() {
 		// TODO Auto-generated constructor stub

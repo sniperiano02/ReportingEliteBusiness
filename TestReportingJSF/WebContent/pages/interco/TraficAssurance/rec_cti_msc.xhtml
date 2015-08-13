@@ -38,19 +38,41 @@
         
     </p:menuButton>
 		<p:panelGrid id="ColLineChart" columns="1" rendered="#{rec_cti_msc.chartDisplayed}">
-		<hf:chart  type="line"    title="Rapport Reconciliation MSC vs CTI" subTitle="#{msc_sup_in.subTitle}"    >
-		<hf:chartSerie   value="#{rec_cti_msc.resultCDRInexistant}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
-		
+		<hf:chart height="220" type="line"    title="Rapport Reconciliation MSC vs CTI(Charge)" subTitle="#{rec_cti_msc.subTitle}"    >
+		<hf:chartSerie name="Durée CTI"  value="#{rec_cti_msc.resultCDRInexistant}" var="point" point="#{point[2]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie name="Durée MSC + Roa"  value="#{rec_cti_msc.resultCDRInexistant}" var="point" point="#{point[8]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
 		</hf:chart>
 		<p:dataTable id="dt1" value="#{rec_cti_msc.resultCDRInexistant}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
         rowsPerPageTemplate="6,12,16" selection="#{rec_cti_msc.selectedRecon}" selectionMode="single" rowKey="#{cdr[0]}">
 		  <p:column headerText="Date">
         <h:outputText value="#{cdr[0]}" />
     </p:column>
+    <p:column headerText="Nb Appel CTI">
+        <h:outputText value="#{cdr[1]}" />
+    </p:column>
+      <p:column headerText="Durées(s) Appel CTI">
+        <h:outputText value="#{cdr[2]}" />
+    </p:column>
+      <p:column headerText="Nb Appel MSC">
+        <h:outputText value="#{cdr[3]}" />
+    </p:column>
+      <p:column headerText="Durée Appel MSC">
+        <h:outputText value="#{cdr[4]}" />
+    </p:column>
+       <p:column headerText="Nb Appel reçus en roaming">
+        <h:outputText value="#{cdr[5]}" />
+    </p:column>
+   <p:column headerText="Durées(s) Appel reçus en roaming">
+        <h:outputText value="#{cdr[6]}" />
+    </p:column>
+    <p:column headerText="Difference">
+        <h:outputText value="#{cdr[7]}" />
+    </p:column>
 
  
     <f:facet name="footer"  >
-            <p:commandButton process="dt1" id="btnn" actionListener="#{rec_cti_msc.getDetail}" update=":form1:DetailAnomalie" icon="ui-icon-search" value="View" oncomplete="PF('DetailsDialog').show()"  />
+            <p:commandButton process="dt1" id="btnn" actionListener="#{rec_cti_msc.getDetail}" update="@form" icon="ui-icon-search" value="View" oncomplete="PF('DetailsDialog').show()"  />
         </f:facet>
 		
 		
@@ -59,56 +81,47 @@
 
 		</p:panelGrid>
 			<p:dialog header="Analyse De l'anomalie cdrs in inexistant" widgetVar="DetailsDialog"   width="1043px">
-        <p:outputPanel id="DetailAnomalie" >
-            <p:panelGrid  columns="2" rendered="#{rec_cti_msc.detailDisplayed}" >
-              <p:panel>
-		<hf:chart width="300px" type="pie" selectedPoint="#{rec_cti_msc.selectedPoint}"    title="Repartition par MSC"   subTitle="#{rec_cti_msc.subtitle1}"  >
-		<p:ajax listener="#{rec_cti_msc.clicked}" event="select" update="form1:DetailAnomalie"   />
-		<hf:chartSerie value="#{rec_cti_msc.pieChartDetails.getSeries().get(0).getMap()}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
-		</hf:chart>
-		</p:panel>
-		  <p:panel rendered="#{rec_cti_msc.choixSelect}" id="pan1">
-		<hf:chart  width="600px" type="line"   title="Rapport CDR Voix inexistant au niveau IN"  subTitle="#{rec_cti_msc.lineChartDetails.name}"   >
-		<hf:chartSerie    name="#{rec_cti_msc.lineChartDetails.getSeries().get(0).name}" value="#{rec_cti_msc.lineChartDetails.getSeries().get(0).getMap()}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
-		<hf:chartSerie yaxis="kpiaxis"  name="#{rec_cti_msc.lineChartDetails.getSeries().get(1).name}" value="#{rec_cti_msc.lineChartDetails.getSeries().get(1).getMap()}" var="point1" point="#{point1[2]}"  tickLabel="#{point1[0]}"></hf:chartSerie>
-		<hf:chartAxis position="w" title="Duree IN" min="0" ></hf:chartAxis>
-		<hf:chartAxis position="e" title="Duree KPI" id="kpiaxis" min="0" ></hf:chartAxis>
+        <p:outputPanel id="DetailAnomalie" rendered="#{rec_cti_msc.detailDisplayed}" >
+           
+       
+		  <p:panel >
+		<hf:chart  type="line"   title="Répartition de l'anomalie"  subTitle="#{rec_cti_msc.subtitle1}"   >
+		<hf:chartSerie name="Durée CTI"   value="#{rec_cti_msc.details}" var="point" point="#{point[2]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie name="Durée MSC"   value="#{rec_cti_msc.details}" var="point" point="#{point[3]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+
+		<hf:chartAxis position="w" title="Durée CTI" min="0" ></hf:chartAxis>
+		<hf:chartAxis position="e" title="Durée MSC" id="kpiaxis" min="0" ></hf:chartAxis>
 		
 		</hf:chart>
 		  </p:panel>
-            </p:panelGrid>
+          
             	<p:dataTable  value="#{rec_cti_msc.resultCDRDetailsInexistant}" var="det" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
         rowsPerPageTemplate="6,12,16">
-		  <p:column headerText="Date">
+		  <p:column headerText="Destination">
         <h:outputText value="#{det[1]}" />
     </p:column>
-     <p:column headerText="Nb Anomalie">
-        <h:outputText value="#{det[2]}" />
-    </p:column>
-     <p:column headerText="Duree Anomalie">
-        <h:outputText value="#{det[3]}" />
-    </p:column>
-     <p:column headerText="Nb d'appel MSC">
-        <h:outputText value="#{det[4]}" />
-    </p:column>
-     <p:column headerText="Duree MSC">
-        <h:outputText value="#{det[5]}" />
-    </p:column>
-     <p:column headerText=" Nb d'appels IN">
+      <p:column headerText="Nb Appel MSC">
         <h:outputText value="#{det[6]}" />
     </p:column>
-     <p:column headerText="Duree IN">
+      <p:column headerText="Durée(s) MSC">
+        <h:outputText value="#{det[3]}" />
+    </p:column>
+      <p:column headerText="Nb Appel CTI">
+        <h:outputText value="#{det[5]}" />
+    </p:column>
+      <p:column headerText="Durée(s) CTI">
+        <h:outputText value="#{det[2]}" />
+    </p:column>
+       <p:column headerText="Nb Appel Roaming">
         <h:outputText value="#{det[7]}" />
     </p:column>
-    <p:column headerText="Nb KPI">
+    <p:column headerText="Durée(s) Roaming">
+        <h:outputText value="#{det[4]}" />
+    </p:column>
+    <p:column headerText="Difference">
         <h:outputText value="#{det[8]}" />
     </p:column>
-    <p:column headerText="Duree KPI">
-        <h:outputText value="#{det[9]}" />
-    </p:column>
-      <p:column headerText="Impact(UM)">
-        <h:outputText value="#{det[10]}" />
-    </p:column>
+  
 		</p:dataTable>
 		
         </p:outputPanel>

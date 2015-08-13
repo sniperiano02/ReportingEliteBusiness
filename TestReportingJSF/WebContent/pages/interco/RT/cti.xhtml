@@ -50,7 +50,7 @@
 		<p:panel header="Type Stat"  >
 		<p:panelGrid columns="1" >
 		<p:selectOneMenu value="#{staticCtiBean.choix_stat}" >
-		 <p:ajax listener="#{staticCtiBean.handlechange1}" event="change" update="@form" process="@this"/>
+		 <p:ajax listener="#{staticCtiBean.handlechange1}" event="change" update="layoutUnit" process="@this"/>
 		 <f:selectItem itemLabel="" itemValue="" />
 		<f:selectItem itemLabel="charge" itemValue="charge" />
             <f:selectItem itemLabel="produit" itemValue="produit" />
@@ -67,7 +67,7 @@
 			<p:panel header="Operateur">
 			<p:panelGrid columns="1" >
 		<p:selectOneMenu value="#{staticCtiBean.choix_oper}"  converter="omnifaces.SelectItemsConverter" >
-		<p:ajax listener="#{staticCtiBean.handlechange1}" event="change" update="@form" process="@this"/>
+		<p:ajax listener="#{staticCtiBean.handlechange1}" event="change" update="layoutUnit" process="@this"/>
 		<f:selectItems value="#{staticCtiBean.listeoper}" var="type" itemLabel="#{type.operateur}" itemValue="#{type}" />
             
 		
@@ -78,7 +78,7 @@
 	<p:panel header="Type Trafic"  >
 		<p:panelGrid columns="1" >
 		<p:selectOneMenu value="#{staticCtiBean.choix_type}" >
-		 <p:ajax listener="#{staticCtiBean.handlechange1}" event="change" update="@form" process="@this"/>
+		 <p:ajax listener="#{staticCtiBean.handlechange1}" event="change" update="layoutUnit" process="@this"/>
 		 <f:selectItem itemLabel="" itemValue="" />
 		<f:selectItem itemLabel="hubbing" itemValue="hubbing" />
             <f:selectItem itemLabel="bilateral" itemValue="bilateral" />
@@ -91,7 +91,7 @@
 		
 	
 	
-		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form" oncomplete="layvar.toggle('east')"  actionListener="#{staticCtiBean.Valider}"></p:commandButton>
+		<p:commandButton value="Exécuter" id="btn"  ajax="true" update="@form"   actionListener="#{staticCtiBean.Valider}"></p:commandButton>
 		
 		</p:layoutUnit>
 		<p:layoutUnit styleClass="layoutUnitCenter" id="layoutUnit"   position="center" resizable="true" >

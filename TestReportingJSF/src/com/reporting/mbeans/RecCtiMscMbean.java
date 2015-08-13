@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
+import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
@@ -22,8 +23,14 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.BehaviorEvent;
 
 import org.apache.commons.collections.ListUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
+import org.primefaces.behavior.ajax.AjaxBehavior;
+import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.calendar.Calendar;
 import org.primefaces.component.panelgrid.PanelGrid;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
@@ -168,14 +175,24 @@ public void setSubTitle(String subTitle) {
 	public void setxDetail(String xDetail) {
 		this.xDetail = xDetail;
 	}
+	private List<Object[]> Details = new ArrayList<>();
 	 private Date date_Parheure;
 	 private Date date_ParJourDeb;
 	 private Date date_ParJourFin;
 	 private Integer date_year_deb;
 	 private Integer date_year_fin;
-	 private Integer date_mois_Fin;
-	 private Integer date_mois_debut;
+	 private Date date_mois_fin;
+	 private Date date_mois_debut;
 	 private Integer date_year; 
+	 
+	 
+	 
+	 public List<Object[]> getDetails() {
+		return Details;
+	}
+	 public void setDetails(List<Object[]> details) {
+		Details = details;
+	}
 		private List<String> where_liste ;
 
 		public List<String> getWhere_liste() {
@@ -215,18 +232,18 @@ public void setSubTitle(String subTitle) {
 	public void setDate_year_fin(Integer date_year_fin) {
 		this.date_year_fin = date_year_fin;
 	}
-	public Integer getDate_mois_Fin() {
-		return date_mois_Fin;
-	}
-	public void setDate_mois_Fin(Integer date_mois_Fin) {
-		this.date_mois_Fin = date_mois_Fin;
-	}
-	public Integer getDate_mois_debut() {
-		return date_mois_debut;
-	}
-	public void setDate_mois_debut(Integer date_mois_debut) {
-		this.date_mois_debut = date_mois_debut;
-	}
+public Date getDate_mois_debut() {
+	return date_mois_debut;
+}
+public void setDate_mois_debut(Date date_mois_debut) {
+	this.date_mois_debut = date_mois_debut;
+}public Date getDate_mois_fin() {
+	return date_mois_fin;
+}
+public void setDate_mois_fin(Date date_mois_fin) {
+	this.date_mois_fin = date_mois_fin;
+}
+
 	public Integer getDate_year() {
 		return date_year;
 	}
@@ -270,253 +287,178 @@ public void setSubTitle(String subTitle) {
 		    lineChartDetails = new HighChart();
 	}
 	
-	public void clicked() {
-		choixSelect=false;  
-	    FacesMessage m = new FacesMessage("You clicked " + selectedPoint );
-        FacesContext.getCurrentInstance().addMessage("", m);  
-		System.out.println(selectedPoint);
-		System.out.println(selectedRecon[0].toString());
-		lineChartDetails = new HighChart();
-		
-		SerieChart sc1 = new SerieChart();
-		SerieChart sc2 = new SerieChart();
-		
-	
-	
-		String yDetail=null;
-		String where = null;
-//		String deb = df.format(selectedRecon.toString());
-//		System.out.println(deb);
-	List<Object[]> result1 = new ArrayList<Object[]>();
-		
-	
-		if(this.getChoix_periode().equals("Par Jour")){
-			
-			
-			
-		
-			where="  to_date(dateAppel,'YYMMDD') = to_date("+"'"+selectedRecon[0].toString()+"'"+",'yyyy-MM-dd') ";
-		
-			
-			xDetail="CAST(trancheHoraire AS integer)  ";
-			yDetail = ",SUM(dureeAppelMsc),SUM(dureeAppelMsc)";
-			///resultCDRDetailsInexistant = statRecon.getDetailsDestinationStatReconMscIn("to_date(dateAppel,'YYMMDD')", where);
-			Subtitle1="Par tranche Horaire"+selectedRecon[0].toString();
-			for(int i=0;i<24;i++){
-				Object[] obj = new Object[3];
-				obj[0]=i;
-				obj[1]=0;
-				obj[2]=0;
-						result1.add(obj);
-			}
-		}else if(this.getChoix_periode().equals("Par An")){
-	
-		
-		
-		
-		 where =" Extract(year from to_date(dateAppel,'YYMMDD')) = "+Integer.valueOf(selectedRecon[0].toString())+"  And Extract(month from to_date(dateAppel,'YYMMDD')) >= 01 And Extract(month from to_date(dateAppel,'YYMMDD')) <= 12";
-		xDetail="Extract(month from to_date(dateAppel,'YYMMDD')) ";
-		yDetail = ",SUM(dureeAppelMsc),SUM(dureeAppelMsc)";
-		//resultCDRDetailsInexistant = statRecon.getDetailsDestinationStatReconMscIn(xDetail, where);
-		
-		Subtitle1="Par Mois en "+selectedRecon[0].toString();
-		for(int i=1;i<=12;i++){
-			Object[] obj = new Object[3];
-			obj[0]=i;
-			obj[1]=0;
-			obj[2]=0;
-					result1.add(obj);
-		}
-	}else if(this.getChoix_periode().equals("Par Mois")){
-		Integer year = this.getDate_year();
-		Integer deb = this.getDate_mois_debut();
-		Integer fin =this.getDate_mois_Fin();
-		System.out.println(year+""+deb+""+fin);
-		Integer mois = Integer.valueOf(selectedRecon[0].toString());
- where="Extract(year from to_date(dateAppel,'YYMMDD')) ="+year+" And Extract(month from to_date(dateAppel,'YYMMDD')) ="+mois+" And codeMsc='"+selectedPoint+"'";
-xDetail="Extract(day from to_date(dateAppel,'YYMMDD'))  ";
-yDetail = ",SUM(dureeAppelMsc),SUM(dureeAppelMsc)";
-//resultCDRDetailsInexistant = statRecon.getDetailsDestinationStatReconMscIn(xDetail, where);
-Subtitle1="Par Jour en "+selectedRecon[0].toString();
-for(int i=1;i<=31;i++){
-	Object[] obj = new Object[3];
-	obj[0]=i;
-	obj[1]=0;
-	obj[2]=0;
-			result1.add(obj);
-}
-	}
-		
-		List<Object[]> Details = statRecon.getDetailsStatReconCtiMsc(xDetail,yDetail, where);
-	
-		List<Object[]> res = ListUtils.union(result1, Details);
-		System.out.println(res.size());
-	
-		
-		
-		sc1.setMap(Details);
-		sc2.setMap(Details);
-		lineChartDetails.setName("Par "+selectedPoint);
-		sc1.setName(" Duree IN");
-		sc2.setName("Duree KPI");
-		
-		System.out.println(sc1.getMap().isEmpty());
-		List<SerieChart> series = new ArrayList<>();
-		series.add(sc1);
-		series.add(sc2);
-		//List<SerieChart> series1 = new ArrayList<>();
-		
-		lineChartDetails.setSeries(series);
-		
-		
-		//System.out.println(lineChartDetails.getSeries().get(0).getName()+":"+lineChartDetails.getSeries().get(0).getMap().entrySet().size());
-		choixSelect=true;       
-    }
 	
 	
 	
 	public void handlechange(AjaxBehaviorEvent event){
-		chartDisplayed= false;
+		
+		chartDisplayed = false;
+			
 
-		FacesContext facesCtx = FacesContext.getCurrentInstance();
-	    ELContext elContext = facesCtx.getELContext();
-	    Application app = facesCtx.getApplication();
-		 ExpressionFactory elFactory = app.getExpressionFactory();
-			PanelGrid comp = (PanelGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:PanelPeriode");
-			System.out.println(comp.getId());
-			System.out.println(comp.getChildCount());
-			UIComponent compJourOutput0 =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:cld_jour_debut");
-			UIComponent compJourOutput1 =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:cld_jour_fin");
-		
-			UIComponent compJourOutputHeure =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:cld_jour");
-			UIComponent compJourOutputYear=FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:lstDateYears");
-			UIComponent compJourOutputYearFin=FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:lstDateYearsFin");
-		
-			UIComponent compSLYearMois =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:lstDateYearsMois");
-			UIComponent compSLMois =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:lstMois");
-			UIComponent compSLMoisFin =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:lstMoisFin");
-		
-			if(compJourOutput0!=null){
+				FacesContext facesCtx = FacesContext.getCurrentInstance();
+			    ELContext elContext = facesCtx.getELContext();
+			    Application app = facesCtx.getApplication();
+				 ExpressionFactory elFactory = app.getExpressionFactory();
+					PanelGrid comp = (PanelGrid) FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:PanelPeriode");
+					System.out.println(comp.getId());
+					System.out.println(comp.getChildCount());
+					UIComponent compJourOutput0 =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:cld_jour_debut");
+					UIComponent compJourOutput1 =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:cld_jour_fin");
 				
-				comp.getChildren().remove(compJourOutput0);
-				comp.getChildren().remove(compJourOutput1);
+					UIComponent compJourOutputHeure =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:cld_jour");
+					UIComponent compJourOutputYear=FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:lstDateYears");
+					UIComponent compJourOutputYearFin=FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:lstDateYearsFin");
+				
+					UIComponent compSLYearMois =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:lstDateYearsMois");
+					UIComponent compSLMois =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:cld_mois_debut");
+					UIComponent compSLMoisFin =FacesContext.getCurrentInstance().getViewRoot().findComponent("form1:cld_mois_fin");
+				
+					if(compJourOutput0!=null){
+						
+						comp.getChildren().remove(compJourOutput0);
+						comp.getChildren().remove(compJourOutput1);
+					}
+					if(compSLMois!=null){
+
+						comp.getChildren().remove(compSLMois);
+						comp.getChildren().remove(compSLMoisFin);
+						
+						
+					}
+					if(compJourOutputYear!=null){
+						
+						comp.getChildren().remove(compJourOutputYear);
+						comp.getChildren().remove(compJourOutputYearFin);
+					}
+				if(compJourOutputHeure!=null){
+				
+					comp.getChildren().remove(compJourOutputHeure);
+				}
+					
+					if(this.getChoix_periode().equals("Par Jour")){
+						
+						
+					
+							Calendar cld_jour_debut = new Calendar();
+							cld_jour_debut.setId("cld_jour_debut");
+							cld_jour_debut.setRequired(true);
+						
+							
+						ValueExpression valjour = createValueExpression("#{rec_cti_msc.date_ParJourDeb}", Date.class);
+						cld_jour_debut.setValueExpression("value", valjour);
+							
+							Calendar cld_jour_fin = new Calendar();
+						
+							cld_jour_fin.setId("cld_jour_fin");
+							
+						ValueExpression valjourfin = createValueExpression("#{rec_cti_msc.date_ParJourFin}", Date.class);
+						cld_jour_fin.setValueExpression("value", valjourfin);
+						
+						
+							
+						
+							
+							comp.getChildren().add(cld_jour_debut);
+							
+							comp.getChildren().add(cld_jour_fin);
+						
+						
+						
+							
+					
+					}else if (this.getChoix_periode().equals("Par Heure")){
+						Calendar cld_jour = new Calendar();
+						
+						
+						cld_jour.setId("cld_jour");
+						
+					ValueExpression valjour = createValueExpression("#{rec_cti_msc.date_Parheure}", Date.class);
+					cld_jour.setValueExpression("value", valjour);
+					AjaxBehavior ajax = new AjaxBehavior();
+				       // MethodExpression me = elFactory.createMethodExpression(elContext, "#{sampleMBean.processAction}", null, new Class<?>[]{BehaviorEvent.class});
+				        ajax.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(
+				            createActionMethodExpression("#{rec_cti_msc.handlechange1}"),createActionMethodExpression("#{rec_cti_msc.handlechange1}")));
+				        ajax.setUpdate("@form");
+				       
+
+					      
+			         
+			        
+//					        
+			         
+				         cld_jour.addClientBehavior("dateSelect", ajax);
+				         FacesContext fc = FacesContext.getCurrentInstance();
+				         ExpressionFactory ef = fc.getApplication().getExpressionFactory();
+
+				         MethodExpression me = ef.createMethodExpression(fc.getELContext(), "#{rec_cti_msc.handlechange2}", null, new Class<?>[]{BehaviorEvent.class});
+				         AjaxBehavior ajaxBehavior = (AjaxBehavior) fc.getApplication().createBehavior(AjaxBehavior.BEHAVIOR_ID);
+				         ajaxBehavior.setProcess("@this");
+				      
+				         ajaxBehavior.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(me, me));
+				         cld_jour.addClientBehavior("change", ajaxBehavior);
+						comp.getChildren().add(cld_jour);
+					}else if (this.getChoix_periode().equals("Par An")){
+						SelectOneMenu lstDateYears = new SelectOneMenu();
+						lstDateYears.setId("lstDateYears");
+						 ValueExpression valueExp = createValueExpression("#{rec_cti_msc.date_year_deb}", Integer.class);
+				         UISelectItems list_items0 = new UISelectItems();
+						 lstDateYears.setValueExpression("value", valueExp);
+				         list_items0.setValue(liste_desAns);
+				         lstDateYears.getChildren().add(list_items0);
+						
+						SelectOneMenu lstDateYearsFin = new SelectOneMenu();
+						lstDateYearsFin.setId("lstDateYearsFin");
+						 ValueExpression valueExp1 = createValueExpression("#{rec_cti_msc.date_year_fin}", Integer.class);
+				         UISelectItems list_items = new UISelectItems();
+						 lstDateYearsFin.setValueExpression("value", valueExp1);
+				         list_items.setValue(liste_desAns);
+				         lstDateYearsFin.getChildren().add(list_items);
+					
+				
+					comp.getChildren().add(lstDateYears);
+					
+					comp.getChildren().add(lstDateYearsFin);
+					
+					
+					
+					}else if (this.getChoix_periode().equals("Par Mois")){
+						Calendar cld_mois_debut = new Calendar();
+						cld_mois_debut.setId("cld_mois_debut");
+						cld_mois_debut.setRequired(true);
+					
+						
+					ValueExpression valjour = createValueExpression("#{rec_cti_msc.date_mois_debut}", Date.class);
+					cld_mois_debut.setValueExpression("value", valjour);
+					cld_mois_debut.setPattern("MM/yyyy");
+					cld_mois_debut.setMask("true");
+				
+						Calendar cld_mois_fin = new Calendar();
+					
+						cld_mois_fin.setId("cld_mois_fin");
+						cld_mois_fin.setPattern("MM/yyyy");
+						cld_mois_fin.setMask("true");
+					ValueExpression valjourfin = createValueExpression("#{rec_cti_msc.date_mois_fin}", Date.class);
+					cld_mois_fin.setValueExpression("value", valjourfin);
+					
+					
+						
+					
+						
+						comp.getChildren().add(cld_mois_debut);
+						
+						comp.getChildren().add(cld_mois_fin);
+					
+					
+					
+					}
+					
+						
+						
+					
+					
+					
+					
 			}
-			if(compSLMois!=null){
-				comp.getChildren().remove(compSLYearMois);
-				comp.getChildren().remove(compSLMois);
-				comp.getChildren().remove(compSLMoisFin);
-				
-				
-			}
-			if(compJourOutputYear!=null){
-				
-				comp.getChildren().remove(compJourOutputYear);
-				comp.getChildren().remove(compJourOutputYearFin);
-			}
-		if(compJourOutputHeure!=null){
-		
-			comp.getChildren().remove(compJourOutputHeure);
-		}
-			
-			if(this.getChoix_periode().equals("Par Jour")){
-				
-				
-			
-					Calendar cld_jour_debut = new Calendar();
-					cld_jour_debut.setId("cld_jour_debut");
-					cld_jour_debut.setRequired(true);
-				
-					
-				ValueExpression valjour = createValueExpression("#{rec_cti_msc.date_ParJourDeb}", Date.class);
-				cld_jour_debut.setValueExpression("value", valjour);
-					
-					Calendar cld_jour_fin = new Calendar();
-				
-					cld_jour_fin.setId("cld_jour_fin");
-					
-				ValueExpression valjourfin = createValueExpression("#{rec_cti_msc.date_ParJourFin}", Date.class);
-				cld_jour_fin.setValueExpression("value", valjourfin);
-				
-				
-					
-				
-					
-					comp.getChildren().add(cld_jour_debut);
-					
-					comp.getChildren().add(cld_jour_fin);
-				
-				
-				
-					
-			
-			}else if (this.getChoix_periode().equals("Par Heure")){
-				Calendar cld_jour = new Calendar();
-				
-				
-				cld_jour.setId("cld_jour");
-				
-			ValueExpression valjour = createValueExpression("#{rec_cti_msc.date_Parheure}", Date.class);
-			cld_jour.setValueExpression("value", valjour);
-			
-				comp.getChildren().add(cld_jour);
-			}else if (this.getChoix_periode().equals("Par An")){
-				SelectOneMenu lstDateYears = new SelectOneMenu();
-				lstDateYears.setId("lstDateYears");
-				 ValueExpression valueExp = createValueExpression("#{rec_cti_msc.date_year_deb}", Integer.class);
-		         UISelectItems list_items0 = new UISelectItems();
-				 lstDateYears.setValueExpression("value", valueExp);
-		         list_items0.setValue(liste_desAns);
-		         lstDateYears.getChildren().add(list_items0);
-				
-				SelectOneMenu lstDateYearsFin = new SelectOneMenu();
-				lstDateYearsFin.setId("lstDateYearsFin");
-				 ValueExpression valueExp1 = createValueExpression("#{rec_cti_msc.date_year_fin}", Integer.class);
-		         UISelectItems list_items = new UISelectItems();
-				 lstDateYearsFin.setValueExpression("value", valueExp1);
-		         list_items.setValue(liste_desAns);
-		         lstDateYearsFin.getChildren().add(list_items);
-			
-		
-			comp.getChildren().add(lstDateYears);
-			
-			comp.getChildren().add(lstDateYearsFin);
-			}else if (this.getChoix_periode().equals("Par Mois")){
-				SelectOneMenu lstDateYearsMois = new SelectOneMenu();
-				lstDateYearsMois.setId("lstDateYearsMois");
-				 ValueExpression valueExp = createValueExpression("#{rec_cti_msc.date_year}", Integer.class);
-		         UISelectItems list_items0 = new UISelectItems();
-		         lstDateYearsMois.setValueExpression("value", valueExp);
-		         list_items0.setValue(liste_desAns);
-		         lstDateYearsMois.getChildren().add(list_items0);
-				
-				SelectOneMenu lstMois = new SelectOneMenu();
-				lstMois.setId("lstMois");
-				 ValueExpression valueExp1 = createValueExpression("#{rec_cti_msc.date_mois_debut}", Integer.class);
-		         UISelectItems list_items = new UISelectItems();
-		         lstMois.setValueExpression("value", valueExp1);
-		         list_items.setValue(listeMois);
-		         lstMois.getChildren().add(list_items);
-				
-				SelectOneMenu lstMoisFin = new SelectOneMenu();
-				lstMoisFin.setId("lstMoisFin");
-				 ValueExpression valueExp2 = createValueExpression("#{rec_cti_msc.date_mois_Fin}", Integer.class);
-		         UISelectItems list_items2 = new UISelectItems();
-		         lstMoisFin.setValueExpression("value", valueExp2);
-		         list_items2.setValue(listeMois);
-		         lstMoisFin.getChildren().add(list_items2);
-				
-				comp.getChildren().add(lstDateYearsMois);
-		
-				comp.getChildren().add(lstMois);
-			
-				comp.getChildren().add(lstMoisFin);
-			}
-			lineChart1= new HighChart();
-			
-		
-			
-			
-	}
 	
 	public void Valider(){
 		
@@ -525,28 +467,47 @@ for(int i=1;i<=31;i++){
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,"Erreur",  "Veuillez choisir une Periode " ) );
 		}
 		else{
-			where_liste.add(" ");
-			List<Object[]> result1 = new ArrayList<Object[]>();
+		
+			List<Object[]> generateList = new ArrayList<>();
 			
 			if(this.getChoix_periode().equals("Par Jour")){
-				
+				 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+					String deb0 = df1.format(this.getDate_ParJourDeb());
+					String fin0 = df1.format(this.getDate_ParJourFin());
+				DateTime start = DateTime.parse(deb0);
+		        System.out.println("Start: " + start);
+		  
+		        DateTime end = DateTime.parse(fin0);
+		        System.out.println("End: " + end);
+
+		        List<DateTime> between = getDateRange(start, end);
+		        for (DateTime d : between) {
+		        	String s = d+"";
+		            
+		            System.out.println(" " + s.substring(8,10));
+		            Object[] ob = new Object[9];
+		            ob[0]=s.substring(0,10);
+		            ob[1]=0.0;
+		            ob[2]=0.0;
+		            ob[3]=0.0;
+		            ob[4]=0.0;
+		            ob[5]=0.0;
+		            ob[6]=0.0;
+		            ob[7]=0.0;
+		            ob[8]=0.0;
+		            
+		            generateList.add(ob);
+		        }
 					DateFormat df = new SimpleDateFormat("yyyy-MM-dd ");
 					
 					String deb = df.format(this.getDate_ParJourDeb());
 					String fin = df.format(this.getDate_ParJourFin());
 					where_liste.add(" to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'yyyy-MM-dd') And to_date("+"'"+fin+"'"+",'yyyy-MM-dd')");
 					String where="  to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'yyyy-MM-dd') And to_date("+"'"+fin+"'"+",'yyyy-MM-dd')";
-					resultCDRInexistant= statRecon.getAllStatReconCtiMsc("to_char(to_date(dateAppel,'YYMMDD'),'YYYY-MM-DD')",where);
+					resultCDRInexistant= removeDuplicate(generateList,statRecon.getAllStatReconCtiMsc("to_char(to_date(dateAppel,'YYMMDD'),'YYYY-MM-DD')",where));
 				
 					SubTitle ="Periode entre "+deb+" et "+fin;
-					List<Date> dates = new ArrayList<Date>(25);
-					java.util.Calendar cal = java.util.Calendar.getInstance();
-					cal.setTime(date_ParJourDeb);
-					while (cal.getTime().before(date_ParJourFin)) {
-					    cal.add(java.util.Calendar.DATE, 1);
-					    dates.add(cal.getTime());
-					}
-				
+					
 					
 			}else if(this.getChoix_periode().equals("Par An")){
 			
@@ -558,58 +519,41 @@ for(int i=1;i<=31;i++){
 				resultCDRInexistant= statRecon.getAllStatReconCtiMsc("Extract (year from to_date(dateAppel,'YYMMDD'))",where);
 				
 			}else if(this.getChoix_periode().equals("Par Mois")){
-				Integer year = this.getDate_year();
-				Integer deb = this.getDate_mois_debut();
-				Integer fin =this.getDate_mois_Fin();
-				System.out.println(year+""+deb+""+fin);
-				where_liste.add(" Extract(year from to_date(dateAppel,'YYMMDD')) = "+year+"  And Extract(month from to_date(dateAppel,'YYMMDD')) >= "+deb+" And Extract(month from to_date(dateAppel,'YYMMDD')) <= "+fin+"");
-		String where="  Extract(year from to_date(dateAppel,'YYMMDD')) = "+year+"  And Extract(month from to_date(dateAppel,'YYMMDD')) >= "+deb+" And Extract(month from to_date(dateAppel,'YYMMDD')) <= "+fin+"";
-		resultCDRInexistant= statRecon.getAllStatReconCtiMsc("Extract (month from to_date(dateAppel,'YYMMDD'))",where);
-		SubTitle ="Periode entre au "+year+"entre les mois"+deb+" et "+fin;
+				 DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+					String deb0 = df1.format(this.getDate_mois_debut());
+					String fin0 = df1.format(this.getDate_mois_fin());
+					LocalDate date1 = new LocalDate(deb0);
+					 LocalDate date2 = new LocalDate(fin0);
+					 date2 = date2.plus(Period.months(1));
+					 while(date1.isBefore(date2)){
+						 Object[] ob = new Object[9];
+				            ob[0]=date1.toString("MM/yyyy");
+				            ob[1]=0.0;
+				            ob[2]=0.0;
+				            ob[3]=0.0;
+				            ob[4]=0.0;
+				            ob[5]=0.0;
+				            ob[6]=0.0;
+				            ob[7]=0.0;
+				            ob[8]=0.0;
+				            
+				            generateList.add(ob);
+					     System.out.println(date1.toString("MM/yyyy"));
+					     date1 = date1.plus(Period.months(1));
+					    
+					 }
+				DateFormat df = new SimpleDateFormat("MM-YYYY");
+				System.out.println(date_Parheure);
+				String deb = df.format(this.getDate_mois_debut());
+				String fin = df.format(this.getDate_mois_fin());
+				where_liste.add("to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'MM-YYYY') And to_date("+"'"+fin+"'"+",'MM-YYYY')");
+		String where="  to_date(dateAppel,'YYMMDD') Between to_date("+"'"+deb+"'"+",'MM-YYYY') And to_date("+"'"+fin+"'"+",'MM-YYYY')";
+		resultCDRInexistant= removeDuplicate(generateList,statRecon.getAllStatReconCtiMsc("to_char(to_date(dateAppel,'YYMMDD'),'MM/YYYY')",where));
+		SubTitle ="Periode  entre les mois"+deb+" et "+fin;
 		
 			}
 		//String kfdf=	(String) resultCDRInexistant.get(0)[0].t;
-			lineChart1 = new HighChart();
-			SerieChart sc1 = new SerieChart();
-			SerieChart sc2 = new SerieChart();
-			SerieChart sc3 = new SerieChart();
-		
-			 Map<Object,Number> map = new HashMap<>();
- 			 Map<Object,Number> map1= new HashMap<>();
- 			 Map<Object,Number> map2 = new HashMap<>();
- 			List<Object[]>  result = new ArrayList<>();
-			//pie1=statRecon.getAllStatRecon1("s.destination.typeDest", "duree)", "SUM(", "Group By s.destination.typeDest ", where_liste);
-		 if(this.getChoix_periode().equals("Par An")){
 			
-			 result = statRecon.getAllStatReconCDRIN("Extract (year from to_date(dateAppel,'YYMMDD'))", "SUM(dureeAppelCti),SUM(dureeAppelMsc),SUM(dureeRoaOut)", where_liste);
-				
- 			 System.out.println(result.size());
-			
-			
-		 		 }else if(this.getChoix_periode().equals("Par Mois")){
-		 		
-		 			 
-		 			result = statRecon.getAllStatReconCDRIN("Extract (month from to_date(dateAppel,'YYMMDD'))", "SUM(dureeAppelCti),SUM(dureeAppelMsc),SUM(dureeRoaOut)", where_liste);
-					
-					 
-		 		 }
-		 
-		 sc1.setMap(result);
-			sc2.setMap(result);
-			sc3.setMap(result);
-		 sc1.setName("Duree Cti ");
-		 sc2.setName("Duree MSC");
-		 sc3.setName("Duree Roa Out");
-		
-		List<SerieChart> series= new ArrayList<>();
-		series.add(sc1);
-		series.add(sc2);
-		
-		series.add(sc3);
-		
-		lineChart1.setSeries(series);
-	
-			 			
 			 		     
 			 	
 
@@ -628,14 +572,13 @@ chartDisplayed=true;
 	
 	
 	public void getDetail(){
-		choixSelect=false;
+	
 		DetailDisplayed=true;
 		System.out.println(selectedRecon[0].toString());
 		
-		pieChartDetails= new HighChart();
-	
-		SerieChart spie = new SerieChart();
 		
+	
+	
 		
 		String yDetail=null;
 		String where = null;
@@ -653,7 +596,7 @@ chartDisplayed=true;
 		
 			
 			xDetail="CAST(trancheHoraire AS integer)  ";
-			yDetail = ",SUM(dureeTotalIn),SUM(kpiDuree)";
+			yDetail = ",SUM(dureeAppelCti),SUM(dureeAppelMsc),SUM(dureeRoaOut),SUM(nbAppelCti),SUM(nbAppelMsc),SUM(nbRoaOut)";
 			resultCDRDetailsInexistant = statRecon.getDetailsDestinationStatReconCtiMsc("to_date(dateAppel,'YYMMDD')", where);
 			Subtitle1="Par tranche Horaire"+selectedRecon[0].toString();
 		
@@ -664,53 +607,44 @@ chartDisplayed=true;
 		
 		 where =" Extract(year from to_date(dateAppel,'YYMMDD')) = "+Integer.valueOf(selectedRecon[0].toString())+"  And Extract(month from to_date(dateAppel,'YYMMDD')) >= 01 And Extract(month from to_date(dateAppel,'YYMMDD')) <= 12";
 		xDetail="Extract(month from to_date(dateAppel,'YYMMDD')) ";
-		yDetail = ",SUM(dureeAppelMsc),SUM(dureeAppelMsc)";
+		yDetail = ",SUM(dureeAppelCti),SUM(dureeAppelMsc),SUM(dureeRoaOut),SUM(nbAppelCti),SUM(nbAppelMsc),SUM(nbRoaOut)";
 		resultCDRDetailsInexistant = statRecon.getDetailsDestinationStatReconCtiMsc(xDetail, where);
 		
 		Subtitle1="Par Mois en "+selectedRecon[0].toString();
 		
 	}else if(this.getChoix_periode().equals("Par Mois")){
-		Integer year = this.getDate_year();
-		Integer deb = this.getDate_mois_debut();
-		Integer fin =this.getDate_mois_Fin();
-		System.out.println(year+""+deb+""+fin);
-		Integer mois = Integer.valueOf(selectedRecon[0].toString());
- where=" Extract(year from to_date(dateAppel,'YYMMDD')) ="+year+" And Extract(month from to_date(dateAppel,'YYMMDD')) ="+mois;
+		DateFormat df = new SimpleDateFormat("MM-YYYY");
+		System.out.println(date_Parheure);
+		String deb = df.format(this.getDate_mois_debut());
+		String fin = df.format(this.getDate_mois_fin());
+		String mois = "01/"+selectedRecon[0].toString();
+		String mois1 = "31/"+selectedRecon[0].toString();
+ where="to_date(dateAppel,'YYMMDD') BETWEEN to_date("+"'"+mois+"'"+",'DD/MM/YYYY') AND to_date("+"'"+mois1+"'"+",'DD/MM/YYYY') ";
 xDetail="Extract(day from to_date(dateAppel,'YYMMDD'))  ";
-yDetail = ",SUM(dureeAppelMsc),SUM(dureeAppelMsc)";
+yDetail = ",SUM(dureeAppelCti),SUM(dureeAppelMsc),SUM(dureeRoaOut),SUM(nbAppelCti),SUM(nbAppelMsc),SUM(nbRoaOut)";
 resultCDRDetailsInexistant = statRecon.getDetailsDestinationStatReconCtiMsc(xDetail, where);
 Subtitle1="Par Jour en "+selectedRecon[0].toString();
-for(int i=1;i<=31;i++){
-	Object[] obj = new Object[3];
-	obj[0]=i;
-	obj[1]=0;
-	obj[2]=0;
-			result1.add(obj);
-}
+
 	}
 		
-		List<Object[]> Details = statRecon.getDetailsStatReconCtiMsc(xDetail,yDetail, where);
+		Details = statRecon.getDetailsStatReconCtiMsc(xDetail,yDetail, where);
 	
-		List<Object[]> res = ListUtils.union(result1, Details);
-		System.out.println(res.size());
-		List<Object[]> DetailsMSC = statRecon.getDetailsStatReconCtiMsc("codeMsc",yDetail, where);
 		
 		
-	spie.setMap(DetailsMSC);
-		
-		spie.setName("Repartition Par MSc");
-		//System.out.println(sc1.getMap().isEmpty());
-		List<SerieChart> series = new ArrayList<>();
-		
-		List<SerieChart> series1 = new ArrayList<>();
-		series1.add(spie);
-		
-		pieChartDetails.setSeries(series1);
-		pieChartDetails.setName("Repartition par MSC");
 		
 		//System.out.println(lineChartDetails.getSeries().get(0).getName()+":"+lineChartDetails.getSeries().get(0).getMap().entrySet().size());
 		
 	}
+	 public MethodExpression createActionMethodExpression(String name) {
+	        FacesContext facesCtx = FacesContext.getCurrentInstance();
+	        ELContext elContext = facesCtx.getELContext();
+	        return facesCtx
+	            .getApplication()
+	            .getExpressionFactory()
+	            .createMethodExpression(elContext, name, String.class,
+	                new Class[]{});
+	    }
+	 
 	
 	public ValueExpression createValueExpression(String valueExpression,
 	        Class<?> valueType) {
@@ -722,6 +656,77 @@ for(int i=1;i<=31;i++){
 	                valueType);
 	    }
 
+	 public static List<DateTime> getDateRange(DateTime start, DateTime end) {
+
+	        List<DateTime> ret = new ArrayList<DateTime>();
+	        DateTime tmp = start;
+	        while(tmp.isBefore(end) || tmp.equals(end)) {
+	            ret.add(tmp);
+	            tmp = tmp.plusDays(1);
+	        }
+	        return ret;
+	    }
+	 public List<Object[]> removeDuplicate(List <Object[]> list,List<Object[]> list1) {
+		 List<Object[]> liste = new ArrayList<>();
+		 int i =0;
+		 int j=0;
+		 if(list1==null){
+			 liste=list;
+		 }else if(list1.size()==list.size()){
+			 
+		   while(j<list.size()){
+			   
+				   if(list.get(j)[0].toString().equals(list1.get(i)[0].toString())){
+					   liste.add(list1.get(i));
+				   }else{
+					   liste.add(list.get(j));
+				   }
+				   i++;
+					  j++;
+			   
+		   }
+		 }else if(list.size()>list1.size()){
+			 System.out.println(list1.size());
+			if(list.size()>0){
+				for(int nb=0;nb<list.size();nb++){
+					
+					 boolean trouve = false;
+					 int nb1 =0;
+					   while((trouve==false) && (nb1<list1.size()) ){
+						   System.out.println(trouve);
+						  
+					   if(list.get(nb)[0].toString().equals(list1.get(nb1)[0].toString())){
+						 
+						   trouve = true;
+						 
+					   }else{
+						   nb1++;
+					   }
+						   
+						  
+					   }
+					   if(trouve==false){
+						   liste.add(list.get(nb));
+					   }else{
+						   liste.add(list1.get(nb1));
+						   System.out.println(list1.get(nb1)[2]);
+					   }
+					   
+					  
+				   
+			   }
+			}else{
+				   liste = list;
+			   }
+			
+		 }
+		 
+		   return liste;
+		  }
+	 public void handlechange1(){
+			
+			chartDisplayed=false;
+		}
 
 	
 

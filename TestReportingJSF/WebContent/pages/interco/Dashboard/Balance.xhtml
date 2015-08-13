@@ -38,15 +38,15 @@
  
 		<p:panel rendered="#{inter_balance.chartDisplayed}"  >
 		
-		<hf:chart   type="line" subTitle="#{inter_balance.subTitle}"  title="Balance "   >
-		<hf:chartSerie   name="Balance" value="#{inter_balance.listeInterBalance}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
-		
+		<hf:chart  height="220" type="line" subTitle="#{inter_balance.subTitle}"  title="Balance "   >
+		<hf:chartSerie   name="Produit" value="#{inter_balance.listeInterBalance}" var="point" point="#{point[1]}"  tickLabel="#{point[0]}"></hf:chartSerie>
+		<hf:chartSerie   name="Charge" value="#{inter_balance.listeInterBalance}" var="point" point="#{point[5]}"  tickLabel="#{point[0]}"></hf:chartSerie>
 		<hf:chartAxis position="w" min="0" ></hf:chartAxis>
 		
 		</hf:chart>
 		</p:panel>
 		
-          <p:dataTable rendered="#{inter_balance.chartDisplayed}"  value="#{inter_balance.listeInterBalance}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+          <p:dataTable  rendered="#{inter_balance.chartDisplayed}"  value="#{inter_balance.listeInterBalance}" var="cdr" paginator="true" rows="8"    paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
         rowsPerPageTemplate="6,12,16" >
 		  <p:column headerText="Date">
         <h:outputText value="#{cdr[0]}" />
